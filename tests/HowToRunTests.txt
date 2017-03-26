@@ -1,0 +1,10 @@
+To run tests:
+1. Put the new installer on /root
+2. From /root run: sh setup_tufin_ps_scripts_<#ver>.run -R (to clean all previous installation)
+3. From /root run: sh setup_tufin_ps_scripts_<#ver>.run -W
+4. Go to: /opt/tufin/securitysuite/ps/bin
+5. Run: set_secure_store.py -o
+6. For SecureTrack set: user - admin, password - zubur1
+   For SecureChange set: user - a, password - a
+7. Go to: /opt/tufin/securitysuite/ps/tests/bin
+8. From there run: /opt/tufin/securitysuite/ps/python/bin/python3.4 -m unittest discover -f

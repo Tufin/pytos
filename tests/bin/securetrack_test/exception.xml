@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security_policy_exception>
+    <approved_by>admin</approved_by>
+    <created_by>admin</created_by>
+    <creation_date>2016-01-01</creation_date>
+    <description>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</description>
+    <exempted_traffic_list>
+        <exempted_traffic>
+            <comment>Creating USP exception for ticket 123</comment>
+            <dest_network_collection>
+                <network_items>
+                    <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">
+                        <ip>192.168.1.2</ip>
+                        <prefix>32</prefix>
+                    </network_item>
+                </network_items>
+            </dest_network_collection>
+            <security_requirements>
+                <zone_to_zone_security_requirement>
+                    <from_zone>30.100.30.0</from_zone>
+                    <policy_name>Test</policy_name>
+                    <to_zone>200.200.200.0</to_zone>
+                </zone_to_zone_security_requirement>
+            </security_requirements>
+            <service_collection>
+                <service_items>
+                    <service_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="custom">
+                        <port>4321</port>
+                        <protocol>tcp</protocol>
+                    </service_item>
+                </service_items>
+            </service_collection>
+            <source_network_collection>
+                <network_items>
+                    <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">
+                        <ip>192.168.1.1</ip>
+                        <prefix>32</prefix>
+                    </network_item>
+                </network_items>
+            </source_network_collection>
+        </exempted_traffic>
+    </exempted_traffic_list>
+    <expiration_date>2025-01-01</expiration_date>
+    <name>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</name>
+    <requested_by>admin</requested_by>
+    <ticket_id>123</ticket_id>
+</security_policy_exception>

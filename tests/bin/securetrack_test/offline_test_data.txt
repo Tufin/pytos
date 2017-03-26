@@ -1,0 +1,435 @@
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+logging count
+logging message-counter syslog
+no logging buffered
+enable secret 5 $1$61sC$0qdgN.6W7v5xf/kJEhSto.
+enable password 7 140D070919167B
+!
+no aaa new-model
+dot11 syslog
+ip source-route
+!
+!
+ip nbar custom shay tcp 2500
+!
+!
+ip cef
+ip inspect name SDM_LOW cuseeme
+ip inspect name SDM_LOW dns
+ip inspect name SDM_LOW ftp
+ip inspect name SDM_LOW h323
+ip inspect name SDM_LOW https
+ip inspect name SDM_LOW icmp
+ip inspect name SDM_LOW imap
+ip inspect name SDM_LOW pop3
+ip inspect name SDM_LOW netshow
+ip inspect name SDM_LOW rcmd
+ip inspect name SDM_LOW realaudio
+ip inspect name SDM_LOW rtsp
+ip inspect name SDM_LOW esmtp
+ip inspect name SDM_LOW sqlnet
+ip inspect name SDM_LOW streamworks
+ip inspect name SDM_LOW tftp
+ip inspect name SDM_LOW udp
+ip inspect name SDM_LOW vdolive
+ip domain name tufin
+ip host qamail.tufin.com 172.16.2.167 192.168.168.167
+ip host hercules 172.16.2.1
+ip host WANem_172 172.16.2.155
+ip host DA_WAN 10.100.0.157
+ip host monica 172.16.2.7
+ip host cupid.tufin.com 192.168.1.68
+ip host FW-LAN 172.16.1.2
+ip host stella 172.16.2.250
+ip host hydra 192.168.1.66
+ip host shayshayshay 4.4.4.4
+ip host sadsad 2.2.2.44
+ip host upup 2.2.2.11
+ip host-list automation
+ip name-server 192.168.1.68
+ip vrf shay
+description this is my VRF
+maximum routes 100 60
+bgp next-hop Loopback1
+!
+ip vrf shay2
+!
+ip vrf shay3
+!
+ip ddns update method dd
+HTTP
+!
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+object-group network 1.1.1.1/255.255.255.255
+host 1.1.1.1
+!
+object-group network bobo1
+host 1.1.1.1
+!
+object-group network bobo2
+!
+object-group service bobo3
+tcp
+udp
+tcp range www www
+!
+object-group service bobo_grp_srv
+icmp redirect
+tcp
+icmp
+icmp 7
+!
+object-group network my_network_object_group
+host 172.16.2.167
+host 172.16.2.168
+host 17.17.17.17
+range 172.16.2.128 172.16.2.180
+host 172.16.2.190
+!
+object-group network my_network_object_group_dest
+host 14.14.14.14
+14.14.14.0 255.255.255.0
+!
+object-group service my_service_object_group
+icmp echo
+tcp eq www
+tcp eq smtp
+tcp eq telnet
+!
+object-group service shayy
+tcp eq telnet
+tcp eq www
+!
+username elton privilege 5 password 7 0301571F0901
+username jennifer privilege 5 password 7 1203101507195D
+username shayd
+username shay privilege 15 secret 5 $1$Q.yP$STfX6wrgNQ1Gpjpb4ckFa.
+username asi privilege 15 password 7 13061E010803
+username shai privilege 15 secret 5 $1$n1uy$W6/eTKSiOe9ckWnGOVSIj/
+username zubur1 privilege 5 secret 5 $1$xVe2$G.8Oh3ks5gVn9Zc/RrEjn1
+username oren privilege 15 password 7 031E4E09131D70
+username mark privilege 15 password 7 0506071D2A1D1C5A
+archive
+log config
+hidekeys
+!
+!
+!
+!
+crypto ipsec client ezvpn shay_VPN
+connect auto
+group shay key shay
+mode client
+peer 1.1.1.1
+xauth userid mode interactive
+!
+!
+!
+ip ssh source-interface FastEthernet0/0
+!
+class-map match-all type
+!
+!
+policy-map shayd
+!
+zone security bobo
+description bobo111
+!
+!
+!
+interface Loopback1
+ip address 147.147.147.147 255.255.255.255
+!
+interface Loopback14
+ip address 77.77.77.77 255.255.255.0
+!
+interface Tunnel0
+description discontinuous-Ruth
+ip address 10.10.11.11 255.255.255.0
+ip access-group bobo_acl in
+!
+interface Tunnel1
+no ip address
+!
+interface Tunnel5
+description r
+ip address 10.10.12.10 255.255.255.0 secondary
+ip address 5.5.6.1 255.255.255.0
+ip access-group 122 out
+!
+interface Tunnel15
+no ip address
+ip access-group bobo_acl in
+!
+interface Multilink4
+ip address 172.21.21.1 255.255.255.0
+shutdown
+ppp multilink
+ppp multilink group 4
+!
+interface FastEthernet0/0
+description $FW_INSIDE$$ETH-WAN$
+ip address 172.16.2.159 255.255.255.0
+ip access-group shayyy in
+ip nbar protocol-discovery
+ip flow ingress
+load-interval 30
+speed auto
+full-duplex
+no mop enabled
+!
+interface FastEthernet0/1
+description trunk to catalyst2950 FAST_ETH 0/24
+ip address 10.10.10.1 255.255.255.0 secondary
+ip address 62.219.50.2 255.255.255.252
+ip access-group IN-LAN in
+ip flow ingress
+duplex auto
+speed auto
+crypto ipsec client ezvpn shay_VPN inside
+!
+interface Dialer0
+ip address dhcp
+dialer pool 4
+dialer-group 1
+!
+no ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.2.1
+ip route 0.0.0.0 0.0.0.0 62.219.50.1
+ip route 1.1.1.1 255.255.255.255 FastEthernet0/0 name myasdf
+ip route 1.1.1.1 255.255.255.255 FastEthernet0/0 172.16.2.1
+ip route 1.1.1.1 255.255.255.255 172.16.2.97
+ip route 1.1.1.5 255.255.255.255 Null0
+ip route 1.2.3.4 255.255.255.255 172.16.2.1
+ip route 2.2.1.1 255.255.255.255 Null0
+ip route 2.2.2.0 255.255.255.0 5.5.6.11
+ip route 2.2.2.1 255.255.255.255 Null0
+ip route 5.4.4.4 255.255.255.255 1.1.1.1
+ip route 10.10.10.10 255.255.255.255 172.16.2.97
+ip route 10.100.100.102 255.255.255.255 172.16.2.102
+ip route 12.12.0.0 255.255.0.0 172.16.2.97
+ip route 44.44.44.0 255.255.255.0 172.16.2.62
+ip route 55.1.0.1 255.255.255.255 172.21.21.222
+ip route 55.55.55.55 255.255.255.255 172.16.2.55 tag 222 permanent name shayshay
+ip route 88.88.88.0 255.255.255.0 20.20.20.20
+ip route 172.16.2.99 255.255.255.255 172.16.2.62
+ip route 172.16.2.100 255.255.255.255 172.16.2.123
+ip route 172.16.2.101 255.255.255.255 172.16.2.165
+ip route 172.16.2.101 255.255.255.255 3.3.4.5
+ip route 172.16.2.103 255.255.255.255 3.3.4.5
+ip route 172.16.2.104 255.255.255.255 172.16.2.102
+ip route 172.20.20.0 255.255.255.0 5.5.6.11
+ip route 192.168.0.0 255.255.0.0 172.16.2.1
+ip route 192.168.6.0 255.255.255.0 10.10.10.99
+ip route 212.179.50.0 255.255.255.0 62.219.50.1
+ip route vrf shay 0.0.0.0 0.0.0.0 172.16.2.2
+ip route vrf shay 0.0.0.0 0.0.0.0 10.10.10.10
+ip route vrf shay2 0.0.0.0 0.0.0.0 10.10.11.10
+ip route vrf shay3 0.0.0.0 0.0.0.0 10.10.12.10
+!
+ip flow-export version 5
+!
+ip http server
+no ip http secure-server
+!
+ip access-list standard bobo_acls
+ip access-list standard bobo_std2
+ip access-list standard my_stand
+permit 172.16.2.168
+permit 172.16.2.167
+permit any
+ip access-list standard my_standard_acl
+remark asdasdl sad
+permit 2.2.2.2 log
+deny   5.5.5.5
+remark adasd 23121 sajdh
+permit any log
+!
+ip access-list extended IN-LAN
+remark THIS IS TO CONTROLL TRAFFIC ORIGINATED FROM LAN
+permit tcp 10.10.10.0 0.0.0.255 host 150.150.150.0 eq www pop3 smtp domain 443 telnet 22
+deny   ip any any
+permit ahp any host 10.0.1.220
+ip access-list extended bobo2222
+ip access-list extended bobo_acl
+permit ip host 1.1.1.1 host 1.1.1.2
+permit tcp any any established
+permit tcp any any
+ip access-list extended bobo_acl2
+permit tcp any any
+permit ip any any
+ip access-list extended bobo_std
+ip access-list extended eth0-out
+remark SDM_ACL Category=1
+permit ip any any
+ip access-list extended joeisnew
+remark SDM_ACL Category=1
+permit ip host 5.6.7.8 host 8.9.5.6
+ip access-list extended net_172
+remark SDM_ACL Category=1
+permit ip any any
+ip access-list extended sdm_fastethernet0/0_in
+remark SDM_ACL Category=1
+permit tcp any any log
+permit udp any any log
+permit icmp any any log
+ip access-list extended sdm_fastethernet0/1_in
+remark SDM_ACL Category=1
+permit ip any any
+ip access-list extended services
+permit tcp any any eq 14 15
+permit tcp any any eq 14 15 16
+permit tcp any any eq 14 15 16 17 18 chargen ftp-data ftp 22 telnet
+ip access-list extended shay
+permit tcp any any eq telnet ftp-data ftp 22 pop3
+ip access-list extended shayyy
+permit object-group shayy any any
+permit ip any any
+ip access-list extended to_pix
+deny   tcp 172.16.2.0 0.0.0.255 212.179.50.0 0.0.0.255 eq www
+permit tcp 172.16.2.0 0.0.0.255 212.179.50.0 0.0.0.255 eq 443
+permit tcp host 172.16.2.167 212.179.50.0 0.0.0.255 eq 443
+permit tcp host 172.16.2.167 212.179.50.0 0.0.0.255 eq smtp
+deny   tcp 172.16.2.128 0.0.0.127 212.179.50.0 0.0.0.255 eq smtp
+permit tcp host 172.16.2.167 14.14.14.0 0.0.0.255 eq www
+permit udp host 172.16.2.167 host 212.179.50.167 eq syslog
+deny   udp 172.16.2.0 0.0.0.255 212.179.50.0 0.0.0.255 eq syslog
+deny   udp 172.16.2.0 0.0.0.127 212.179.50.0 0.0.0.127 eq isakmp
+permit udp 172.16.2.128 0.0.0.127 212.179.50.128 0.0.0.127 eq isakmp
+permit icmp 172.16.2.0 0.0.0.255 212.179.50.128 0.0.0.127
+permit icmp 172.16.2.0 0.0.0.255 host 212.179.50.135
+deny   icmp 172.16.2.0 0.0.0.255 212.179.50.0 0.0.0.127
+permit gre host 172.16.2.167 any
+permit gre host 172.16.2.46 any
+deny   gre any any
+deny   ip any any
+permit tcp 0.0.0.0 255.255.0.0 any
+!
+kron policy-list s
+cli wr
+!
+logging trap notifications
+logging origin-id hostname
+logging 10.100.105.113
+access-list 1 permit any log
+access-list 5 permit 172.16.2.102
+access-list 18 remark hosts_allow
+access-list 18 permit 172.16.2.0 0.0.0.255 log
+access-list 18 permit 192.168.5.0 0.0.0.255 log
+access-list 18 remark hosts_deny
+access-list 18 deny   any log
+access-list 55 remark SDM_ACL Category=17
+access-list 55 permit 1.1.1.1
+access-list 55 permit 1.1.1.2
+access-list 55 deny   any
+access-list 66 permit 172.16.2.190
+access-list 66 permit 192.168.5.21
+access-list 66 permit 192.168.0.0 0.0.255.255
+access-list 66 permit 172.16.2.0 0.0.0.255
+access-list 1302 remark DD22323
+access-list 1302 permit 1.1.1.1
+access-list 1302 permit 1.1.1.2
+access-list 1302 deny   any
+access-list 1302 permit any
+access-list 100 permit ip any any time-range time1
+access-list 113 remark DD2323
+access-list 113 permit ip any any
+access-list 113 remark DD555 shay
+access-list 113 remark DD555444
+access-list 113 permit tcp any any
+access-list 120 permit tcp any any eq 3389 log
+access-list 120 deny   ip any any log
+access-list 123 permit ip any any
+access-list 129 permit tcp host 172.16.2.176 20.20.20.0 0.0.1.255
+access-list 129 deny   tcp any any eq 3389
+access-list 129 permit ip any any
+access-list 133 permit tcp any any eq drip
+access-list 134 remark DD4444
+access-list 134 permit ip any any
+access-list 155 permit ip any 44.44.44.0 0.0.0.255
+access-list 155 permit ip any any
+access-list 163 deny   tcp any any eq 139
+access-list 163 permit ip any any
+access-list 163 remark SecureTrack Allowed Protocols
+access-list 163 permit tcp host 192.168.3.20 any eq smtp log
+access-list 163 remark SecureTrack Allowed Protocols
+access-list 163 permit tcp host 192.168.3.20 any eq telnet log
+access-list 163 remark SecureTrack Allowed Protocols
+access-list 163 permit tcp host 192.168.3.20 any eq 22 log
+access-list 163 deny   ip any any
+access-list 167 remark SDM_ACL Category=17
+access-list 167 deny   ip 20.20.20.0 0.0.0.255 any log
+access-list 167 deny   ip host 255.255.255.255 any log
+access-list 167 deny   ip 127.0.0.0 0.255.255.255 any log
+access-list 167 permit ip any any log
+access-list 181 remark shay
+access-list 181 permit tcp any any eq telnet
+access-list 181 permit tcp any any eq 22
+access-list 181 permit ip any any
+access-list 187 remark Alex
+access-list 188 permit ip 172.16.2.164 0.0.0.3 any
+access-list 188 deny   ip any any
+access-list 190 permit tcp 20.20.20.0 0.0.0.255 30.30.30.0 0.0.0.255 eq www
+access-list 190 deny   ip any any
+!
+!
+!
+!
+!
+control-plane
+!
+banner motd ^C
+User-name = zubur1
+Password = zubur1
+Enabled Password = zubur1
+^C
+alias exec br show ip int brief
+!
+line con 0
+line aux 0
+line vty 0 4
+password 7 0715344E5B1B48
+login local
+transport input telnet ssh
+transport output telnet ssh
+!
+scheduler allocate 20000 1000
+time-range bobo
+absolute start 11:00 01 May 2000
+!
+time-range bobo33
+absolute start 11:00 01 January 2003
+!
+time-range bobo_time
+absolute start 00:55 01 June 2000
+!
+time-range bobo_ttt
+absolute start 00:22 01 May 2001
+!
+time-range sched1
+absolute start 00:00 04 January 2010 end 00:00 05 January 2020
+!
+time-range time1
+absolute end 00:00 30 October 2009
+!
+time-range time2
+absolute start 00:00 01 January 2000
+!

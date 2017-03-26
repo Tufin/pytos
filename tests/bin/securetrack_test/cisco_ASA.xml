@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dcr_test_group>
+        <name>Cisco ASA AAA</name>
+        <dcr_tests>
+                <dcr_test_concrete>
+                        <name>Require AAA Service</name>
+                        <isActive>true</isActive>
+                        <isDefault>true</isDefault>
+                        <risk>3</risk>
+                        <severity>3</severity>
+                        <testDef>
+                                <description>Verify centralized authentication, authorization, and accounting (AAA) service (new- model) is enabled</description>
+                                <expression>^aaa-server .*</expression>
+                                <input>running_config</input>
+                                <isCustom>false</isCustom>
+                                <mustContain>true</mustContain>
+                                <name>Require AAA Service</name>
+                                <products>
+                                        <device>ASA</device>
+                                        <vendor>Cisco</vendor>
+                                </products>
+                                <remediation>Globally enable authentication, authorization and accounting (AAA) using new-model command:\nhostname(config)# aaa-server</remediation>
+                                <testDefUid>TF001</testDefUid>
+                                <type>line_match</type>
+                        </testDef>
+                        <testUid>TF001</testUid>
+                </dcr_test_concrete>
+                <dcr_test_concrete>
+                        <name>Require AAA Authentication for Login</name>
+                        <isActive>true</isActive>
+                        <isDefault>true</isDefault>
+                        <risk>3</risk>
+                        <severity>3</severity>
+                        <testDef>
+                                <description>Verify authentication, authorization, and accounting (AAA) method(s) configuration for case-sensitive, local user login authentication.</description>
+                                <expression>aaa authentication .*</expression>
+                                <input>running_config</input>
+                                <isCustom>true</isCustom>
+                                <mustContain>true</mustContain>
+                                <name>Require AAA Authentication for Login</name>
+                                <products>
+                                        <device>ASA</device>
+                                        <vendor>Cisco</vendor>
+                                </products>
+                                <remediation>Configure AAA authentication method(s) for login authentication.\nhostname(config)#aaa authentication [AAA options]</remediation>
+                                <testDefUid>TF002</testDefUid>
+                                <type>line_match</type>
+                        </testDef>
+                        <testUid>TF002</testUid>
+                </dcr_test_concrete>
+                <dcr_test_concrete>
+                        <name>Require AAA Authentication for Enable Mode</name>
+                        <isActive>true</isActive>
+                        <isDefault>true</isDefault>
+                        <risk>3</risk>
+                        <severity>3</severity>
+                        <testDef>
+                                <description>Verify authentication, authorization, and accounting (AAA) methods for enable mode authentication.</description>
+                                <expression>aaa authentication enable [^\n]*</expression>
+                                <input>running_config</input>
+                                <isCustom>false</isCustom>
+                                <mustContain>true</mustContain>
+                                <name>Require AAA Authentication for Enable Mode</name>
+                                <products>
+                                        <device>ASA</device>
+                                        <vendor>Cisco</vendor>
+                                </products>
+                                <remediation>Configure AAA authentication method(s) for enable authentication\nhostname(config)# aaa authentication enable</remediation>
+                                <testDefUid>TF003</testDefUid>
+                                <type>line_match</type>
+                        </testDef>
+                        <testUid>TF003</testUid>
+                </dcr_test_concrete>
+                <dcr_test_concrete>
+                        <name>Require AAA Authentication for Local Console Lines</name>
+                        <isActive>true</isActive>
+                        <isDefault>true</isDefault>
+                        <risk>3</risk>
+                        <severity>2</severity>
+                        <testDef>
+                                <description>Verify authentication, authorization, and accounting (AAA) method(s) configuration for case-sensitive, local user login authentication.</description>
+                                <expression>aaa authentication serial console .*</expression>
+                                <input>running_config</input>
+                                <isCustom>false</isCustom>
+                                <mustContain>true</mustContain>
+                                <name>Require AAA Authentication for Local Console Lines</name>
+                                <products>
+                                        <device>ASA</device>
+                                        <vendor>Cisco</vendor>
+                                </products>
+                                <remediation>Configure management lines to require login using the default or a named AAA authentication list. This configuration must be set individually for all lines (e.g. aux, console, etc.)\nhostname(config)# aaa authentication serial [AAA options]</remediation>
+                                <testDefUid>TF005</testDefUid>
+                                <type>line_match</type>
+                        </testDef>
+                        <testUid>TF005</testUid>
+                </dcr_test_concrete>
+                <dcr_test_concrete>
+                        <name>Require AAA Authentication for Local TTY Lines</name>
+                        <isActive>true</isActive>
+                        <isDefault>true</isDefault>
+                        <risk>3</risk>
+                        <severity>2</severity>
+                        <testDef>
+                                <description>Verify authentication, authorization, and accounting (AAA) method(s) configuration for case-sensitive, local user login authentication.</description>
+                                <expression>aaa authentication telnet console .*</expression>
+                                <input>running_config</input>
+                                <isCustom>false</isCustom>
+                                <mustContain>true</mustContain>
+                                <name>Require AAA Authentication for Local TTY Lines</name>
+                                <products>
+                                        <device>ASA</device>
+                                        <vendor>Cisco</vendor>
+                                </products>
+                                <remediation>Configure management lines to require login using the default or a named AAA authentication list. This configuration must be set individually for all lines (e.g. aux, console, etc.)\nhostname(config)#aaa authentication telnet console [AAA options]</remediation>
+                                <testDefUid>TF006</testDefUid>
+                                <type>line_match</type>
+                        </testDef>
+                        <testUid>TF006</testUid>
+                </dcr_test_concrete>
+        </dcr_tests>
+</dcr_test_group>

@@ -1,0 +1,32 @@
+<ticket>
+	<subject>Test ticket</subject>
+	<requester>api</requester>
+	<priority>Normal</priority>
+	<domain_name/>
+	<sla_status>NA</sla_status>
+	<sla_outcome>NA</sla_outcome>
+	<workflow>
+		<name>My workflow</name>
+		<uses_topology>false</uses_topology>
+	</workflow>
+	<steps>
+		<step>
+			<name>Open request</name>
+			<redone>false</redone>
+			<skipped>false</skipped>
+			<tasks>
+				<task>
+					<assignee_id></assignee_id>
+					<assignee></assignee>
+					<status></status>
+					<fields>
+						<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="time">
+							<name>Time field</name>
+						</field>
+					</fields>
+				</task>
+			</tasks>
+		</step>
+	</steps>
+	<comments/>
+</ticket>

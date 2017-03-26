@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+   <Report_Name>New Revision 1</Report_Name>
+   <Report_Type>New Revision Report</Report_Type>
+   <Report_Display_Name>New Revision Report</Report_Display_Name>
+   <Mgmts>
+      <Mgmt_Id></Mgmt_Id>
+      <All_Mgmts>0</All_Mgmts>
+   </Mgmts>
+   <Users>
+      <All_Users>1</All_Users>
+   </Users>
+   <Ad_Hoc_Emails />
+   <Customers>
+      <All_Customers>0</All_Customers>
+      <Customer_Id>1</Customer_Id>
+   </Customers>
+   <Params>
+      <New_Revision_Report_Params>
+         <Type>Detailed</Type>
+         <Add_Affected_Info>1</Add_Affected_Info>
+         <Changes>
+            <!--"Change" tags may have "Change" children too-->
+            <Change>
+               <UID>Any_Changes</UID>
+               <Display_Name>Any Changes</Display_Name>
+               <Active>1</Active>
+               <Change>
+                  <UID>Security_Rules</UID>
+                  <Display_Name>Security Rule base</Display_Name>
+                  <Active>1</Active>
+                  <Change>
+                     <UID>Checkpoint_Rules</UID>
+                     <Display_Name>Check Point rules and NAT</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Global_Rules</UID>
+                     <Display_Name>Check Point Provider-1 global rules</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Cisco_Rules</UID>
+                     <Display_Name>Cisco access rules</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Juniper_Rules</UID>
+                     <Display_Name>Juniper policies</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Fortinet_Rules</UID>
+                     <Display_Name>Fortinet policies</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+               </Change>
+               <Change>
+                  <UID>Network_Objects</UID>
+                  <Display_Name>Hosts and networks</Display_Name>
+                  <Active>1</Active>
+               </Change>
+               <Change>
+                  <UID>Services</UID>
+                  <Display_Name>Services</Display_Name>
+                  <Active>1</Active>
+               </Change>
+               <Change>
+                  <UID>Textual_Configuration</UID>
+                  <Display_Name>Textual configuration</Display_Name>
+                  <Active>1</Active>
+                  <Change>
+                     <UID>Cisco_Device_Config</UID>
+                     <Display_Name>Cisco running configuration</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Juniper_Device_Config</UID>
+                     <Display_Name>Juniper device configuration</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>Fortinet_Device_Config</UID>
+                     <Display_Name>Fortinet device configuration</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+                  <Change>
+                     <UID>TOP_Device_Config</UID>
+                     <Display_Name>TOP device configuration</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+               </Change>
+               <Change>
+                  <UID>Routing</UID>
+                  <Display_Name>Routing</Display_Name>
+                  <Active>1</Active>
+                  <Change>
+                     <UID>Cisco_Routing</UID>
+                     <Display_Name>Cisco routers routing tables</Display_Name>
+                     <Active>1</Active>
+                  </Change>
+               </Change>
+               <Change>
+                  <UID>Checkpoint_Global_Properties</UID>
+                  <Display_Name>Check Point Global Properties</Display_Name>
+                  <Active>1</Active>
+               </Change>
+               <Change>
+                  <UID>Checkpoint_P1_Settings</UID>
+                  <Display_Name>Check Point Provider-1 settings</Display_Name>
+                  <Active>1</Active>
+               </Change>
+               <Change>
+                  <UID>Checkpoint_Users</UID>
+                  <Display_Name>Check Point Users</Display_Name>
+                  <Active>1</Active>
+               </Change>
+               <Change>
+                  <UID>Any_Other</UID>
+                  <Display_Name>Any other changes</Display_Name>
+                  <Active>1</Active>
+               </Change>
+            </Change>
+         </Changes>
+      </New_Revision_Report_Params>
+      <Policies>
+         <All_Policies>1</All_Policies>
+      </Policies>
+      <Anonymous>0</Anonymous>
+      <Show_Only_Ticket_Id>0</Show_Only_Ticket_Id>
+      <Include_Objects>1</Include_Objects>
+      <Include_Object_Groups>1</Include_Object_Groups>
+      <Include_Zones>0</Include_Zones>
+      <Show_Textual_Configuration>1</Show_Textual_Configuration>
+      <Email_Subject />
+   </Params>
+   <Enable_New_Version>1</Enable_New_Version>
+   <Enable_Periodic>0</Enable_Periodic>
+   <New_Version_Params>
+      <Actions>
+         <All_Actions>1</All_Actions>
+      </Actions>
+      <Report_Only_Changes>1</Report_Only_Changes>
+      <Report_Distribution>
+         <Send_Report_By_Email>0</Send_Report_By_Email>
+         <Save_Report_Locally>1</Save_Report_Locally>
+         <Email_Me_When_Saved>0</Email_Me_When_Saved>
+         <Export_To_Portal>0</Export_To_Portal>
+         <Email_Me_When_Exported>0</Email_Me_When_Exported>
+      </Report_Distribution>
+   </New_Version_Params>
+   <Periodic_Params />
+</Report>

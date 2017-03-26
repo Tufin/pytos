@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ticket_info>
+   <id>1</id>
+   <subject>1</subject>
+   <createDate>1</createDate>
+   <updateDate>1</updateDate>
+   <current_stage>
+      <id>1</id>
+      <name>Current Step Name</name>
+   </current_stage>
+   <open_request_stage>
+      <id>1</id>
+      <name>Open Request Step Name</name>
+   </open_request_stage>
+  <current_stage>
+  <id>5</id><name>dfgffg</name></current_stage>
+  <open_request_stage><id>5</id><name>fghfghgf</name></open_request_stage>
+</ticket_info>
