@@ -11,7 +11,7 @@ Installation
 
 First install the package by running the following command
 ::
-# pip install pytos
+	# pip install pytos
 
 Quick Start SecureTrack
 ***********************
