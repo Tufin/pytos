@@ -13,10 +13,18 @@ First install the package by running the following command
 ::
 	# pip install pytos
 
-Quick Start SecureTrack
-***********************
+SecureTrack
+***********
 
 Connecting to SecureTrack
+::
+	from pytos.securechange.Helpers import Secure_Track_Helper
+	sc_helper = Secure_Track_Helper("127.0.0.1", ("username", "passowrd"))
+
+SecureChange
+************
+
+Connecting to SecureChange with valid username and password
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "passowrd"))
