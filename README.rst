@@ -1,12 +1,12 @@
-===============================
-=Tufin PS Scripts Installation=
-===============================
-1. Run the script at /opt/tufin/securitysuite/ps/setup_tufin_ps_scripts.sh as the root user.
-2. When prompted, enter the credentials for systems the scripts will interact with (securetrack,securechange,smtp server,remedy server)
-   To skip a section, hit Control+C.
+====================================
+pytos - The Tufin TOS SDK for Python
+====================================
 
-To change the stored credentials, run the script located at /opt/tufin/securitysuite/ps/bin/set_secure_store.py:
-	sudo -u tomcat /opt/tufin/securitysuite/ps/bin/set_secure_store.py -F
+|Build Status| |Docs| |Version| |Gitter|
+
+The pytos is the formal Python Software Development Kit (SDK) for Tufin Orchestration Suite (TOS).
+Python developers can use this package to write a scripts that able to connect, retrieve and update information
+in the TOS system. This SDK is using
 
 ====================================
 Pyton for Tufin Orchestration Suite
