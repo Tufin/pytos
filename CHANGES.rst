@@ -6,4 +6,4 @@ CHANGES
 =====
 
 * Supports SecureTrack, SecureChange and SecureApp
-* Supports low-level clients for most services
+* Supports most of the endpoint APIs

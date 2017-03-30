@@ -1,20 +1,22 @@
 #!/home/user/sources/compiled/python3.4_dev/lib/python3.4
 
 import os
+import re
 from setuptools import setup, find_packages
 
 package_name = "pytos"
-rootdir = os.path.abspath(os.path.dirname(__file__))
+root_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 def get_version():
-    with open("CHANGES.txt") as f:
-        version = f.readline().split(',')[0]
+    file_path = os.path.join(root_dir, 'pytos', '__init__.py')
+    with open(file_path, 'rt') as f:
+        version = re.search('__version__ = "(\d+\.\d+\.\d+)', f.read()).group(1)
         return version
 
 
 setup(
-    name='pyTOS',
+    name='pytos',
     version=get_version(),
     author="Tufin Solution Engineering",
     author_email="support@tufin.com",

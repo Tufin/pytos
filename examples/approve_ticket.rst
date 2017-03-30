@@ -1,9 +1,8 @@
 Approve SecureChange ticket
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following example shows how to approve ticket in SecureChange by using the Approve/Reject field:::
-
-	#!/opt/tufin/securitysuite/ps/python/bin/python3.4
+The following example shows how to approve ticket in SecureChange by using the Approve/Reject field:
+::
 	import argparse
 	import shlex
 	import sys
@@ -17,7 +16,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 
 	conf = Secure_Config_Parser()
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	sc_helper = Secure_Change_Helper("192.168.204.161", ("tzachi", "tzachi"))
+	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
 
 	def get_cli_args():
