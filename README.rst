@@ -1,6 +1,6 @@
-====================================
-pytos - The Tufin TOS SDK for Python
-====================================
+====================================================
+pytos - The Tufin Orchestration Suite SDK for Python
+====================================================
 
 |Build Status| |Docs| |Version| |Gitter|
 
