@@ -36,6 +36,6 @@ We use GitHub issues for tracking bugs and feature requests and have limited
 bandwidth to address them. Please use these community resources for getting
 help:
 
-* Come join the AWS Python community chat on `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__
+* Come join the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__
 * Open a support ticket with `Tufin Support <https://https://www.tufin.com/support/>`__
 * If it turns out that you may have found a bug, please `open an issue <https://github.com/pytos/pytos/issues/new>`__
