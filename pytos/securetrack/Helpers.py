@@ -21,6 +21,7 @@ from pytos.securetrack.XML_Objects.REST.Cleanups import Generic_Cleanup_List
 from pytos.securetrack.XML_Objects.REST.Device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
     RuleSearchDeviceList, Device_Revision, InternetReferralObject
 from pytos.securetrack.XML_Objects.REST.Domain import Domains
+from pytos.securetrack.XML_Objects.REST.Routes import RoutesList
 from pytos.securetrack.XML_Objects.REST.Rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
     Interfaces_List, Topology_Interfaces_List, Policy_Analysis_Query_Result, Network_Objects_List, Services_List, \
     Security_Policies_List, Rule_Documentation, Zone_Entries_List, SecurityPolicyDeviceViolations, Change_Authorization, \
@@ -2158,3 +2159,29 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to set internet referral object for device. Error: {}".format(error)
             logger.critical(message)
             raise IOError(message)
+
+    def get_device_routes(self, device_id, is_generic=None, start=None, count=None):
+        """Get the list of device routes from SecureTrack.
+
+        :return: list of available routes
+        :rtype: RoutesList
+        """
+        logger.info("Getting device routes from SecureTrack")
+        device_route_uri_suffix = ""
+        if is_generic:
+            device_route_uri_suffix += "&is_generic={}".format(is_generic)
+        if start and count:
+            device_route_uri_suffix += "&start={}&count={}".format(start, count)
+        try:
+            response_string = self.get_uri(
+                "/securetrack/api/devices/topology_routes?mgmtId={}{}".format(device_id, device_route_uri_suffix),
+                expected_status_codes=200).response.content
+        except REST_Not_Found_Error:
+            message = "Device with ID {} does not exist.".format(device_id)
+            logger.critical(message)
+            raise ValueError(message)
+        except RequestException:
+            message = "Failed to get routes for device id '{}'".format(device_id)
+            logger.critical(message)
+            raise IOError(message)
+        return RoutesList.from_xml_string(response_string)

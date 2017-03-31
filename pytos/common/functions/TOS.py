@@ -59,9 +59,13 @@ def create_backup():
     """
     backup_file_name_regex = r"^Compressing and saving Tufin Orchestration Suite backup file to: '?(.*(tgz|zip))"
     print("Creating backup file.")
-    command_string = "{} {}".format(TSS_EXECUTABLE_PATH, "backup")
+
+    export_path_command = 'export PATH="${PATH}:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"'
+    backup_command = "{} {}".format(TSS_EXECUTABLE_PATH, "backup")
+    command_string = ';'.join((export_path_command, backup_command))
+
     try:
-        output = subprocess.check_output(shlex.split(command_string)).decode()
+        output = subprocess.check_output(command_string, shell=True).decode()
     except subprocess.CalledProcessError:
         raise IOError("Could not create backup file.")
     backup_file_name = re.search(backup_file_name_regex, output, re.MULTILINE).group(1)

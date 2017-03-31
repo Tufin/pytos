@@ -458,15 +458,16 @@ class Ticket_Step(XML_Object_Base):
         return str_to_bool(self.skipped)
 
 
-class Ticket_Lock:
+class FileLock:
     TICKET_FILE_LOCK_PATH = "/tmp/"
 
-    def __init__(self, ticket_id):
+    def __init__(self, ticket_id, blocking=False):
         self.ticket_id = str(ticket_id)
         self.locked = False
         self.lock = None
         self.lock_file = None
-        self.file_path = Ticket_Lock.TICKET_FILE_LOCK_PATH + self.ticket_id + ".lock"
+        self.blocking = blocking
+        self.file_path = FileLock.TICKET_FILE_LOCK_PATH + self.ticket_id + ".lock"
         self._get_lock_file_handle()
 
     def __enter__(self):
@@ -479,7 +480,11 @@ class Ticket_Lock:
     def _get_lock_file_handle(self):
         self.lock_file = open(self.file_path, "w")
 
-    def acquire(self, blocking=False):
+    def acquire(self, blocking=None):
+        # Give an opportunity to set blocking with the class for context use
+        if blocking is None:
+            blocking = self.blocking
+
         if blocking:
             lock_mode = fcntl.LOCK_EX
         else:
@@ -504,6 +509,8 @@ class Ticket_Lock:
             except OSError:
                 pass
 
+#To keep backward compatibility with previous projects:
+Ticket_Lock = FileLock
 
 class Step_Field_Checkbox(Step_Field_Base):
     FIELD_CONTENT_ATTRIBUTES = "value"

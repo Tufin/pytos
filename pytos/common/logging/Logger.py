@@ -24,7 +24,7 @@ class LoggingConfigurationFileMonitor(FileMonitor):
 
     def _reload_modified_file(self, *args, **kwargs):
         logger.debug("Reloading modified log file settings.")
-        setup_loggers(conf.dict("log_levels"))  # Does not support passing additional_log_files parameter.
+        setup_loggers(conf.dict("log_levels"), monitor_log_levels_change=False)  # Does not support passing additional_log_files parameter.
 
 
 def iter_loggers():
@@ -68,7 +68,9 @@ def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file
             pass
 
     remove_logger_handlers()
-    LoggingConfigurationFileMonitor()
+    monitor_log_levels_change = kwargs.get("monitor_log_levels_change", True)
+    if monitor_log_levels_change:
+        LoggingConfigurationFileMonitor()
     configured_loggers = []
     log_to_stdout = kwargs.get("log_to_stdout")
 
@@ -125,7 +127,7 @@ def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file
         configured_loggers = handle_unconfigured_loggers(handler, configured_loggers, log_data_is_updateable,
                                                          log_levels_data)
     if log_to_stdout:
-        print("logging to STDOUT is enabled.")
+        print("Logging to STDOUT is enabled.")
         handle_log_to_stdout(configured_loggers)
 
     return logging.getLogger(COMMON_LOGGER_NAME)

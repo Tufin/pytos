@@ -1,5 +1,7 @@
+
 import netaddr
 
+from importlib import import_module
 from pytos.common.Base_Types import XML_Object_Base, Comparable
 from pytos.common.definitions import XML_Tags
 
@@ -25,6 +27,11 @@ class Service(Base_Object):
         self.set_attrib(XML_Tags.Attributes.XSI_TYPE, attr_type)
         super().__init__(xml_tag, name, display_name, service_id)
 
+    def as_sa_service(self, *, alt_class_name=None):
+        module = import_module('Secure_App.XML_Objects.REST')
+        class_name = alt_class_name or type(self).__name__
+        return getattr(module, class_name).from_st_service_object(self)
+
 
 class Network_Object(XML_Object_Base, Comparable):
     def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, device_id, comment, implicit,
@@ -49,6 +56,11 @@ class Network_Object(XML_Object_Base, Comparable):
 
     def __key(self):
         return self.id, self.device_id
+
+    def as_sa_object(self, *, alt_class_name=None):
+        module = import_module('Secure_App.XML_Objects.REST')
+        class_name = alt_class_name or type(self).__name__
+        return getattr(module, class_name).from_st_network_object(self)
 
 
 class URL_Link(XML_Object_Base):
