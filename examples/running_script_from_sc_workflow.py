@@ -9,7 +9,8 @@ from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.securechange.Helpers import Secure_Change_Helper, Secure_Change_API_Handler
 from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
-conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf")
+conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
+                            custom_config_file_path="/opt/tufin/securitysuite/pytos/conf/custom.conf")
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 src_step_name = "Source step name"

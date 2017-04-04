@@ -3,7 +3,6 @@ Approve SecureChange ticket
 
 The following example shows how to run a script from the SecureChange workflow by specify the relevant step name,
 read the ticket info and copy a field from previous step:
-
 ::
 	import argparse
 	import shlex
