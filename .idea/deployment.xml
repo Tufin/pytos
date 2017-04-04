@@ -5,7 +5,7 @@
       <paths name="161">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/opt/tufin/securitysuite/ps/bin" local="$PROJECT_DIR$/examples" web="/" />
           </mappings>
         </serverdata>
       </paths>

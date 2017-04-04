@@ -1,4 +1,4 @@
-#!/opt/tufin/securitysuite/ps/python/bin/python3.4
+#!/usr/local/python3.4_dev/bin/python3.5
 import argparse
 import shlex
 import sys
@@ -9,7 +9,7 @@ from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.securechange.Helpers import Secure_Change_Helper, Secure_Change_API_Handler
 from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
-conf = Secure_Config_Parser()
+conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf")
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 src_step_name = "Source step name"

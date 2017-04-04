@@ -15,16 +15,16 @@ from .Defines import LOG_FORMAT, LOG_CONFIG_FILE_PATH, LOG_LEVEL_SECTION_NAME, l
 FORMATTER = logging.Formatter(LOG_FORMAT)
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
-conf = Secure_Config_Parser()
+# conf = Secure_Config_Parser()
 
 
-class LoggingConfigurationFileMonitor(FileMonitor):
-    def __init__(self):
-        super().__init__((LOG_CONFIG_FILE_PATH,))
-
-    def _reload_modified_file(self, *args, **kwargs):
-        logger.debug("Reloading modified log file settings.")
-        setup_loggers(conf.dict("log_levels"), monitor_log_levels_change=False)  # Does not support passing additional_log_files parameter.
+# class LoggingConfigurationFileMonitor(FileMonitor):
+#     def __init__(self):
+#         super().__init__((LOG_CONFIG_FILE_PATH,))
+#
+#     def _reload_modified_file(self, *args, **kwargs):
+#         logger.debug("Reloading modified log file settings.")
+#         setup_loggers(conf.dict("log_levels"), monitor_log_levels_change=False)  # Does not support passing additional_log_files parameter.
 
 
 def iter_loggers():
@@ -69,8 +69,8 @@ def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file
 
     remove_logger_handlers()
     monitor_log_levels_change = kwargs.get("monitor_log_levels_change", True)
-    if monitor_log_levels_change:
-        LoggingConfigurationFileMonitor()
+    # if monitor_log_levels_change:
+    #     LoggingConfigurationFileMonitor()
     configured_loggers = []
     log_to_stdout = kwargs.get("log_to_stdout")
 
