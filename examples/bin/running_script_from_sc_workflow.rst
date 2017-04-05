@@ -1,5 +1,5 @@
-Approve SecureChange ticket
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Copy field between steps in SecureChange ticket
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows how to run a script from the SecureChange workflow by specify the relevant step name,
 read the ticket info and copy a field from previous step:
@@ -9,14 +9,17 @@ read the ticket info and copy a field from previous step:
 	import sys
 	import logging
 
+
 	from pytos.common.logging.Logger import setup_loggers
 	from pytos.common.functions.Config import Secure_Config_Parser
 	from pytos.securechange.Helpers import Secure_Change_Helper, Secure_Change_API_Handler
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
-	conf = Secure_Config_Parser()
+
+	conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
+								custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
+	sc_helper = Secure_Change_Helper("127.0.0.1", ("tzachi", "tzachi"))
 	src_step_name = "Source step name"
 	dst_step_name = "Destination step name"
 	src_field_name = "Source Field name"

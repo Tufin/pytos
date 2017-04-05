@@ -1,4 +1,3 @@
-import datetime
 import http.cookiejar
 import logging
 import multiprocessing
@@ -51,8 +50,6 @@ class Secure_API_Helper:
         else:
             self._real_hostname = hostname
         self.login_data = {"username": login_data[0], "password": login_data[1]}
-        self.login_cookie_update_time = datetime.datetime.min
-        self._login_cookie = None
         self.cookie_jar = http.cookiejar.CookieJar()
         self._application_url = None
         self.max_retries = max_retries

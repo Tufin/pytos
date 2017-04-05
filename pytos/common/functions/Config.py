@@ -19,11 +19,8 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
     SECURETRACK = "securetrack"
     LOG_LEVELS = "log_levels"
     DEFAULT_SECTIONS = (COMMON, LOG_LEVELS, SECURETRACK, SECURECHANGE)
-
     CONFIG_FILE_PATH = "/opt/tufin/securitysuite/pytos/conf/tufin_api.conf"
     CUSTOM_CONFIG_FILE_PATH = "/opt/tufin/securitysuite/pytos/conf/custom.conf"
-    PASSWORD_SUFFIX = "_password"
-    USERNAME_SUFFIX = "_username"
 
     def __init__(self, config_file_path=None, custom_config_file_path=None):
         configparser.ConfigParser.__init__(self)
@@ -38,9 +35,7 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         else:
             self.custom_config_file_path = custom_config_file_path
         FileMonitor.__init__(self, (self.config_file_path, self.custom_config_file_path))
-
         self._read_config_files()
-        self.secret_helper = Secret_Store_Helper()
 
     def _read_config_files(self):
         try:
@@ -104,66 +99,6 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
     def dict(self, section):
         return dict(configparser.ConfigParser.items(self, section))
 
-    def _get_encrypted(self, key):
-        """
-        Get an encrypted value from the Secure Store.
-        :param key: The key for the encrypted value to get.
-        :type key: str
-        """
-        try:
-            return self.secret_helper.get(key)
-        except KeyError:
-            return None
-
-    def _set_encrypted(self, key, value):
-        """
-        Set an encrypted value in the Secure Store.
-        :param key: The key for the encrypted value to set.
-        :type key: str
-        :param value: The value to set for the specified key.
-        :type value: str
-        """
-        return self.secret_helper.set(key, value)
-
-    def get_password(self, key):
-        """
-        Convenience function that gets a password from the Secure Store (appends the string "_password" to the
-        requested key.
-        :param key: The key for the encrypted password to get. (The key that will be used is key + "_password")
-        :type key: str
-        """
-        try:
-            return self._get_encrypted(key + Secure_Config_Parser.PASSWORD_SUFFIX)
-        except KeyError:
-            return None
-
-    def set_password(self, key, value):
-        """
-        Convenience function that sets a password in the Secure Store (appends the string "_password" to the
-        requested key.
-        :param key: The key for the encrypted password to set. (The key that will be used is key + "_password")
-        :type key: str
-        """
-        return self._set_encrypted(key + Secure_Config_Parser.PASSWORD_SUFFIX, value)
-
-    def get_username(self, key):
-        """
-        Convenience function that gets a username from the Secure Store (appends the string "_username" to the
-        requested key.
-        :param key: The key for the encrypted username to get. (The key that will be used is key + "_username")
-        :type key: str
-        """
-        return self._get_encrypted(key + Secure_Config_Parser.USERNAME_SUFFIX)
-
-    def set_username(self, key, value):
-        """
-        Convenience function that sets a username in the Secure Store (appends the string "_username" to the
-        requested key.
-        :param key: The key for the encrypted username to set. (The key that will be used is key + "_username")
-        :type key: str
-        """
-        return self._set_encrypted(key + Secure_Config_Parser.USERNAME_SUFFIX, value)
-
     def update_config_file(self):
         """
         Write the configuration values from memory to the configuration file.
@@ -176,18 +111,3 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
             for section in self._sections:
                 if section in Secure_Config_Parser.DEFAULT_SECTIONS:
                     self._write_section(config_file, section, self._sections[section].items(), delimiter)
-
-    def delete_section(self, section):
-        if not self.secret_helper.db:
-            msg = "Secret DB file is empty"
-            logger.info(msg)
-            raise ValueError(msg)
-
-        db = self.secret_helper.db
-        for suffix in [Secure_Config_Parser.USERNAME_SUFFIX, Secure_Config_Parser.PASSWORD_SUFFIX]:
-            try:
-                del db[section + suffix]
-            except KeyError as e:
-                msg = "Failed to delete section '{}', Error: '{}'".format(section + suffix, e)
-                raise KeyError(msg)
-        self.secret_helper.write_db_file(db)
