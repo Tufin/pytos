@@ -11,7 +11,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 	from pytos.common.logging.Logger import setup_loggers
 	from pytos.common.functions.Config import Secure_Config_Parser
 	from pytos.common.definitions.XML_Tags import Attributes
-	from pytos.securechange.Helpers import Secure_Change_Helper, Secure_Change_API_Handler
+	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
 	conf = Secure_Config_Parser()

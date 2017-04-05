@@ -1,6 +1,6 @@
 import logging
 
-from pytos.common.Base_Types import XML_Object_Base, XML_List
+from pytos.common.base_types import XML_Object_Base, XML_List
 from pytos.common.definitions import XML_Tags
 from pytos.common.functions import get_xml_text_value
 from pytos.common.logging.Defines import XML_LOGGER_NAME

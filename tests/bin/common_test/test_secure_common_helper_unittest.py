@@ -3,7 +3,7 @@
 import unittest
 
 from pytos.common.logging.Logger import setup_loggers
-from pytos.common.Helpers import Secure_API_Helper
+from pytos.common.helpers import Secure_API_Helper
 from pytos.common.functions.Config import Secure_Config_Parser
 
 conf = Secure_Config_Parser()

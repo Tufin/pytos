@@ -1,6 +1,6 @@
 import enum
 
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.initialize import *
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.initialize import *
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

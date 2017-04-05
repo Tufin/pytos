@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-from pytos.common.Base_Types import Service_Type, Single_Service_Type, \
+from pytos.common.base_types import Service_Type, Single_Service_Type, \
     Any_Service_Type, Range_Service_Type, Group_Service_Type, Service_Set
 
 __author__ = 'saar.katz'

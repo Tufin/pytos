@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from pytos.common.Base_Types import XML_Object_Base, XML_List
+from pytos.common.base_types import XML_Object_Base, XML_List
 from pytos.common.definitions import XML_Tags
 from pytos.common.functions import str_to_bool, XML_LOGGER_NAME
 from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value

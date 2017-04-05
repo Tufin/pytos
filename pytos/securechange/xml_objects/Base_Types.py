@@ -1,6 +1,6 @@
 import xml.sax.saxutils
 
-from pytos.common.Base_Types import XML_Object_Base, XML_List
+from pytos.common.base_types import XML_Object_Base, XML_List
 from pytos.common.definitions import XML_Tags
 
 

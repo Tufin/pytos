@@ -2,7 +2,7 @@
 import netaddr
 
 from importlib import import_module
-from pytos.common.Base_Types import XML_Object_Base, Comparable
+from pytos.common.base_types import XML_Object_Base, Comparable
 from pytos.common.definitions import XML_Tags
 
 

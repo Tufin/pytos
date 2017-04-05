@@ -2,7 +2,7 @@ import enum
 import logging
 import sys
 
-from pytos.common.Base_Types import XML_Object_Base, XML_List, Flat_XML_Object_Base
+from pytos.common.base_types import XML_Object_Base, XML_List, Flat_XML_Object_Base
 from pytos.common.logging.Defines import XML_LOGGER_NAME
 from pytos.common.definitions.XML_Tags import Elements
 from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value, get_xml_node

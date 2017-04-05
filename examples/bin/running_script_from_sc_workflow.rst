@@ -12,7 +12,7 @@ read the ticket info and copy a field from previous step:
 
 	from pytos.common.logging.Logger import setup_loggers
 	from pytos.common.functions.Config import Secure_Config_Parser
-	from pytos.securechange.Helpers import Secure_Change_Helper, Secure_Change_API_Handler
+	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
 

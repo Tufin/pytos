@@ -2,7 +2,7 @@ import http.cookiejar
 import logging
 import multiprocessing
 
-from pytos.common import REST_Requests
+from pytos.common import rest_requests
 from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
 from pytos.common.functions import get_local_ip_addresses
 
@@ -81,11 +81,11 @@ class Secure_API_Helper:
         if max_retries is None:
             max_retries = self.max_retries
 
-        get_request = REST_Requests.GET_Request(self._real_hostname, uri, login_data=self.login_data,
-                                                              headers=headers, verify_ssl=False,
-                                                              expected_status_codes=expected_status_codes,
-                                                              timeout=timeout, cookies=self.cookie_jar,
-                                                              session=session, max_retries=max_retries)
+        get_request = rest_requests.GET_Request(self._real_hostname, uri, login_data=self.login_data,
+                                                headers=headers, verify_ssl=False,
+                                                expected_status_codes=expected_status_codes,
+                                                timeout=timeout, cookies=self.cookie_jar,
+                                                session=session, max_retries=max_retries)
         return get_request
 
     def post_uri(self, uri, body=None, expected_status_codes=None, cgi=None, headers=None, timeout=None, session=None):
@@ -119,11 +119,11 @@ class Secure_API_Helper:
             timeout = self.timeout
 
         logger.debug("Sending regular POST.")
-        post_request = REST_Requests.POST_Request(self._real_hostname, uri, body, headers=headers,
-                                                                login_data=self.login_data, verify_ssl=False,
-                                                                expected_status_codes=expected_status_codes,
-                                                                timeout=timeout, cookies=self.cookie_jar,
-                                                                session=session, cgi=cgi)
+        post_request = rest_requests.POST_Request(self._real_hostname, uri, body, headers=headers,
+                                                  login_data=self.login_data, verify_ssl=False,
+                                                  expected_status_codes=expected_status_codes,
+                                                  timeout=timeout, cookies=self.cookie_jar,
+                                                  session=session, cgi=cgi)
         return post_request
 
     def put_uri(self, uri, body=None, expected_status_codes=None, headers=None, timeout=None,
@@ -148,11 +148,11 @@ class Secure_API_Helper:
         if timeout is None:
             timeout = self.timeout
 
-        put_request = REST_Requests.PUT_Request(self._real_hostname, uri, body, headers=headers,
-                                                              login_data=self.login_data, verify_ssl=False,
-                                                              expected_status_codes=expected_status_codes,
-                                                              timeout=timeout, cookies=self.cookie_jar,
-                                                              session=session)
+        put_request = rest_requests.PUT_Request(self._real_hostname, uri, body, headers=headers,
+                                                login_data=self.login_data, verify_ssl=False,
+                                                expected_status_codes=expected_status_codes,
+                                                timeout=timeout, cookies=self.cookie_jar,
+                                                session=session)
         return put_request
 
     def delete_uri(self, uri, headers=None, session=None, **kwargs):
@@ -173,11 +173,11 @@ class Secure_API_Helper:
         if timeout is None:
             timeout = self.timeout
 
-        delete_request = REST_Requests.DELETE_Request(self._real_hostname, uri, headers=headers,
-                                                                    login_data=self.login_data, verify_ssl=False,
-                                                                    expected_status_codes=expected_status_codes,
-                                                                    timeout=timeout, cookies=self.cookie_jar,
-                                                                    session=session)
+        delete_request = rest_requests.DELETE_Request(self._real_hostname, uri, headers=headers,
+                                                      login_data=self.login_data, verify_ssl=False,
+                                                      expected_status_codes=expected_status_codes,
+                                                      timeout=timeout, cookies=self.cookie_jar,
+                                                      session=session)
         return delete_request
 
     @classmethod

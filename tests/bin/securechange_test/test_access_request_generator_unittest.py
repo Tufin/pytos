@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 
 from pytos.common.logging.Logger import setup_loggers
 from pytos.common.functions.Config import Secure_Config_Parser
-from pytos.securechange.Helpers import Access_Request_Generator
+from pytos.securechange.helpers import Access_Request_Generator
 
 conf = Secure_Config_Parser()
 

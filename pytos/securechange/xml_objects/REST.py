@@ -6,11 +6,11 @@ import time
 from collections import OrderedDict
 import logging
 
-from pytos.secureapp.XML_Objects.Base_Types import Base_Link_Target, URL_Link
-from pytos.securechange import Defines
-from pytos.securechange.XML_Objects.Base_Types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.AccessRequest import *
-from pytos.common.Base_Types import XML_List, XML_Object_Base, Flat_XML_Object_Base
+from pytos.secureapp.xml_objects.Base_Types import Base_Link_Target, URL_Link
+from pytos.securechange import definitions
+from pytos.securechange.xml_objects.Base_Types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.AccessRequest import *
+from pytos.common.base_types import XML_List, XML_Object_Base, Flat_XML_Object_Base
 from pytos.common.logging.Defines import XML_LOGGER_NAME
 from pytos.common.functions import str_to_bool, get_xml_node, get_xml_text_value, get_xml_int_value
 from pytos.common.functions import convert_timedelta_to_seconds
@@ -1916,7 +1916,7 @@ class Ticket_History_Activities(XML_List):
     def sort(self):
         self._list_data = sorted(self._list_data, key=lambda x: x.as_time_obj_with_tz())
 
-    def get_step_durations(self, time_unit_in_seconds=Defines.Time_Units.Seconds.value):
+    def get_step_durations(self, time_unit_in_seconds=definitions.Time_Units.Seconds.value):
         step_times = OrderedDict()
         step_durations = OrderedDict()
         previous_step_name = None
@@ -1950,7 +1950,7 @@ class Ticket_History_Activities(XML_List):
         step_states = OrderedDict()
         for history_item in self._list_data:
             step_name = history_item.step_name
-            step_state = Defines.Ticket_Activity.find_matching_state(history_item.description)
+            step_state = definitions.Ticket_Activity.find_matching_state(history_item.description)
             step_states[step_name] = step_state
         return step_states
 

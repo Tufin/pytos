@@ -1,7 +1,7 @@
 from mako.template import Template
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.Designer import *
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.Verifier import *
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.Risk import *
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Designer import *
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Verifier import *
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Risk import *
 
 
 logger = logging.getLogger(XML_LOGGER_NAME)

@@ -4,10 +4,10 @@ import time
 import types
 
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Change_Test/"
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.Verifier import AccessRequestVerifierResult
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Verifier import AccessRequestVerifierResult
 from pytos.common.definitions import XML_Tags
-from pytos.securechange.Helpers import Secure_Change_Helper
-from pytos.securechange.XML_Objects.REST import Ticket, Ticket_History_Activities, User, User_List, TicketList
+from pytos.securechange.helpers import Secure_Change_Helper
+from pytos.securechange.xml_objects.REST import Ticket, Ticket_History_Activities, User, User_List, TicketList
 from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error
 from pytos.common.logging.Logger import setup_loggers

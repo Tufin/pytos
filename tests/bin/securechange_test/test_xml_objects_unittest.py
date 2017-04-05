@@ -2,7 +2,7 @@
 
 import unittest
 
-from pytos.securechange.XML_Objects import REST, Secure_Change_API
+from pytos.securechange.xml_objects import REST, Secure_Change_API
 from pytos.common.functions.Config import Secure_Config_Parser
 import xml.etree.ElementTree as ET
 from pytos.common.logging.Logger import setup_loggers

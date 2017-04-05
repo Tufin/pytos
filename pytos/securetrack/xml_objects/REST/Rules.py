@@ -1,15 +1,15 @@
 import logging
 import netaddr
 
-from pytos.common.Base_Types import XML_Object_Base, XML_List, XSI_Object, Single_Service_Type, Range_Service_Type, \
+from pytos.common.base_types import XML_Object_Base, XML_List, XSI_Object, Single_Service_Type, Range_Service_Type, \
     Group_Service_Type, Any_Service_Type, Comparable, IPNetworkMixin, Flat_XML_Object_Base
 from pytos.common.definitions import XML_Tags
 from pytos.common.definitions.XML_Tags import Attributes
 from pytos.common.functions import str_to_bool, get_iana_protocols, netmask_to_cidr, XML_LOGGER_NAME
 from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value, get_xml_node, \
     create_tagless_xml_objects_list
-from pytos.securetrack.XML_Objects.Base_Types import Base_Object, Network_Object, Service
-from pytos.securetrack.XML_Objects.REST.Device import Device, Device_Revision
+from pytos.securetrack.xml_objects.Base_Types import Base_Object, Network_Object, Service
+from pytos.securetrack.xml_objects.REST.Device import Device, Device_Revision
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

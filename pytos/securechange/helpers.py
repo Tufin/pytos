@@ -12,20 +12,20 @@ import requests
 
 from pytos.common.definitions import XML_Tags
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error, REST_Unauthorized_Error
-from pytos.common.Helpers import Secure_API_Helper
+from pytos.common.helpers import Secure_API_Helper
 from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
 from pytos.common.functions import xml_node_from_string, read_multiline_str_from_stdin, get_iana_services, \
     get_csv_parser, calculate_quad_dotted_netmask
 from pytos.common.definitions.XML_Tags import Attributes, Elements
-from pytos.securechange.XML_Objects.Base_Types import Step_Field_Base
-from pytos.securechange.XML_Objects.REST import Ticket, Ticket_History_Activities, Comment, Step_Task, \
+from pytos.securechange.xml_objects.Base_Types import Step_Field_Base
+from pytos.securechange.xml_objects.REST import Ticket, Ticket_History_Activities, Comment, Step_Task, \
     MultiGroupChangeImplementResult, User_List, User, Group, TicketList, Reassign_Comment, Redo_Comment
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.AccessRequest import DNS_Access_Request_Target, \
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.AccessRequest import DNS_Access_Request_Target, \
     IP_Access_Request_Target, IP_Range_Access_Request_Target, Any_Access_Request_Target, Internet_Access_Request_Target, \
     Object_Access_Request_Target, Named_Access_Request_Device, Any_Access_Request_Device, Any_Service_Target, \
     Protocol_Service_Target, Predefined_Service_Target, Access_Request
-from pytos.securechange.XML_Objects.RestApi.Step.AccessRequest.Verifier import AccessRequestVerifierResult
-from pytos.securechange.XML_Objects.Secure_Change_API import Ticket_Info
+from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Verifier import AccessRequestVerifierResult
+from pytos.securechange.xml_objects.Secure_Change_API import Ticket_Info
 
 
 UDP = "udp"

@@ -2,7 +2,7 @@
 
 import sys
 
-from pytos.securetrack.XML_Objects import REST
+from pytos.securetrack.xml_objects import REST
 import xml.etree.ElementTree as ET
 from pytos.common import tufin_logger
 from pytos.common.functions.Config import Secure_Config_Parser
