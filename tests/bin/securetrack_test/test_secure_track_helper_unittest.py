@@ -86,6 +86,7 @@ class TestDevices(unittest.TestCase):
     def test_03_get_devices_list_with_custom_param(self):
         self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
         devices_list = self.helper.get_devices_list(custom_params={'vendor': 'isco'})
+        print(devices_list)
         self.assertIsInstance(devices_list, Devices_List)
         self.assertEqual(len(devices_list), devices_list.count)
         self.assertTrue(devices_list.count > 0)
