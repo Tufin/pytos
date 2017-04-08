@@ -18,8 +18,9 @@ from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, D
 from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
     Interfaces_List
 
-# conf = Secure_Config_Parser()
-# LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
+conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
+                            custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
+LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
 # existing device -  need to change these ID's when we'll have final version of the TOS for the testing suit
@@ -131,7 +132,7 @@ class TestDevices(unittest.TestCase):
 
     def test_09_add_offline_device(self):
         global added_offline_device_id
-        # self.mock_get_uri.return_value.status_code = 201
+        self.mock_get_uri.return_value.status_code = 201
         # self.mock_get_uri.get_created_item_id.side_effect = lambda: 1
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         print()
