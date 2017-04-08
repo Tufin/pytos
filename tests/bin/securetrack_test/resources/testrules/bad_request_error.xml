@@ -1,0 +1,4 @@
+<result>
+	<code>BAD_REQUEST_ERROR</code>
+	<message>At least one of the UIDs is not found in the specified device.</message>
+</result>

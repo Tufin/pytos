@@ -16,7 +16,7 @@ from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.REST import Security_Policy
 from pytos.securetrack.xml_objects.Base_Types import Network_Object
-from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List
+from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
 from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List
 
@@ -56,7 +56,6 @@ g_service_group = None
 def fake_request_response(rest_file):
     sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
     resource_file = os.path.join("resources", sub_resources_dir, "{}.xml".format(rest_file))
-    print(resource_file)
     with open(resource_file, mode='rb') as f:
         return f.read()
 
@@ -153,6 +152,9 @@ class TestRules(unittest.TestCase):
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
 
+    def tearDown(self):
+        self.patcher.stop()
+
     def test_01_get_shadowed_rules(self):
         self.mock_get_uri.return_value.content = fake_request_response("cleanup_set")
         cleanup = self.helper.get_shadowed_rules_for_device_by_id(155)
@@ -176,34 +178,26 @@ class TestRules(unittest.TestCase):
         self.assertTrue(len(rules) == 0)
 
     def test_05_get_shadowing_rules_for_device_id_and_rule_uids(self):
-        # assert valid request - passing only 10 UID rules due to url length limitation
-        shadowing_rules = self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id,
-                                                                                      cisco_ASA_rules_UIDs[0:11])
-        self.assertIsInstance(shadowing_rules, pytos.securetrack.xml_objects.REST.Rules.Cleanup_Set)
-        self.assertTrue(len(shadowing_rules.shadowed_rules_cleanup.shadowed_rules) > 0)
+        self.mock_get_uri.return_value.content = fake_request_response("cleanup_set")
+        uid = "{53b95431-73ee-43de-a153-d299f4eb4804}"
+        shadowing_rules = self.helper.get_shadowing_rules_for_device_id_and_rule_uids(155, uid)
+        self.assertIsInstance(shadowing_rules, Cleanup_Set)
 
-        # assert invalid request
+    def test_06_failed_get_shadowing_rules_for_device_id_and_rule_uids(self):
+        self.mock_get_uri.return_value.content = fake_request_response("bad_request_error")
         with self.assertRaises(REST_Bad_Request_Error):
             self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id, [])
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id, "NotValidUID")
 
-    def test_06_get_devices_by_rule_search(self):
-        # assert valid requests
+    def test_07_get_devices_by_rule_search(self):
+        self.mock_get_uri.return_value.content = fake_request_response("devices_list_by_rule_search")
         devices = self.helper.get_devices_by_rule_search()
-        self.assertIsInstance(devices, pytos.securetrack.xml_objects.REST.Device.RuleSearchDeviceList)
+        self.assertIsInstance(devices, RuleSearchDeviceList)
         self.assertTrue(len(devices) > 0)
-
-        devices1 = self.helper.get_devices_by_rule_search({"port": "8898"})
-        self.assertIsInstance(devices1, pytos.securetrack.xml_objects.REST.Device.RuleSearchDeviceList)
-        self.assertTrue(len(devices1) > 0)
-
-        # assert invalid request
 
     def test_07_rule_search_for_device(self):
         # assert valid request
         rules = self.helper.rule_search_for_device(cisco_ASA_id)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
         # assert invalid request
