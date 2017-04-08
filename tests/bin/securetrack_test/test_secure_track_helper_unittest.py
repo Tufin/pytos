@@ -51,7 +51,6 @@ g_service_group = None
 def fake_request_response(rest_file):
     parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     resource_file = os.path.join(parent_dir, "resources/{}.xml".format(rest_file))
-    print(resource_file)
     # Must return a file-like object
     return open(resource_file, mode='rb').read()
 
@@ -88,7 +87,6 @@ class TestDevices(unittest.TestCase):
         mock_get_uri.return_value.raise_for_status = lambda: None
         mock_get_uri.return_value.status_code = 200
         device_by_id = self.helper.get_device_by_id(added_offline_device_id)
-        print(device_by_id)
         self.assertIsInstance(device_by_id, Device)
 
     def test_06_get_device_config(self):
