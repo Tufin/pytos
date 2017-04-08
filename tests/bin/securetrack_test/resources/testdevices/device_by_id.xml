@@ -1,0 +1,11 @@
+<device>
+    <model>router</model>
+    <vendor>Cisco</vendor>
+    <domain_id>1</domain_id>
+    <domain_name>Default</domain_name>
+    <id>159</id>
+    <name>TEST_DEVICE_123</name>
+    <offline>true</offline>
+    <topology>true</topology>
+    <latest_revision>5625</latest_revision>
+</device>

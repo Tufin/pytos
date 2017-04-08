@@ -1,4 +1,6 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
+import sys
+
 import pytos
 import os
 import tempfile
@@ -16,7 +18,7 @@ from pytos.securetrack.xml_objects.REST import Security_Policy
 from pytos.securetrack.xml_objects.Base_Types import Network_Object
 from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List
 from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List
+    Interfaces_List, Cleanup_Set, Rules_List
 
 conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
                             custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
@@ -52,18 +54,14 @@ g_service_group = None
 
 
 def fake_request_response(rest_file):
-    parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    resource_file = os.path.join(parent_dir, "resources/{}.xml".format(rest_file))
-    # Must return a file-like object
+    sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
+    resource_file = os.path.join("resources", sub_resources_dir, "{}.xml".format(rest_file))
+    print(resource_file)
     with open(resource_file, mode='rb') as f:
         return f.read()
 
-class TestDevices(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        with open(test_data_dir + 'offline_test_data.txt') as f:
-            cls.OFFLINE_TEST_DATA = f.read().encode()
 
+class TestDevices(unittest.TestCase):
     def setUp(self):
         self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
@@ -136,14 +134,8 @@ class TestDevices(unittest.TestCase):
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         self.assertIsInstance(added_offline_device_id, int)
 
-        # Invalid device creation
-        # with self.assertRaises(ValueError):
-        #     self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
-
     def test_06_get_device_config(self):
         self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
-
-
 
     def test_09_upload_device_offline_config(self):
         with tempfile.NamedTemporaryFile(delete=False) as config_tempfile:
@@ -156,38 +148,34 @@ class TestDevices(unittest.TestCase):
 
 class TestRules(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
 
     def test_01_get_shadowed_rules(self):
-        cleanup = self.helper.get_shadowed_rules_for_device_by_id(added_offline_device_id)
-        self.assertIsInstance(cleanup, pytos.securetrack.xml_objects.REST.Rules.Cleanup_Set)
+        self.mock_get_uri.return_value.content = fake_request_response("cleanup_set")
+        cleanup = self.helper.get_shadowed_rules_for_device_by_id(155)
+        self.assertIsInstance(cleanup, Cleanup_Set)
 
     def test_02_get_rule_by_device_and_rule_id(self):
-        # assert valid request
-        rules = self.helper.get_rule_by_device_and_rule_id(1, 1)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
-
-        # assert invalid requests
-        rules =  self.helper.get_rule_by_device_and_rule_id(645644, 55555)
-        self.assertFalse(rules)
+        self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
+        rules = self.helper.get_rule_by_device_and_rule_id(155, 1318012)
+        self.assertEqual(rules[0].id, 1318012)
 
     def test_03_get_rules_for_device(self):
-        global cisco_ASA_rules_UIDs
-
-        # assert valid request
-        rules = self.helper.get_rules_for_device(cisco_ASA_id)
-        cisco_ASA_rules_UIDs = [rule.uid for rule in rules]
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
+        rules = self.helper.get_rules_for_device(155)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
-        # assert invalid request
-        rules = self.helper.get_rules_for_device(5555)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+    def test_04_failed_to_get_rules_for_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("empty_rules")
+        rules = self.helper.get_rules_for_device(155)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) == 0)
 
-    def test_04_get_shadowing_rules_for_device_id_and_rule_uids(self):
+    def test_05_get_shadowing_rules_for_device_id_and_rule_uids(self):
         # assert valid request - passing only 10 UID rules due to url length limitation
         shadowing_rules = self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id,
                                                                                       cisco_ASA_rules_UIDs[0:11])
@@ -200,7 +188,7 @@ class TestRules(unittest.TestCase):
         with self.assertRaises(REST_Bad_Request_Error):
             self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id, "NotValidUID")
 
-    def test_05_get_devices_by_rule_search(self):
+    def test_06_get_devices_by_rule_search(self):
         # assert valid requests
         devices = self.helper.get_devices_by_rule_search()
         self.assertIsInstance(devices, pytos.securetrack.xml_objects.REST.Device.RuleSearchDeviceList)
@@ -212,7 +200,7 @@ class TestRules(unittest.TestCase):
 
         # assert invalid request
 
-    def test_06_rule_search_for_device(self):
+    def test_07_rule_search_for_device(self):
         # assert valid request
         rules = self.helper.rule_search_for_device(cisco_ASA_id)
         self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
@@ -222,7 +210,7 @@ class TestRules(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.rule_search_for_device(5555)
 
-    def test_07_get_rules_for_revision(self):
+    def test_08_get_rules_for_revision(self):
         # assert valid request
         rules = self.helper.get_rules_for_revision(1)
         self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
@@ -236,12 +224,12 @@ class TestRules(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.get_rules_for_revision(10000)
 
-    def test_08_get_rule_base(self):
+    def test_09_get_rule_base(self):
         rule_base = self.helper.get_rule_base()
         self.assertIsInstance(rule_base, dict)
         self.assertIsInstance(list(rule_base.values())[0], pytos.securetrack.xml_objects.REST.Rules.Rules_List)
 
-    def test_09_put_rule_documentation_for_device(self):
+    def test_10_put_rule_documentation_for_device(self):
         rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
         self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
         self.assertTrue(len(rules) > 0)
