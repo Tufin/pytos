@@ -16,8 +16,8 @@ from pytos.securetrack.xml_objects.Base_Types import Network_Object
 from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List
 from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry
 
-conf = Secure_Config_Parser()
-LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
+# conf = Secure_Config_Parser()
+# LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
 # existing device -  need to change these ID's when we'll have final version of the TOS for the testing suit
