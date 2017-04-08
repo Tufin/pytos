@@ -132,7 +132,7 @@ class TestDevices(unittest.TestCase):
     def test_09_add_offline_device(self):
         global added_offline_device_id
         self.mock_get_uri.return_value.status_code = 201
-        self.mock_get_uri.return_value.get_created_item_id = lambda: 1
+        self.mock_get_uri.get_created_item_id.return_value = 1
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         print(added_generic_device_id)
         self.assertIsInstance(added_offline_device_id, int)
