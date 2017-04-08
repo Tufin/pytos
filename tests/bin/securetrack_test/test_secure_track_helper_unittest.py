@@ -68,7 +68,7 @@ class TestDevices(unittest.TestCase):
         self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
-        # self.mock_get_uri.return_value.raise_for_status = lambda: None
+        self.mock_get_uri.return_value.raise_for_status = lambda: None
         self.mock_get_uri.return_value.status_code = 200
 
     def tearDown(self):
