@@ -1,12 +1,11 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
-
+import pytos
 import os
 import tempfile
 import time
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
-from pytos.common.helpers import Secure_API_Helper
 from pytos.securetrack.helpers import Secure_Track_Helper
 from pytos.securetrack.xml_objects.REST.Domain import Domains
 from pytos.common.logging.Logger import setup_loggers
