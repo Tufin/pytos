@@ -85,11 +85,24 @@ class TestDevices(unittest.TestCase):
 
     def test_03_get_devices_list_with_custom_param(self):
         self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
-        devices_list = self.helper.get_devices_list(custom_params={'vendor': 'isco'})
-        print(devices_list)
+        devices_list = self.helper.get_devices_list(custom_params={'vendor': 'cisco'})
         self.assertIsInstance(devices_list, Devices_List)
         self.assertEqual(len(devices_list), devices_list.count)
         self.assertTrue(devices_list.count > 0)
+
+    def test_04_get_device_id_by_name(self):
+        self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
+        device_id = self.helper.get_device_id_by_name(device_name="Router 2801")
+        self.assertTrue(device_id is not None)
+        self.assertTrue(device_id, 155)
+
+        # assert invalid request - 2 devices with same name
+        with self.assertRaises(IndexError):
+            self.helper.get_device_id_by_name(device_name="ASA")
+
+        # assert invalid request - Non existing device
+        with self.assertRaises(ValueError):
+            self.helper.get_device_id_by_name(device_name="NonExistingDeviceName")
 
     def test_03_add_offline_device(self):
         global added_offline_device_id
@@ -113,20 +126,6 @@ class TestDevices(unittest.TestCase):
         with open(config_temp_file_path) as config_tempfile:
             self.helper.upload_device_offline_config(added_offline_device_id, config_tempfile)
         os.remove(config_temp_file_path)
-
-    def test_16_get_device_id_by_name(self):
-        # assert valid request
-        device_id = self.helper.get_device_id_by_name(device_name="Cisco Router2801")
-        self.assertTrue(device_id is not None)
-        self.assertTrue(device_id, 2)
-
-        # assert invalid request - 2 devices with same name
-        with self.assertRaises(IndexError):
-            self.helper.get_device_id_by_name(device_name="ASA")
-
-        # assert invalid request - Non existing device
-        with self.assertRaises(ValueError):
-            self.helper.get_device_id_by_name(device_name="NonExistingDeviceName")
 
     def test_22_get_cleanups_for_device_by_id(self):
         # assert valid request
