@@ -80,8 +80,11 @@ class TestDevices(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
-    def test_05_get_device(self):
-        self.patcher.return_value.content = fake_request_response("get_device_by_id")
+    @patch('pytos.common.rest_requests.requests.Session.send')
+    def test_05_get_device(self, mock_get_uri):
+        mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
+        mock_get_uri.return_value.raise_for_status = lambda: None
+        mock_get_uri.return_value.status_code = 200
         device_by_id = self.helper.get_device_by_id(added_offline_device_id)
         print(device_by_id)
         self.assertIsInstance(device_by_id, Device)
