@@ -134,9 +134,6 @@ class TestDevices(unittest.TestCase):
         self.mock_get_uri.return_value.status_code = 201
         self.mock_get_uri.return_value.headers = {'location': '1'}
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
-        print()
-        print(added_generic_device_id)
-        print()
         self.assertIsInstance(added_offline_device_id, int)
 
         # Invalid device creation
