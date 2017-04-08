@@ -62,10 +62,10 @@ class TestDevices(unittest.TestCase):
 
     def setUp(self):
         self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
-        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
-        self.patcher.start()
-        self.patcher.return_value.raise_for_status = lambda: None
-        self.patcher.return_value.status_code = 200
+        # self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        # self.patcher.start()
+        # self.patcher.return_value.raise_for_status = lambda: None
+        # self.patcher.return_value.status_code = 200
 
     def tearDown(self):
         self.patcher.stop()
