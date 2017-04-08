@@ -82,7 +82,7 @@ class TestDevices(unittest.TestCase):
             self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
     # @patch('pytos.common.rest_requests.requests.Session.send')
-    def test_05_get_device(self, mock_get_uri):
+    def test_05_get_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
         # mock_get_uri.return_value.raise_for_status = lambda: None
         # mock_get_uri.return_value.status_code = 200
