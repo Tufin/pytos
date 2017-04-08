@@ -67,8 +67,8 @@ class TestDevices(unittest.TestCase):
         # self.patcher.return_value.raise_for_status = lambda: None
         # self.patcher.return_value.status_code = 200
 
-    def tearDown(self):
-        self.patcher.stop()
+    # def tearDown(self):
+    #     self.patcher.stop()
 
     def test_03_add_offline_device(self):
         global added_offline_device_id
