@@ -68,7 +68,7 @@ class TestDevices(unittest.TestCase):
         self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
-        self.mock_get_uri.return_value.raise_for_status = lambda: None
+        # self.mock_get_uri.return_value.raise_for_status = lambda: None
         self.mock_get_uri.return_value.status_code = 200
 
     def tearDown(self):
@@ -133,7 +133,7 @@ class TestDevices(unittest.TestCase):
     def test_09_add_offline_device(self):
         global added_offline_device_id
         self.mock_get_uri.return_value.status_code = 201
-        # self.mock_get_uri.get_created_item_id.side_effect = lambda: 1
+        self.mock_get_uri.return_value.headers = {'location': 'location'}
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         print()
         print(added_generic_device_id)
