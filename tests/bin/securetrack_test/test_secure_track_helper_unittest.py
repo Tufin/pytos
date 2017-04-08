@@ -4,15 +4,17 @@ import os
 import tempfile
 import time
 import unittest
+from unittest.mock import patch, Mock
 
-import pytos.securetrack.helpers
+from pytos.common.helpers import Secure_API_Helper
+from pytos.securetrack.helpers import Secure_Track_Helper
 from pytos.securetrack.xml_objects.REST.Domain import Domains
 from pytos.common.logging.Logger import setup_loggers
 from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.REST import Security_Policy
 from pytos.securetrack.xml_objects.Base_Types import Network_Object
-from pytos.securetrack.xml_objects.REST.Device import Device_Revision
+from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List
 from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry
 
 conf = Secure_Config_Parser()
@@ -47,6 +49,12 @@ g_service = None
 g_service_group = None
 
 
+def fake_request_response(rest_file):
+    resource_file = os.path.normpath("tests/resources/{}".format(rest_file))
+    # Must return a file-like object
+    return open(resource_file, mode='rb')
+
+
 class TestDevices(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -54,9 +62,14 @@ class TestDevices(unittest.TestCase):
             cls.OFFLINE_TEST_DATA = f.read().encode()
 
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.patcher.return_value.raise_for_status = lambda: None
+        self.patcher.return_value.status_code = 200
+        self.patcher.start()
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_03_add_offline_device(self):
         global added_offline_device_id
@@ -69,22 +82,23 @@ class TestDevices(unittest.TestCase):
             self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
     def test_05_get_device(self):
+        self.patcher.return_value.content = fake_request_response("get_device_by_id")
         device_by_id = self.helper.get_device_by_id(added_offline_device_id)
-        self.assertTrue(device_by_id is not None)
-        self.assertIsInstance(device_by_id, pytos.securetrack.xml_objects.REST.Device.Device)
+        print(device_by_id)
+        self.assertIsInstance(device_by_id, Device)
 
     def test_06_get_device_config(self):
         self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
 
     def test_07_get_devices_list(self):
         devices_list = self.helper.get_devices_list()
-        self.assertIsInstance(devices_list, pytos.securetrack.xml_objects.REST.Device.Devices_List)
+        self.assertIsInstance(devices_list, Devices_List)
         self.assertTrue(len(devices_list) == devices_list.count)
         self.assertTrue(devices_list.count > 0)
 
     def test_08_get_devices_list_with_custom_param(self):
         devices_list = self.helper.get_devices_list(custom_params={'vendor': 'Cisco'})
-        self.assertIsInstance(devices_list, pytos.securetrack.xml_objects.REST.Device.Devices_List)
+        self.assertIsInstance(devices_list, Devices_List)
         self.assertEqual(len(devices_list), devices_list.count)
         self.assertTrue(devices_list.count > 0)
 

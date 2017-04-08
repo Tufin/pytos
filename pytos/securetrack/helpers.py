@@ -2037,23 +2037,6 @@ class Secure_Track_Helper(Secure_API_Helper):
             device_id_to_device = {device.id: device for device in devices}
         return device_id_to_device
 
-    def get_domain_device_tree(self, devices=None):
-        """Get the domain device tree from SecureTrack.
-
-        :type devices: collections.Iterable[Secure_Track.XML_Objects.REST.Device.Device]
-        :rtype: dict[str,list[Secure_Track.XML_Objects.REST.Device.Device]]
-        """
-        domain_names = set()
-        domain_name_to_devices = {}
-        for device in self.get_device_tree(devices):
-            domain_names.add(device.domain_name)
-            try:
-                domain_name_to_devices[device.domain_name].append(device)
-            except KeyError:
-                domain_name_to_devices[device.domain_name] = [device]
-        logger.debug("Returning the following domain device tree: %s", domain_name_to_devices)
-        return domain_name_to_devices
-
     def get_latest_ready_revision_for_device_id(self, device_id):
         """Get the latest ready for the specified device ID.
 

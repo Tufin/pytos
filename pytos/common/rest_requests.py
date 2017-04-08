@@ -30,9 +30,11 @@ except ImportError:
 # http.client.HTTPConnection.debuglevel = 1
 logger = logging.getLogger(REQUESTS_LOGGER_NAME)
 
+
 class RESTAuthMethods(Enum):
     Digest = "digest"
     Basic = "basic"
+
 
 class REST_Request(object):
     """
