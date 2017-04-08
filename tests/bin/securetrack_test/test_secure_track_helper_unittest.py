@@ -53,7 +53,7 @@ def fake_request_response(rest_file):
     resource_file = os.path.join(parent_dir, "resources/{}.xml".format(rest_file))
     print(resource_file)
     # Must return a file-like object
-    return open(resource_file, mode='rb')
+    return open(resource_file, mode='rb').read()
 
 
 class TestDevices(unittest.TestCase):
