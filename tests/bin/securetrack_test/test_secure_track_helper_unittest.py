@@ -71,6 +71,18 @@ class TestDevices(unittest.TestCase):
     def tearDown(self):
         self.patcher.stop()
 
+    def test_01_get_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
+        device_by_id = self.helper.get_device_by_id(added_offline_device_id)
+        self.assertIsInstance(device_by_id, Device)
+
+    def test_02_get_devices_list(self):
+        self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
+        devices_list = self.helper.get_devices_list()
+        self.assertIsInstance(devices_list, Devices_List)
+        self.assertTrue(len(devices_list) == devices_list.count)
+        self.assertTrue(devices_list.count > 0)
+
     def test_03_add_offline_device(self):
         global added_offline_device_id
         # Valid device creation
@@ -81,22 +93,8 @@ class TestDevices(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
-    # @patch('pytos.common.rest_requests.requests.Session.send')
-    def test_05_get_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
-        # mock_get_uri.return_value.raise_for_status = lambda: None
-        # mock_get_uri.return_value.status_code = 200
-        device_by_id = self.helper.get_device_by_id(added_offline_device_id)
-        self.assertIsInstance(device_by_id, Device)
-
     def test_06_get_device_config(self):
         self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
-
-    def test_07_get_devices_list(self):
-        devices_list = self.helper.get_devices_list()
-        self.assertIsInstance(devices_list, Devices_List)
-        self.assertTrue(len(devices_list) == devices_list.count)
-        self.assertTrue(devices_list.count > 0)
 
     def test_08_get_devices_list_with_custom_param(self):
         devices_list = self.helper.get_devices_list(custom_params={'vendor': 'Cisco'})
