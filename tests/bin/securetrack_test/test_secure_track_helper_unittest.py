@@ -7,6 +7,7 @@ import unittest
 from unittest.mock import patch
 
 from pytos.securetrack.helpers import Secure_Track_Helper
+from pytos.securetrack.xml_objects.REST.Cleanups import Generic_Cleanup_List
 from pytos.securetrack.xml_objects.REST.Domain import Domains
 from pytos.common.logging.Logger import setup_loggers
 from pytos.common.functions.Config import Secure_Config_Parser
@@ -72,28 +73,27 @@ class TestDevices(unittest.TestCase):
         self.patcher.stop()
 
     def test_01_get_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
+        self.mock_get_uri.return_value.content = fake_request_response("device_by_id")
         device_by_id = self.helper.get_device_by_id(added_offline_device_id)
         self.assertIsInstance(device_by_id, Device)
 
     def test_02_get_devices_list(self):
-        self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
+        self.mock_get_uri.return_value.content = fake_request_response("device_list")
         devices_list = self.helper.get_devices_list()
         self.assertIsInstance(devices_list, Devices_List)
         self.assertTrue(len(devices_list) == devices_list.count)
         self.assertTrue(devices_list.count > 0)
 
     def test_03_get_devices_list_with_custom_param(self):
-        self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
+        self.mock_get_uri.return_value.content = fake_request_response("device_list")
         devices_list = self.helper.get_devices_list(custom_params={'vendor': 'cisco'})
         self.assertIsInstance(devices_list, Devices_List)
         self.assertEqual(len(devices_list), devices_list.count)
         self.assertTrue(devices_list.count > 0)
 
     def test_04_get_device_id_by_name(self):
-        self.mock_get_uri.return_value.content = fake_request_response("get_device_list")
+        self.mock_get_uri.return_value.content = fake_request_response("device_list")
         device_id = self.helper.get_device_id_by_name(device_name="Router 2801")
-        self.assertTrue(device_id is not None)
         self.assertTrue(device_id, 155)
 
         # assert invalid request - 2 devices with same name
@@ -103,6 +103,15 @@ class TestDevices(unittest.TestCase):
         # assert invalid request - Non existing device
         with self.assertRaises(ValueError):
             self.helper.get_device_id_by_name(device_name="NonExistingDeviceName")
+
+    def test_05_get_cleanups_for_device_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("cleanups_by_device_id")
+        cleanups = self.helper.get_cleanups_for_device_by_id(155)
+        self.assertIsInstance(cleanups, Generic_Cleanup_List)
+        self.assertTrue(len(cleanups) > 0)
+
+        with self.assertRaises(ValueError):
+            self.helper.get_cleanups_for_device_by_id(5555)
 
     def test_03_add_offline_device(self):
         global added_offline_device_id
@@ -127,14 +136,7 @@ class TestDevices(unittest.TestCase):
             self.helper.upload_device_offline_config(added_offline_device_id, config_tempfile)
         os.remove(config_temp_file_path)
 
-    def test_22_get_cleanups_for_device_by_id(self):
-        # assert valid request
-        cleanups = self.helper.get_cleanups_for_device_by_id(2)
-        self.assertIsInstance(cleanups, pytos.securetrack.xml_objects.REST.Cleanups.Generic_Cleanup_List)
-        self.assertTrue(len(cleanups) > 0)
 
-        with self.assertRaises(ValueError):
-            self.helper.get_cleanups_for_device_by_id(5555)
 
     def test_23_get_bindings_for_device(self):
         # assert valid request
