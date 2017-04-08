@@ -110,6 +110,8 @@ class TestDevices(unittest.TestCase):
         self.assertIsInstance(cleanups, Generic_Cleanup_List)
         self.assertTrue(len(cleanups) > 0)
 
+    def test_06_failed_to_get_cleanups_for_device_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("no_found_error")
         with self.assertRaises(ValueError):
             self.helper.get_cleanups_for_device_by_id(5555)
 
