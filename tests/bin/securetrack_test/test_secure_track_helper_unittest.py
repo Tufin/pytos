@@ -50,6 +50,7 @@ g_service_group = None
 
 def fake_request_response(rest_file):
     resource_file = os.path.normpath("tests/resources/{}".format(rest_file))
+    print(resource_file)
     # Must return a file-like object
     return open(resource_file, mode='rb')
 
