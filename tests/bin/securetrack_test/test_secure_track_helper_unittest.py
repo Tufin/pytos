@@ -97,7 +97,7 @@ class TestDevices(unittest.TestCase):
         self.assertTrue(device_id, 155)
 
         # assert invalid request - 2 devices with same name
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             self.helper.get_device_id_by_name(device_name="ASA FireWall")
 
         # assert invalid request - Non existing device
