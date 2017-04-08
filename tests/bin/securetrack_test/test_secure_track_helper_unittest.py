@@ -15,7 +15,8 @@ from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.REST import Security_Policy
 from pytos.securetrack.xml_objects.Base_Types import Network_Object
 from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List
-from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry
+from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
+    Interfaces_List
 
 # conf = Secure_Config_Parser()
 # LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
@@ -116,15 +117,28 @@ class TestDevices(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.get_cleanups_for_device_by_id(5555)
 
-    def test_03_add_offline_device(self):
+    def test_07_get_bindings_for_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("device_bindings")
+        binding = self.helper.get_bindings_for_device(155)
+        self.assertIsInstance(binding, Bindings_List)
+        self.assertTrue(len(binding) > 0)
+
+    def test_08_get_interfaces_for_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("device_interfaces")
+        interfaces = self.helper.get_interfaces_for_device(155)
+        self.assertIsInstance(interfaces, Interfaces_List)
+        self.assertTrue(len(interfaces) > 0)
+
+    def test_09_add_offline_device(self):
         global added_offline_device_id
-        # Valid device creation
+        self.mock_get_uri.return_value.status_code = 201
+        self.mock_get_uri.return_value.get_created_item_id = lambda: 1
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         self.assertIsInstance(added_offline_device_id, int)
 
         # Invalid device creation
-        with self.assertRaises(ValueError):
-            self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
+        # with self.assertRaises(ValueError):
+        #     self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
     def test_06_get_device_config(self):
         self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
@@ -138,28 +152,6 @@ class TestDevices(unittest.TestCase):
         with open(config_temp_file_path) as config_tempfile:
             self.helper.upload_device_offline_config(added_offline_device_id, config_tempfile)
         os.remove(config_temp_file_path)
-
-
-
-    def test_23_get_bindings_for_device(self):
-        # assert valid request
-        binding = self.helper.get_bindings_for_device(cisco_ASA_id)
-        self.assertIsInstance(binding, pytos.securetrack.xml_objects.REST.Rules.Bindings_List)
-        self.assertTrue(len(binding) > 0)
-
-        # assert invalid request - device doesn't exist
-        binding = self.helper.get_bindings_for_device(5555)
-        self.assertFalse(len(binding))
-
-    def test_24_get_interfaces_for_device(self):
-        # assert valid request
-        interfaces = self.helper.get_interfaces_for_device(cisco_ASA_id)
-        self.assertIsInstance(interfaces, pytos.securetrack.xml_objects.REST.Rules.Interfaces_List)
-        self.assertTrue(len(interfaces) > 0)
-
-        # assert invalid request - device doesn't exists
-        with self.assertRaises(ValueError):
-            self.helper.get_interfaces_for_device(5555)
 
 
 class TestRules(unittest.TestCase):
