@@ -63,13 +63,13 @@ class TestDevices(unittest.TestCase):
 
     def setUp(self):
         self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
-        # self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
-        # self.patcher.start()
-        # self.patcher.return_value.raise_for_status = lambda: None
-        # self.patcher.return_value.status_code = 200
+        patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = patcher.start()
+        self.mock_get_uri.return_value.raise_for_status = lambda: None
+        self.mock_get_uri.return_value.status_code = 200
 
-    # def tearDown(self):
-    #     self.patcher.stop()
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_03_add_offline_device(self):
         global added_offline_device_id
@@ -81,11 +81,11 @@ class TestDevices(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.add_offline_device("TEST_DEVICE_321", "INVALID_VENDOR", "INVALID_MODEL")
 
-    @patch('pytos.common.rest_requests.requests.Session.send')
+    # @patch('pytos.common.rest_requests.requests.Session.send')
     def test_05_get_device(self, mock_get_uri):
-        mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
-        mock_get_uri.return_value.raise_for_status = lambda: None
-        mock_get_uri.return_value.status_code = 200
+        self.mock_get_uri.return_value.content = fake_request_response("get_device_by_id")
+        # mock_get_uri.return_value.raise_for_status = lambda: None
+        # mock_get_uri.return_value.status_code = 200
         device_by_id = self.helper.get_device_by_id(added_offline_device_id)
         self.assertIsInstance(device_by_id, Device)
 
