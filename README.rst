@@ -50,7 +50,7 @@ To use the pytos logging mechanism perform the following steps:
 	web = DEBUG
 	third_party = WARNING
 
-* In your code call the following methods to define and the
+In your code call the following methods to define and the
 ::
 	import logging
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
