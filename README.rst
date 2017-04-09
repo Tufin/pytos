@@ -30,7 +30,7 @@ Connecting to SecureChange with valid username and password
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "passowrd"))
 
 How to use pytos Logger
-****************
+***********************
 
 To use the pytos logging mechanism perform the following steps:
 
