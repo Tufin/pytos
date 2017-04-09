@@ -71,7 +71,7 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
-                logger.warn(message)
+                logger.warning(message)
                 raise KeyError(message)
             else:
                 return None
@@ -82,7 +82,7 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
-                logger.warn(message)
+                logger.warning(message)
                 raise KeyError(message)
             else:
                 return None
@@ -93,7 +93,7 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
-                logger.warn(message)
+                logger.warning(message)
                 raise KeyError(message)
             else:
                 return None
@@ -104,7 +104,7 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
-                logger.warn(message)
+                logger.warning(message)
                 raise KeyError(message)
             else:
                 return None

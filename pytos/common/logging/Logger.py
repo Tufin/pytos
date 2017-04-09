@@ -50,7 +50,7 @@ def remove_logger_handlers():
         logger_.handlers = []
 
 
-def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file="Tufin_PS_Logger.log",
+def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file="pytos_logger.log",
                   update_config_file=True, additional_log_files=None, **kwargs):
     """
     Set up the loggers used by the Tufin PS scripts.
@@ -81,7 +81,7 @@ def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file
             pass
 
     remove_logger_handlers()
-    monitor_log_levels_change = kwargs.get("monitor_log_levels_change", True)
+    # monitor_log_levels_change = kwargs.get("monitor_log_levels_change", True)
     # if monitor_log_levels_change:
     #     LoggingConfigurationFileMonitor()
     configured_loggers = []
@@ -175,26 +175,3 @@ def handle_log_to_stdout(configured_loggers):
         log_stream_handler = logging.StreamHandler(stream=sys.stdout)
         log_stream_handler.setFormatter(FORMATTER)
         logger_.addHandler(log_stream_handler)
-
-
-class MessageBoardHandler(logging.Handler):
-    """
-    This class is used to write log entries to the SecureChange Message Board.
-    """
-
-    def __init__(self, message_board_writer, min_level_to_log=logging.CRITICAL):
-        """
-        Constructor
-        :param message_board_writer: The Message_Board_Writer object used to write to the database.
-        :type  message_board_writer: pytos.common.functions.Message_Board_Writer
-        :param min_level_to_log: The minimum log level to log events to the Message Board.
-        """
-        logging.Handler.__init__(self)
-        self.message_board_writer = message_board_writer
-        self.min_level_to_log = min_level_to_log
-
-    def emit(self, record):
-        if record.levelno >= self.min_level_to_log:
-            message = record.getMessage()
-            message = message.replace("'", "\\'")
-            self.message_board_writer.write(message)
