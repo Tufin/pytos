@@ -1,0 +1,81 @@
+<rules>
+	<count>1</count>
+	<total>1</total>
+	<rule type="securityRuleDTO">
+		<id>1318013</id>
+		<cp_uid/>
+		<uid>{5a2b2989-7572-470c-bb88-3f25f0ea8ca2}</uid>
+		<order>2</order>
+		<binding>
+			<acl>
+				<global>false</global>
+				<interfaces>
+					<name>Loopback99</name>
+					<id>565340</id>
+					<direction>INSIDE</direction>
+					<device_id>155</device_id>
+					<acl_name>Avi1</acl_name>
+					<global>false</global>
+					<interface_ips>
+						<interface_ip>
+							<ip>10.99.100.1</ip>
+							<netmask>255.255.255.0</netmask>
+						</interface_ip>
+					</interface_ips>
+				</interfaces>
+				<name>Avi1</name>
+			</acl>
+			<default>false</default>
+			<rule_count>85</rule_count>
+			<security_rule_count>85</security_rule_count>
+			<uid>Avi1_@_155</uid>
+		</binding>
+		<acceleration_breaker>false</acceleration_breaker>
+		<action>Accept</action>
+		<authentication_rule>false</authentication_rule>
+		<comment/>
+		<dst_network>
+			<id>3341521</id>
+			<display_name>NetworkGroup_18000000143343594</display_name>
+			<name>group_NetworkGroup_18000000143343594</name>
+		</dst_network>
+		<dest_networks_negated>false</dest_networks_negated>
+		<dst_service>
+			<id>17924338</id>
+			<display_name>Any</display_name>
+			<name>Any</name>
+		</dst_service>
+		<dest_services_negated>false</dest_services_negated>
+		<disabled>false</disabled>
+		<external>false</external>
+		<implicit>false</implicit>
+		<name/>
+		<documentation>
+			<tech_owner>admin</tech_owner>
+			<comment>Some Description</comment>
+			<record_set>
+				<automatic>false</automatic>
+				<businessOwnerName>ticket owner</businessOwnerName>
+				<id>84904</id>
+				<ticketCr>431</ticketCr>
+				<ticketOrigin/>
+			</record_set>
+			<legacy_rule>false</legacy_rule>
+			<violations/>
+		</documentation>
+		<rule_number>30</rule_number>
+		<src_network>
+			<id>3341440</id>
+			<display_name>Bug_31370</display_name>
+			<name>group_Bug_31370</name>
+		</src_network>
+		<src_networks_negated>false</src_networks_negated>
+		<src_services_negated>false</src_services_negated>
+		<textual_rep>ip access-list extended Avi1
+ permit ip object-group Bug_31370 object-group NetworkGroup_18000000143343594 log 0x80B1A86D</textual_rep>
+		<track>
+			<level>LOG</level>
+		</track>
+		<type>rule</type>
+	</rule>
+</rules>

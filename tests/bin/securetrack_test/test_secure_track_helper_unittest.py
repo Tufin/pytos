@@ -201,27 +201,14 @@ class TestRules(unittest.TestCase):
         self.assertTrue(len(rules) > 0)
 
     def test_09_get_rules_for_revision(self):
-        # assert valid request
-        rules = self.helper.get_rules_for_revision(1)
-        self.assertIsInstance(rules, Rules_List)
-        self.assertTrue(len(rules) > 0)
-
+        self.mock_get_uri.return_value.content = fake_request_response("rule_list_in_revision")
         rules = self.helper.get_rules_for_revision(1, True)
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_rules_for_revision(10000)
-
-    def test_09_get_rule_base(self):
-        rule_base = self.helper.get_rule_base()
-        self.assertIsInstance(rule_base, dict)
-        self.assertIsInstance(list(rule_base.values())[0], pytos.securetrack.xml_objects.rest.Rules.Rules_List)
-
     def test_10_put_rule_documentation_for_device(self):
         rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.Rules.Rules_List)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
         # get a single rule
         rule = rules[0:1][0]
