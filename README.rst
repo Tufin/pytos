@@ -34,23 +34,23 @@ How to use pytos Logger
 
 To use the pytos logging mechanism perform the following steps:
 
-	* Create an ini like configuration file with that have the following section
+* Create an ini like configuration file with that have the following section
+::
+	[common]
+	log_file_path = /var/log/pytos/
 
-		[common]
-		log_file_path = /var/log/pytos/
+	[log_levels]
+	common = DEBUG
+	helpers = WARNING
+	reports = DEBUG
+	requests = WARNING
+	mail = WARNING
+	sql = WARNING
+	xml = WARNING
+	web = DEBUG
+	third_party = WARNING
 
-		[log_levels]
-		common = DEBUG
-		helpers = WARNING
-		reports = DEBUG
-		requests = WARNING
-		mail = WARNING
-		sql = WARNING
-		xml = WARNING
-		web = DEBUG
-		third_party = WARNING
-
-	* In your code call the following methods to define and the
+* In your code call the following methods to define and the
 ::
 	import logging
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
