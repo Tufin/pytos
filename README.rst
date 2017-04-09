@@ -35,6 +35,7 @@ How to use pytos Logger
 To use the pytos logging mechanism perform the following steps:
 
 * Create an ini like configuration file with that have the following section
+d
 ::
 	[common]
 	log_file_path = /var/log/pytos/
