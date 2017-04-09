@@ -14,7 +14,7 @@
 import logging
 import netaddr
 
-from pytos.secureapp.xml_objects.Base_Types import Base_Link_Target, Base_Object, URL_Link, Network_Object, Service_Object
+from pytos.secureapp.xml_objects.base_types import Base_Link_Target, Base_Object, URL_Link, Network_Object, Service_Object
 from pytos.common.base_types import XML_Object_Base, XML_List, Group_Service_Type, Single_Service_Type, \
     Range_Service_Type, Any_Service_Type
 from pytos.common.definitions.XML_Tags import Attributes, Elements

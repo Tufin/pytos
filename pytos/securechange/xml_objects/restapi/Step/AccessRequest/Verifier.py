@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.initialize import *
+from pytos.securechange.xml_objects.restapi.Step.AccessRequest.initialize import *
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

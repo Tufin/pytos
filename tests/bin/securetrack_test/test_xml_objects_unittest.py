@@ -2,7 +2,7 @@
 
 import sys
 
-from pytos.securetrack.xml_objects import REST
+from pytos.securetrack.xml_objects import rest
 import xml.etree.ElementTree as ET
 from pytos.common import tufin_logger
 from pytos.common.functions.Config import Secure_Config_Parser
@@ -20,17 +20,17 @@ DEVICES_LIST_XML = '''<?xml version="1.0" encoding="UTF-8"?><devices><count>31</
 class Test_Secure_Track_XML(unittest.TestCase):
     def test_devices_list(self):
         devices_list_xml_node = ET.fromstring(DEVICES_LIST_XML)
-        device_list = REST.Device.Devices_List.from_xml_node(devices_list_xml_node)
+        device_list = rest.Device.Devices_List.from_xml_node(devices_list_xml_node)
         assert device_list.count >= 0
         assert device_list.total >= 0
         assert device_list.total >= device_list.count
         assert device_list is not None
         for device in device_list:
-            assert isinstance(device, REST.Device.Device)
+            assert isinstance(device, rest.Device.Device)
 
     def test_device(self):
         device_xml_node = ET.fromstring(DEVICE_XML)
-        device = REST.Device.Device.from_xml_node(device_xml_node)
+        device = rest.Device.Device.from_xml_node(device_xml_node)
         assert device.model is not None
         assert device.vendor is not None
         assert device.domain_name is not None

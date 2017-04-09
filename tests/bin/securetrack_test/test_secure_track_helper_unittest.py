@@ -9,15 +9,15 @@ import unittest
 from unittest.mock import patch
 
 from pytos.securetrack.helpers import Secure_Track_Helper
-from pytos.securetrack.xml_objects.REST.Cleanups import Generic_Cleanup_List
-from pytos.securetrack.xml_objects.REST.Domain import Domains
+from pytos.securetrack.xml_objects.rest.Cleanups import Generic_Cleanup_List
+from pytos.securetrack.xml_objects.rest.Domain import Domains
 from pytos.common.logging.Logger import setup_loggers
 from pytos.common.functions.Config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
-from pytos.securetrack.xml_objects.REST import Security_Policy
-from pytos.securetrack.xml_objects.Base_Types import Network_Object
-from pytos.securetrack.xml_objects.REST.Device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
-from pytos.securetrack.xml_objects.REST.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
+from pytos.securetrack.xml_objects.rest import Security_Policy
+from pytos.securetrack.xml_objects.base_types import Network_Object
+from pytos.securetrack.xml_objects.rest.Device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
+from pytos.securetrack.xml_objects.rest.Rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List
 
 conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
@@ -194,24 +194,20 @@ class TestRules(unittest.TestCase):
         self.assertIsInstance(devices, RuleSearchDeviceList)
         self.assertTrue(len(devices) > 0)
 
-    def test_07_rule_search_for_device(self):
-        # assert valid request
-        rules = self.helper.rule_search_for_device(cisco_ASA_id)
+    def test_08_rule_search_for_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("rule_list_for_device_in_rule_search")
+        rules = self.helper.rule_search_for_device(155)
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.rule_search_for_device(5555)
-
-    def test_08_get_rules_for_revision(self):
+    def test_09_get_rules_for_revision(self):
         # assert valid request
         rules = self.helper.get_rules_for_revision(1)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
         rules = self.helper.get_rules_for_revision(1, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
         # assert invalid request
@@ -221,11 +217,11 @@ class TestRules(unittest.TestCase):
     def test_09_get_rule_base(self):
         rule_base = self.helper.get_rule_base()
         self.assertIsInstance(rule_base, dict)
-        self.assertIsInstance(list(rule_base.values())[0], pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(list(rule_base.values())[0], pytos.securetrack.xml_objects.rest.Rules.Rules_List)
 
     def test_10_put_rule_documentation_for_device(self):
         rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.Rules.Rules_List)
         self.assertTrue(len(rules) > 0)
         # get a single rule
         rule = rules[0:1][0]
@@ -240,7 +236,7 @@ class TestRules(unittest.TestCase):
         # assert that the rule documentation was updated
         self.helper.put_rule_documentation_for_device(cisco_router2801_id, rule)
         updated_rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.Rules.Rules_List)
         self.assertTrue(len(rules) > 0)
         # get a single rule
         updated_rule = updated_rules[0:1][0]
@@ -259,7 +255,7 @@ class TestRules(unittest.TestCase):
 
     def test_10_get_rule_documentation_by_device_id_and_rule_id(self):
         rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.Rules.Rules_List)
         self.assertTrue(len(rules) > 0)
         # get a single rule
         rule = rules[0:1][0]
@@ -267,7 +263,7 @@ class TestRules(unittest.TestCase):
 
         # assert valid request
         rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(cisco_router2801_id, rule_id)
-        self.assertIsInstance(rd, pytos.securetrack.xml_objects.REST.Rules.Rule_Documentation)
+        self.assertIsInstance(rd, pytos.securetrack.xml_objects.rest.Rules.Rule_Documentation)
         self.assertTrue(len(rd.record_sets) > 0)
 
         # assert valid request
@@ -278,11 +274,11 @@ class TestRules(unittest.TestCase):
 
     def test_11_get_rules_for_network_object_by_id(self):
         network_objects = self.helper.network_object_text_search("192.168", "any_field")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.REST.Rules.Network_Objects_List)
+        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.Rules.Network_Objects_List)
         self.assertTrue(len(network_objects) > 0)
 
         rules = self.helper.get_rules_for_network_object_by_id(network_objects[0].id)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.REST.Rules.Rules_List)
+        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.Rules.Rules_List)
 
 
 class TestZonesPoliciesAndRevisions(unittest.TestCase):
@@ -409,7 +405,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_03_get_zone_by_name(self):
         # assert valid request
         zone = self.helper.get_zone_by_name("dmz")
-        self.assertIsInstance(zone, pytos.securetrack.xml_objects.REST.Rules.Zone)
+        self.assertIsInstance(zone, pytos.securetrack.xml_objects.rest.Rules.Zone)
         self.assertEqual(zone.name, "dmz")
 
         # assert invalid request
@@ -424,18 +420,18 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
         zone_entries = [x.zone_entries for x in zone_data.values() if x.zone_entries]
 
-        self.assertIsInstance(zone_entries[0][0], pytos.securetrack.xml_objects.REST.Rules.Zone_Entry)
+        self.assertIsInstance(zone_entries[0][0], pytos.securetrack.xml_objects.rest.Rules.Zone_Entry)
         self.assertTrue(zone_entries[0][0].ip)
 
     def test_05_get_device_revisions_by_id(self):
         # assert an existing device
         revisions = self.helper.get_device_revisions_by_id(device_id=cisco_ASA_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.REST.Device.Device_Revisions_List)
+        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.Device.Device_Revisions_List)
         self.assertTrue(len(revisions) > 0)
 
         # assert non existing device - this should throw a ValueError but instead returns an empty result
         revisions = self.helper.get_device_revisions_by_id(device_id=55555)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.REST.Device.Device_Revisions_List)
+        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.Device.Device_Revisions_List)
         self.assertTrue(len(revisions) == 0)
 
         '''
@@ -446,11 +442,11 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_06_get_policy_analysis(self):
         # assert valid request
         policy_analysis = self.helper.get_policy_analysis(cisco_ASA_id)
-        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.REST.Rules.Policy_Analysis_Query_Result)
+        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.rest.Rules.Policy_Analysis_Query_Result)
         self.assertTrue(len(policy_analysis.devices_and_bindings) == 1)
 
         policy_analysis = self.helper.get_policy_analysis([cisco_ASA_id, cisco_router2801_id])
-        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.REST.Rules.Policy_Analysis_Query_Result)
+        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.rest.Rules.Policy_Analysis_Query_Result)
         self.assertTrue(len(policy_analysis.devices_and_bindings) == 2)
 
         # assert invalid request
@@ -459,7 +455,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
     def test_07_get_security_policies(self):
         policies = self.helper.get_security_policies()
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.REST.Rules.Security_Policies_List)
+        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.Rules.Security_Policies_List)
         self.assertTrue(len(policies) > 0)
 
     def test_08_get_security_policy_by_name(self):
@@ -467,7 +463,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
         # assert valid request
         policy = self.helper.get_security_policy_by_name(security_policy_name, default_domain_id)
-        self.assertIsInstance(policy, pytos.securetrack.xml_objects.REST.Rules.Security_Policy)
+        self.assertIsInstance(policy, pytos.securetrack.xml_objects.rest.Rules.Security_Policy)
         self.assertEqual(policy.name, security_policy_name)
         security_policy_id = policy.id
 
@@ -478,7 +474,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_09_get_security_policy_by_id(self):
         # assert valid request
         policy = self.helper.get_security_policy_by_id(security_policy_id, default_domain_id)
-        self.assertIsInstance(policy, pytos.securetrack.xml_objects.REST.Rules.Security_Policy)
+        self.assertIsInstance(policy, pytos.securetrack.xml_objects.rest.Rules.Security_Policy)
         self.assertEqual(policy.id, security_policy_id)
 
         # assert invalid request
@@ -531,7 +527,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             if device.name == offline_device_name:
                 violations = device_violations["MEDIUM"]
                 self.assertIsInstance(violations.violating_rules,
-                                      pytos.securetrack.xml_objects.REST.Rules.ViolatingRules)
+                                      pytos.securetrack.xml_objects.rest.Rules.ViolatingRules)
                 self.assertIsInstance(violations.violating_rules.violating_rule_list, list)
                 self.assertTrue(len(violations.violating_rules.violating_rule_list) > 0)
 
@@ -540,7 +536,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         device_id = self.helper.get_device_id_by_name(offline_device_name)
         violations = self.helper.get_security_policy_device_violations_by_severity(device_id,
                                                                                    "MEDIUM", "SECURITY_POLICY")
-        self.assertIsInstance(violations.violating_rules, pytos.securetrack.xml_objects.REST.Rules.ViolatingRules)
+        self.assertIsInstance(violations.violating_rules, pytos.securetrack.xml_objects.rest.Rules.ViolatingRules)
         self.assertIsInstance(violations.violating_rules.violating_rule_list, list)
         self.assertTrue(len(violations.violating_rules.violating_rule_list) > 0)
 
@@ -555,12 +551,12 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_17_get_policies_for_revision(self):
         # get revisions for device
         revisions = self.helper.get_device_revisions_by_id(device_id=checkpoint_device_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.REST.Device.Device_Revisions_List)
+        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.Device.Device_Revisions_List)
         self.assertTrue(len(revisions) > 0)
 
         # assert valid request
         policies = self.helper.get_policies_for_revision(revisions[0].id)
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.REST.Rules.Policy_List)
+        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.Rules.Policy_List)
         self.assertTrue(len(policies) > 0)
 
         # assert invalid request
@@ -570,7 +566,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_18_get_policies_for_device(self):
         # assert valid request
         policies = self.helper.get_policies_for_device(checkpoint_device_id)
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.REST.Rules.Policy_List)
+        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.Rules.Policy_List)
         self.assertTrue(len(policies) > 0)
 
     def test_19_post_security_policy_exception(self):
@@ -613,11 +609,11 @@ class TestTopology(unittest.TestCase):
     def test_03_get_topology_interfaces(self):
         # assert valid request
         topology_interfaces = self.helper.get_topology_interfaces(cisco_ASA_id)
-        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.REST.Rules.Topology_Interfaces_List)
+        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.rest.Rules.Topology_Interfaces_List)
         self.assertTrue(len(topology_interfaces) > 0)
 
         topology_interfaces = self.helper.get_topology_interfaces(5555)
-        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.REST.Rules.Topology_Interfaces_List)
+        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.rest.Rules.Topology_Interfaces_List)
         self.assertTrue(len(topology_interfaces) == 0)
 
         # assert valid request
@@ -637,7 +633,7 @@ class TestReports(unittest.TestCase):
         with open(test_data_dir + "cisco_ASA.xml") as file:
             xml_string = file.read()
             dcr_test_id = self.helper.post_dcr_test(
-                pytos.securetrack.xml_objects.REST.Audit.DCR_Test_Group.from_xml_string(xml_string))
+                pytos.securetrack.xml_objects.rest.Audit.DCR_Test_Group.from_xml_string(xml_string))
             self.assertTrue(dcr_test_id)
             self.assertIsInstance(dcr_test_id, int)
             dcr_id = dcr_test_id
@@ -645,7 +641,7 @@ class TestReports(unittest.TestCase):
     def test_05_get_dcr_test_by_id(self):
         # assert valid request
         dcr = self.helper.get_dcr_test_by_id(dcr_id)
-        self.assertIsInstance(dcr, pytos.securetrack.xml_objects.REST.Audit.DCR_Test_Group)
+        self.assertIsInstance(dcr, pytos.securetrack.xml_objects.rest.Audit.DCR_Test_Group)
         self.assertEqual(int(dcr.id), dcr_id)
 
         # assert invalid request
@@ -667,7 +663,7 @@ class TestDomains(unittest.TestCase):
     def test_02_get_domain_by_id(self):
         # assert valid request
         domain = self.helper.get_domain_by_id(default_domain_id)
-        self.assertIsInstance(domain, pytos.securetrack.xml_objects.REST.Domain.Domain)
+        self.assertIsInstance(domain, pytos.securetrack.xml_objects.rest.Domain.Domain)
         self.assertTrue(domain.name, "Default")
 
         # assert invalid request
@@ -687,7 +683,7 @@ class TestNetworkObjects(unittest.TestCase):
 
         # assert valid request
         network_objects = self.helper.get_network_objects_for_device(cisco_ASA_id)
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.REST.Rules.Network_Objects_List)
+        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.Rules.Network_Objects_List)
         self.assertTrue(len(network_objects) > 0)
 
         # save a single network object for later uses
@@ -699,13 +695,13 @@ class TestNetworkObjects(unittest.TestCase):
 
         # assert invalid request
         network_objects = self.helper.get_network_objects_for_device(5555)
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.REST.Rules.Network_Objects_List)
+        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.Rules.Network_Objects_List)
         self.assertFalse(len(network_objects))
 
     def test_02_network_object_text_search(self):
         # assert valid request
         network_objects = self.helper.network_object_text_search("192.168", "any_field")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.REST.Rules.Network_Objects_List)
+        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.Rules.Network_Objects_List)
         self.assertTrue(len(network_objects) > 0)
 
         # assert invalid request
@@ -715,7 +711,7 @@ class TestNetworkObjects(unittest.TestCase):
     def test_03_network_object_subnet_search(self):
         # assert valid request
         network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.REST.Rules.Network_Objects_List)
+        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.Rules.Network_Objects_List)
         self.assertTrue(len(network_objects) > 0)
 
         # assert invalid request
@@ -730,7 +726,7 @@ class TestNetworkObjects(unittest.TestCase):
     def test_05_get_network_object_by_device_and_object_id(self):
         # assert valid request
         network_object = self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, g_network_object.id)
-        self.assertIsInstance(network_object, pytos.securetrack.xml_objects.REST.Rules.Basic_Network_Object)
+        self.assertIsInstance(network_object, pytos.securetrack.xml_objects.rest.Rules.Basic_Network_Object)
         self.assertTrue(network_object.id and network_object.name)
 
         # assert invalid requests
@@ -744,8 +740,8 @@ class TestNetworkObjects(unittest.TestCase):
         # assert valid request
         members = self.helper.get_member_network_objects_for_group_network_object(g_network_object_group, cisco_ASA_id)
         for member in members:
-            self.assertIsInstance(member, (pytos.securetrack.xml_objects.REST.Rules.Host_Network_Object,
-                                           pytos.securetrack.xml_objects.REST.Rules.Subnet_Network_Object))
+            self.assertIsInstance(member, (pytos.securetrack.xml_objects.rest.Rules.Host_Network_Object,
+                                           pytos.securetrack.xml_objects.rest.Rules.Subnet_Network_Object))
             self.assertTrue(member.id and member.name)
 
         # assert invalid request
@@ -767,7 +763,7 @@ class TestServices(unittest.TestCase):
 
         # assert valid request
         services = self.helper.get_services_for_device(cisco_ASA_id)
-        self.assertIsInstance(services, pytos.securetrack.xml_objects.REST.Rules.Services_List)
+        self.assertIsInstance(services, pytos.securetrack.xml_objects.rest.Rules.Services_List)
         self.assertTrue(len(services) > 0)
 
         # save a single service for later uses
@@ -779,13 +775,13 @@ class TestServices(unittest.TestCase):
 
         # assert invalid request
         services = self.helper.get_services_for_device(5555)
-        self.assertIsInstance(services, pytos.securetrack.xml_objects.REST.Rules.Services_List)
+        self.assertIsInstance(services, pytos.securetrack.xml_objects.rest.Rules.Services_List)
         self.assertFalse(len(services))
 
     def test_02_get_service_for_device_by_name(self):
         # assert valid request
         service = self.helper.get_service_for_device_by_name(cisco_ASA_id, g_service.display_name)
-        self.assertIsInstance(service, pytos.securetrack.xml_objects.REST.Rules.Single_Service)
+        self.assertIsInstance(service, pytos.securetrack.xml_objects.rest.Rules.Single_Service)
         self.assertTrue(service)
 
         # assert invalid request
@@ -795,7 +791,7 @@ class TestServices(unittest.TestCase):
     def test_03_get_service_by_device_and_object_id(self):
         # assert valid request
         service = self.helper.get_service_by_device_and_object_id(cisco_ASA_id, g_service.id)
-        self.assertIsInstance(service, pytos.securetrack.xml_objects.REST.Rules.Single_Service)
+        self.assertIsInstance(service, pytos.securetrack.xml_objects.rest.Rules.Single_Service)
         # self.assertTrue(service.name, "!80 (tcp)")
         self.assertTrue(service.name, g_service.name)
 
@@ -809,7 +805,7 @@ class TestServices(unittest.TestCase):
         # assert valid request
         member_services = self.helper.get_member_services_for_group_service(g_service_group, cisco_ASA_id)
         for member in member_services:
-            self.assertIsInstance(member, pytos.securetrack.xml_objects.REST.Rules.Single_Service)
+            self.assertIsInstance(member, pytos.securetrack.xml_objects.rest.Rules.Single_Service)
             self.assertTrue(member.id and member.name)
 
         # assert valid request
@@ -828,7 +824,7 @@ class TestGeneralSettings(unittest.TestCase):
     def test_03_get_change_authorization_status(self):
         # get revisions for device
         revisions = self.helper.get_device_revisions_by_id(device_id=cisco_ASA_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.REST.Device.Device_Revisions_List)
+        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.Device.Device_Revisions_List)
         self.assertTrue(len(revisions) > 1)
 
         # sort the revision by id
@@ -839,10 +835,10 @@ class TestGeneralSettings(unittest.TestCase):
 
         # assert valid request
         status = self.helper.get_change_authorization_status(old_revision.id, new_revision.id)
-        self.assertIsInstance(status.new_revision, pytos.securetrack.xml_objects.REST.Device.Device_Revision)
-        self.assertIsInstance(status.old_revision, pytos.securetrack.xml_objects.REST.Device.Device_Revision)
+        self.assertIsInstance(status.new_revision, pytos.securetrack.xml_objects.rest.Device.Device_Revision)
+        self.assertIsInstance(status.old_revision, pytos.securetrack.xml_objects.rest.Device.Device_Revision)
         self.assertIsInstance(status.change_authorization_bindings,
-                              pytos.securetrack.xml_objects.REST.Rules.ChangeAuthorizationBindings)
+                              pytos.securetrack.xml_objects.rest.Rules.ChangeAuthorizationBindings)
         self.assertTrue(status.old_revision.id and status.new_revision.id)
 
         # assert invalid request

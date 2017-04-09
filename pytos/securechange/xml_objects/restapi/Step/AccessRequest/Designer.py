@@ -13,7 +13,7 @@
 # limitations under the License.
 import enum
 
-from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.initialize import *
+from pytos.securechange.xml_objects.restapi.Step.AccessRequest.initialize import *
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

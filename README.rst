@@ -16,7 +16,7 @@ First install the package by running the following command
 SecureTrack
 ***********
 
-Connecting to SecureTrack
+Connecting to SecureTrack with valid username and password
 ::
 	from pytos.securechange.Helpers import Secure_Track_Helper
 	sc_helper = Secure_Track_Helper("127.0.0.1", ("username", "passowrd"))
@@ -29,28 +29,36 @@ Connecting to SecureChange with valid username and password
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "passowrd"))
 
+SecureApp
+*********
+
+Connecting to SecureApp with valid username and password
+::
+	from pytos.securechange.Helpers import Secure_Change_Helper
+	sc_helper = Secure_App_Helper("127.0.0.1", ("username", "passowrd"))
+
 How to use pytos Logger
 ***********************
 
 To use the pytos logging mechanism perform the following steps:
 
-Create an ini like configuration file with that have the following section
+Create an ini like configuration file with the following sections.
 ::
 	[common]
 	log_file_path = /var/log/pytos/
 
 	[log_levels]
-	common = DEBUG
+	common = WARNING
 	helpers = WARNING
-	reports = DEBUG
+	reports = WARNING
 	requests = WARNING
 	mail = WARNING
 	sql = WARNING
 	xml = WARNING
-	web = DEBUG
+	web = WARNING
 	third_party = WARNING
 
-In your code call the following methods to define and the
+In your code call the following methods
 ::
 	import logging
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME

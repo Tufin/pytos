@@ -28,14 +28,14 @@ from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error
     REST_Request_URI_Too_Long, REST_Client_Error, ItemAlreadyExists, REST_Internal_Server_Error, REST_HTTP_Exception
 from pytos.common.functions import Config
 from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
-from pytos.securetrack.xml_objects.REST import Domain
-from pytos.securetrack.xml_objects.REST.Audit import DCR_Test_Concrete, DCR_Test_Group
-from pytos.securetrack.xml_objects.REST.Cleanups import Generic_Cleanup_List
-from pytos.securetrack.xml_objects.REST.Device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
+from pytos.securetrack.xml_objects.rest import Domain
+from pytos.securetrack.xml_objects.rest.Audit import DCR_Test_Concrete, DCR_Test_Group
+from pytos.securetrack.xml_objects.rest.Cleanups import Generic_Cleanup_List
+from pytos.securetrack.xml_objects.rest.Device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
     RuleSearchDeviceList, Device_Revision, InternetReferralObject
-from pytos.securetrack.xml_objects.REST.Domain import Domains
-from pytos.securetrack.xml_objects.REST.Routes import RoutesList
-from pytos.securetrack.xml_objects.REST.Rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
+from pytos.securetrack.xml_objects.rest.Domain import Domains
+from pytos.securetrack.xml_objects.rest.Routes import RoutesList
+from pytos.securetrack.xml_objects.rest.Rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
     Interfaces_List, Topology_Interfaces_List, Policy_Analysis_Query_Result, Network_Objects_List, Services_List, \
     Security_Policies_List, Rule_Documentation, Zone_Entries_List, SecurityPolicyDeviceViolations, Change_Authorization, \
     Zone_List

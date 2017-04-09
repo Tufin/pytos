@@ -1,0 +1,145 @@
+<rules>
+	<count>280</count>
+	<total>280</total>
+	<rule type="securityRuleDTO">
+		<id>1318012</id>
+		<cp_uid/>
+		<uid>{53b95431-73ee-43de-a153-d299f4eb4804}</uid>
+		<order>1</order>
+		<binding>
+			<acl>
+				<global>false</global>
+				<interfaces>
+					<name>Loopback99</name>
+					<id>565340</id>
+					<direction>INSIDE</direction>
+					<device_id>155</device_id>
+					<acl_name>Avi1</acl_name>
+					<global>false</global>
+					<interface_ips>
+						<interface_ip>
+							<ip>10.99.100.1</ip>
+							<netmask>255.255.255.0</netmask>
+						</interface_ip>
+					</interface_ips>
+				</interfaces>
+				<name>Avi1</name>
+			</acl>
+			<default>false</default>
+			<rule_count>85</rule_count>
+			<security_rule_count>85</security_rule_count>
+			<uid>Avi1_@_155</uid>
+		</binding>
+		<acceleration_breaker>false</acceleration_breaker>
+		<action>Accept</action>
+		<authentication_rule>false</authentication_rule>
+		<dst_network>
+			<id>3340980</id>
+			<display_name>any</display_name>
+			<name>Any-IPv4</name>
+		</dst_network>
+		<dest_networks_negated>false</dest_networks_negated>
+		<dst_service>
+			<id>17924344</id>
+			<display_name>0-65535</display_name>
+			<name>0-65535 (tcp)</name>
+		</dst_service>
+		<dest_services_negated>false</dest_services_negated>
+		<disabled>false</disabled>
+		<external>false</external>
+		<implicit>false</implicit>
+		<name/>
+		<option>RETURNING_TRAFFIC</option>
+		<documentation>
+			<permissiveness_level>HIGH</permissiveness_level>
+			<shadowed>Not shadowed</shadowed>
+			<last_modified>11 days ago</last_modified>
+			<last_hit>No hits</last_hit>
+			<violations/>
+		</documentation>
+		<rule_number>10</rule_number>
+		<src_network>
+			<id>3340980</id>
+			<display_name>any</display_name>
+			<name>Any-IPv4</name>
+		</src_network>
+		<src_networks_negated>false</src_networks_negated>
+		<src_services_negated>false</src_services_negated>
+		<textual_rep>ip access-list extended Avi1
+ permit tcp any any established</textual_rep>
+		<track>
+			<level>NONE</level>
+		</track>
+		<type>rule</type>
+	</rule>
+	<rule type="securityRuleDTO">
+		<id>1318013</id>
+		<cp_uid/>
+		<uid>{5a2b2989-7572-470c-bb88-3f25f0ea8ca2}</uid>
+		<order>2</order>
+		<binding>
+			<acl>
+				<global>false</global>
+				<interfaces>
+					<name>Loopback99</name>
+					<id>565340</id>
+					<direction>INSIDE</direction>
+					<device_id>155</device_id>
+					<acl_name>Avi1</acl_name>
+					<global>false</global>
+					<interface_ips>
+						<interface_ip>
+							<ip>10.99.100.1</ip>
+							<netmask>255.255.255.0</netmask>
+						</interface_ip>
+					</interface_ips>
+				</interfaces>
+				<name>Avi1</name>
+			</acl>
+			<default>false</default>
+			<rule_count>85</rule_count>
+			<security_rule_count>85</security_rule_count>
+			<uid>Avi1_@_155</uid>
+		</binding>
+		<acceleration_breaker>false</acceleration_breaker>
+		<action>Accept</action>
+		<authentication_rule>false</authentication_rule>
+		<dst_network>
+			<id>3341521</id>
+			<display_name>NetworkGroup_18000000143343594</display_name>
+			<name>group_NetworkGroup_18000000143343594</name>
+		</dst_network>
+		<dest_networks_negated>false</dest_networks_negated>
+		<dst_service>
+			<id>17924338</id>
+			<display_name>Any</display_name>
+			<name>Any</name>
+		</dst_service>
+		<dest_services_negated>false</dest_services_negated>
+		<disabled>false</disabled>
+		<external>false</external>
+		<implicit>false</implicit>
+		<name/>
+		<documentation>
+			<permissiveness_level>LOW</permissiveness_level>
+			<shadowed>Not shadowed</shadowed>
+			<last_modified>11 days ago</last_modified>
+			<last_hit>No hits</last_hit>
+			<violations/>
+		</documentation>
+		<rule_number>30</rule_number>
+		<src_network>
+			<id>3341440</id>
+			<display_name>Bug_31370</display_name>
+			<name>group_Bug_31370</name>
+		</src_network>
+		<src_networks_negated>false</src_networks_negated>
+		<src_services_negated>false</src_services_negated>
+		<textual_rep>ip access-list extended Avi1
+ permit ip object-group Bug_31370 object-group NetworkGroup_18000000143343594 log 0x80B1A86D</textual_rep>
+		<track>
+			<level>LOG</level>
+		</track>
+		<type>rule</type>
+	</rule>
+</rules>

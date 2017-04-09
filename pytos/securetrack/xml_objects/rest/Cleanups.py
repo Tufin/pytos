@@ -17,7 +17,7 @@ from pytos.common.base_types import XML_Object_Base, XML_List
 from pytos.common.logging.Defines import XML_LOGGER_NAME
 from pytos.common.definitions import XML_Tags
 from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value, get_xml_node
-from pytos.securetrack.xml_objects.REST.Rules import Shadowed_Rule
+from pytos.securetrack.xml_objects.rest.Rules import Shadowed_Rule
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

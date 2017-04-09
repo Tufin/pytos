@@ -19,10 +19,10 @@ import time
 from collections import OrderedDict
 import logging
 
-from pytos.secureapp.xml_objects.Base_Types import Base_Link_Target, URL_Link
+from pytos.secureapp.xml_objects.base_types import Base_Link_Target, URL_Link
 from pytos.securechange import definitions
-from pytos.securechange.xml_objects.Base_Types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
-from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.AccessRequest import *
+from pytos.securechange.xml_objects.base_types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
+from pytos.securechange.xml_objects.restapi.Step.AccessRequest.AccessRequest import *
 from pytos.common.base_types import XML_List, XML_Object_Base, Flat_XML_Object_Base
 from pytos.common.logging.Defines import XML_LOGGER_NAME
 from pytos.common.functions import str_to_bool, get_xml_node, get_xml_text_value, get_xml_int_value

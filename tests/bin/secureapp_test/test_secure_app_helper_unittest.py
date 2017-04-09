@@ -5,9 +5,9 @@ import unittest
 
 from pytos.common.logging.Logger import setup_loggers
 from pytos.secureapp.helpers import Secure_App_Helper
-from pytos.secureapp.xml_objects.REST import Application_Owner, Application, Host_Network_Object, \
+from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List
-from pytos.securechange.xml_objects.REST import Group
+from pytos.securechange.xml_objects.rest import Group
 from pytos.common.functions.Config import Secure_Config_Parser
 
 sys.path.append("ps-dev/tests/bin/eval_tools")

@@ -21,8 +21,8 @@ from pytos.common.definitions.XML_Tags import Attributes
 from pytos.common.functions import str_to_bool, get_iana_protocols, netmask_to_cidr, XML_LOGGER_NAME
 from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value, get_xml_node, \
     create_tagless_xml_objects_list
-from pytos.securetrack.xml_objects.Base_Types import Base_Object, Network_Object, Service
-from pytos.securetrack.xml_objects.REST.Device import Device, Device_Revision
+from pytos.securetrack.xml_objects.base_types import Base_Object, Network_Object, Service
+from pytos.securetrack.xml_objects.rest.Device import Device, Device_Revision
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 

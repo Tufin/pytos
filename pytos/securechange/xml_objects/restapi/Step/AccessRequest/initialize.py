@@ -30,6 +30,6 @@ from pytos.common.definitions.XML_Tags import TYPE_ANY, TYPE_ATTRIB, TYPE_DNS, T
     TYPE_HOST, TYPE_RANGE, SERVICE_OBJECT_TYPE_PREDEFINED, SERVICE_OBJECT_TYPE_PROTOCOL, \
     SERVICE_OBJECT_TYPE_APPLICATION_IDENTITY, TYPE_INTERNET
 
-from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.AnalysisResult import Analysis_Result
-from pytos.securechange.xml_objects.Base_Types import Target_Base, Access_Request_Target, Step_Multi_Field_Base
-from pytos.securechange.xml_objects.RestApi.Step.AccessRequest.Risk import Risk_Analysis_Result
+from pytos.securechange.xml_objects.restapi.Step.AccessRequest.AnalysisResult import Analysis_Result
+from pytos.securechange.xml_objects.base_types import Target_Base, Access_Request_Target, Step_Multi_Field_Base
+from pytos.securechange.xml_objects.restapi.Step.AccessRequest.Risk import Risk_Analysis_Result
