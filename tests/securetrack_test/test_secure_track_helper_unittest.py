@@ -193,7 +193,6 @@ class TestRules(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("device_list_by_rule_search")
         devices = self.helper.get_devices_by_rule_search()
         self.assertIsInstance(devices, RuleSearchDeviceList)
-        self.assertTrue(len(devices) > 0)
 
     def test_08_rule_search_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("rule_list_for_device_in_rule_search")
