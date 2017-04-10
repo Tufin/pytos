@@ -1,7 +1,7 @@
 <rules>
 	<count>1</count>
 	<total>1</total>
-	<rule xsi:type="securityRuleDTO">
+	<rule type="securityRuleDTO">
 		<id>1318012</id>
 		<cp_uid/>
 		<uid>{53b95431-73ee-43de-a153-d299f4eb4804}</uid>
