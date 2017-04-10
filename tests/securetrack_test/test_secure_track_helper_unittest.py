@@ -209,7 +209,7 @@ class TestRules(unittest.TestCase):
     def test_10_put_rule_documentation_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
         rules = self.helper.get_rules_for_device(155, True)
-        print(rules[0])
+        print(rules[0].to_xml_string())
         rule = rules[0:1][0]
 
         # create a new record set fot the rule documentation
