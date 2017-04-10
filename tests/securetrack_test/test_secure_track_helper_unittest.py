@@ -127,7 +127,7 @@ class TestDevices(unittest.TestCase):
         self.assertTrue(len(interfaces) > 0)
 
     def test_09_get_device_config(self):
-        self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
+        self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b'\x00')
 
     def test_10_add_offline_device(self):
         global added_offline_device_id
