@@ -161,12 +161,12 @@ class TestRules(unittest.TestCase):
         self.assertIsInstance(cleanup, Cleanup_Set)
 
     def test_02_get_rule_by_device_and_rule_id(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
+        self.mock_get_uri.return_value.content = fake_request_response("rules")
         rules = self.helper.get_rule_by_device_and_rule_id(155, 1318012)
         self.assertEqual(rules[0].id, 1318012)
 
     def test_03_get_rules_for_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
+        self.mock_get_uri.return_value.content = fake_request_response("rules")
         rules = self.helper.get_rules_for_device(155)
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
@@ -195,19 +195,19 @@ class TestRules(unittest.TestCase):
         self.assertIsInstance(devices, RuleSearchDeviceList)
 
     def test_08_rule_search_for_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rule_list_for_device_in_rule_search")
+        self.mock_get_uri.return_value.content = fake_request_response("rules")
         rules = self.helper.rule_search_for_device(155)
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
     def test_09_get_rules_for_revision(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rule_list_in_revision")
+        self.mock_get_uri.return_value.content = fake_request_response("rules")
         rules = self.helper.get_rules_for_revision(1, True)
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
     def test_10_put_rule_documentation_for_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rule_list_in_revision")
+        self.mock_get_uri.return_value.content = fake_request_response("rules")
         rules = self.helper.get_rules_for_device(155, True)
         print(rules[0].to_xml_string())
         rule = rules[0:1][0]
