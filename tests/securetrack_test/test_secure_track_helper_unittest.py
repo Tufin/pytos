@@ -185,8 +185,9 @@ class TestRules(unittest.TestCase):
 
     def test_06_failed_get_shadowing_rules_for_device_id_and_rule_uids(self):
         self.mock_get_uri.return_value.content = fake_request_response("bad_request_error")
+        self.mock_get_uri.return_value.status_code = 404
         with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_shadowing_rules_for_device_id_and_rule_uids(cisco_ASA_id, [])
+            self.helper.get_shadowing_rules_for_device_id_and_rule_uids(155, [])
 
     def test_07_get_devices_by_rule_search(self):
         self.mock_get_uri.return_value.content = fake_request_response("devices_list_by_rule_search")
