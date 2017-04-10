@@ -207,6 +207,7 @@ class TestRules(unittest.TestCase):
         self.assertTrue(len(rules) > 0)
 
     def test_10_put_rule_documentation_for_device(self):
+        self.mock_get_uri.return_value.content = fake_request_response("rule_for_device")
         rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
         print(rules)
         rule = rules[0:1][0]
