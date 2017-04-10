@@ -185,7 +185,7 @@ class TestRules(unittest.TestCase):
 
     def test_06_failed_get_shadowing_rules_for_device_id_and_rule_uids(self):
         self.mock_get_uri.return_value.content = fake_request_response("bad_request_error")
-        self.mock_get_uri.return_value.status_code = 404
+        self.mock_get_uri.return_value.status_code = 500
         with self.assertRaises(REST_Bad_Request_Error):
             self.helper.get_shadowing_rules_for_device_id_and_rule_uids(155, [])
 
