@@ -23,7 +23,7 @@ setup(
     url='http://pypi.python.org/pypi/pytos',
     license="Apache License 2.0",
     description="The Tufin TOS SDK for Python",
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     # package_dir={package_name: package_name},
