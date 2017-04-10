@@ -190,7 +190,7 @@ class TestRules(unittest.TestCase):
             self.helper.get_shadowing_rules_for_device_id_and_rule_uids(155, [])
 
     def test_07_get_devices_by_rule_search(self):
-        self.mock_get_uri.return_value.content = fake_request_response("devices_list_by_rule_search")
+        self.mock_get_uri.return_value.content = fake_request_response("device_list_by_rule_search")
         devices = self.helper.get_devices_by_rule_search()
         self.assertIsInstance(devices, RuleSearchDeviceList)
         self.assertTrue(len(devices) > 0)
