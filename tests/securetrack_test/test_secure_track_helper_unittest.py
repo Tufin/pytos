@@ -126,17 +126,17 @@ class TestDevices(unittest.TestCase):
         self.assertIsInstance(interfaces, Interfaces_List)
         self.assertTrue(len(interfaces) > 0)
 
-    def test_09_add_offline_device(self):
+    def test_09_get_device_config(self):
+        self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
+
+    def test_10_add_offline_device(self):
         global added_offline_device_id
         self.mock_get_uri.return_value.status_code = 201
         self.mock_get_uri.return_value.headers = {'location': '1'}
         added_offline_device_id = self.helper.add_offline_device("TEST_DEVICE_123", "Cisco", "router")
         self.assertIsInstance(added_offline_device_id, int)
 
-    def test_06_get_device_config(self):
-        self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b"")
-
-    def test_09_upload_device_offline_config(self):
+    def test_11_upload_device_offline_config(self):
         with tempfile.NamedTemporaryFile(delete=False) as config_tempfile:
             config_tempfile.write(self.OFFLINE_TEST_DATA)
             config_temp_file_path = config_tempfile.name
