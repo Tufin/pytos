@@ -32,22 +32,17 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
     SECURETRACK = "securetrack"
     LOG_LEVELS = "log_levels"
     DEFAULT_SECTIONS = (COMMON, LOG_LEVELS, SECURETRACK, SECURECHANGE)
-    CONFIG_FILE_PATH = "/opt/tufin/securitysuite/pytos/conf/tufin_api.conf"
-    CUSTOM_CONFIG_FILE_PATH = "/opt/tufin/securitysuite/pytos/conf/custom.conf"
 
-    def __init__(self, config_file_path=None, custom_config_file_path=None):
+    def __init__(self, config_file_path, custom_config_file_path=None):
         configparser.ConfigParser.__init__(self)
+        self.config_file_path = config_file_path
+        self.custom_config_file_path = custom_config_file_path
 
-        if config_file_path is None:
-            self.config_file_path = Secure_Config_Parser.CONFIG_FILE_PATH
+        if custom_config_file_path is not None:
+            args = (self.config_file_path, self.custom_config_file_path)
         else:
-            self.config_file_path = config_file_path
-
-        if custom_config_file_path is None:
-            self.custom_config_file_path = Secure_Config_Parser.CUSTOM_CONFIG_FILE_PATH
-        else:
-            self.custom_config_file_path = custom_config_file_path
-        FileMonitor.__init__(self, (self.config_file_path, self.custom_config_file_path))
+            args = (self.config_file_path, )
+        FileMonitor.__init__(self, *args)
         self._read_config_files()
 
     def _read_config_files(self):
