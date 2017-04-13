@@ -16,16 +16,12 @@ import logging
 
 from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 from pytos.common.functions.file_monitor import FileMonitor
-from pytos.common.Secret_Store import Secret_Store_Helper
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 
 
 class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
-    """
-    This class is used to parse the Tufin PS library configuration files and interact with the Secret_Store_Helper class
-     that is used to encrypt credentials.
-    """
+    """This class is used to parse the Tufin PS library configuration files"""
     COMMON = "common"
     CUSTOM = "custom"
     SECURECHANGE = "securechange"

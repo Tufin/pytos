@@ -16,10 +16,9 @@ read the ticket info and copy a field from previous step:
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
 
-	conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
-								custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
+	conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("tzachi", "tzachi"))
+	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 	src_step_name = "Source step name"
 	dst_step_name = "Destination step name"
 	src_field_name = "Source Field name"
