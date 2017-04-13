@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from mako.template import Template
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.Designer import *
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.Verifier import *
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.Risk import *
+from pytos.securechange.xml_objects.restapi.step.access_request.designer import *
+from pytos.securechange.xml_objects.restapi.step.access_request.verifier import *
+from pytos.securechange.xml_objects.restapi.step.access_request.risk import *
 
 
 logger = logging.getLogger(XML_LOGGER_NAME)

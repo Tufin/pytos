@@ -7,7 +7,7 @@ from getpass import getpass
 from Crypto.Cipher import AES
 from pbkdf2 import PBKDF2
 
-from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 

@@ -14,8 +14,8 @@
 import logging
 import xml.etree.ElementTree as ET
 
-from pytos.common.logging.Defines import REQUESTS_LOGGER_NAME
-from pytos.common.functions.XML import get_xml_text_value
+from pytos.common.logging.definitions import REQUESTS_LOGGER_NAME
+from pytos.common.functions.xml import get_xml_text_value
 
 logger = logging.getLogger(REQUESTS_LOGGER_NAME)
 

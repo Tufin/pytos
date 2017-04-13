@@ -18,7 +18,7 @@ from requests.exceptions import RequestException
 from pytos.common.definitions.Url_Params_Builder import URLParamBuilderDict
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Client_Error, REST_Unauthorized_Error, \
     REST_Bad_Request_Error
-from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
+from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
 from pytos.secureapp.xml_objects.rest import Connection_List, User_List, Applications_List, Services_List, Customers_List, \
     Network_Objects_List, Application, User, Single_Service, Group_Service, Basic_Network_Object,\
     Range_Network_Object, Host_Network_Object, Subnet_Network_Object, Group_Network_Object, \

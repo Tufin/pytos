@@ -14,8 +14,8 @@
 import configparser
 import logging
 
-from pytos.common.logging.Defines import COMMON_LOGGER_NAME
-from pytos.common.functions.FileMonitor import FileMonitor
+from pytos.common.logging.definitions import COMMON_LOGGER_NAME
+from pytos.common.functions.file_monitor import FileMonitor
 from pytos.common.Secret_Store import Secret_Store_Helper
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)

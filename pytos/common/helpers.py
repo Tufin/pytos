@@ -16,7 +16,7 @@ import logging
 import multiprocessing
 
 from pytos.common import rest_requests
-from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
+from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
 from pytos.common.functions import get_local_ip_addresses
 
 logger = logging.getLogger(HELPERS_LOGGER_NAME)

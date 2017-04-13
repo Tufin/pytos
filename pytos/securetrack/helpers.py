@@ -23,19 +23,19 @@ import xml.etree.ElementTree as ElementTree
 from requests import RequestException
 
 from pytos.common.helpers import Secure_API_Helper
-from pytos.common.definitions.XML_Tags import Elements
+from pytos.common.definitions.xml_tags import Elements
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error, \
     REST_Request_URI_Too_Long, REST_Client_Error, ItemAlreadyExists, REST_Internal_Server_Error, REST_HTTP_Exception
-from pytos.common.functions import Config
-from pytos.common.logging.Defines import HELPERS_LOGGER_NAME
-from pytos.securetrack.xml_objects.rest import Domain
-from pytos.securetrack.xml_objects.rest.Audit import DCR_Test_Concrete, DCR_Test_Group
-from pytos.securetrack.xml_objects.rest.Cleanups import Generic_Cleanup_List
-from pytos.securetrack.xml_objects.rest.Device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
+from pytos.common.functions import config
+from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
+from pytos.securetrack.xml_objects.rest import domain
+from pytos.securetrack.xml_objects.rest.audit import DCR_Test_Concrete, DCR_Test_Group
+from pytos.securetrack.xml_objects.rest.cleanups import Generic_Cleanup_List
+from pytos.securetrack.xml_objects.rest.device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
     RuleSearchDeviceList, Device_Revision, InternetReferralObject
-from pytos.securetrack.xml_objects.rest.Domain import Domains
-from pytos.securetrack.xml_objects.rest.Routes import RoutesList
-from pytos.securetrack.xml_objects.rest.Rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
+from pytos.securetrack.xml_objects.rest.domain import Domains
+from pytos.securetrack.xml_objects.rest.routes import RoutesList
+from pytos.securetrack.xml_objects.rest.rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
     Interfaces_List, Topology_Interfaces_List, Policy_Analysis_Query_Result, Network_Objects_List, Services_List, \
     Security_Policies_List, Rule_Documentation, Zone_Entries_List, SecurityPolicyDeviceViolations, Change_Authorization, \
     Zone_List
@@ -1811,7 +1811,7 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param domain_id: the Id of the domain
         :type domain_id: int
         :return: Domain information
-        :rtype: Domain
+        :rtype: domain
         """
         logger.info("Getting domain with ID {}".format(domain_id))
         try:
@@ -1821,7 +1821,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to get domain with ID {}".format(domain_id)
             logger.critical(message)
             raise ValueError(message)
-        return Domain.from_xml_string(response_string)
+        return domain.from_xml_string(response_string)
 
     def get_security_policy_device_violations_by_severity(self, device_id, severity, policy_type=None):
         logger.info("Getting rule violation by device id '{}' and severity '{}'".format(device_id, severity))
@@ -2095,12 +2095,12 @@ class Secure_Track_Helper(Secure_API_Helper):
         """Get the generic device configuration for a device.
 
         :param device_id: The device ID for which the generic configuration will be created.
-        :rtype: Config
+        :rtype: config
         """
         vrf_id_to_name = self.get_device_virtual_routers(device_id)
         interfaces = self.get_device_generic_interfaces(device_id, vrf_id_to_name)
         routes = self.get_device_generic_routes(device_id, vrf_id_to_name)
-        device_config = Config(interfaces, routes)
+        device_config = config(interfaces, routes)
         return device_config
 
     def add_contexts_for_device(self, device_id, device_tree, domain_id=DEFAULT_DOMAIN_ID):

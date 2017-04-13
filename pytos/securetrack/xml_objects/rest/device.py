@@ -15,9 +15,9 @@ import logging
 from datetime import datetime
 
 from pytos.common.base_types import XML_Object_Base, XML_List
-from pytos.common.definitions import XML_Tags
+from pytos.common.definitions import xml_tags
 from pytos.common.functions import str_to_bool, XML_LOGGER_NAME
-from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value
+from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
@@ -38,7 +38,7 @@ class Device(XML_Object_Base):
         self._config = None
         self._children = []
         self._parent = None
-        super().__init__(XML_Tags.Elements.DEVICE)
+        super().__init__(xml_tags.Elements.DEVICE)
 
     def _key(self):
         return self.id, self.domain_id, self.domain_id
@@ -50,15 +50,15 @@ class Device(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        name = get_xml_text_value(xml_node, XML_Tags.Elements.NAME)
-        model = get_xml_text_value(xml_node, XML_Tags.Elements.MODEL)
-        num_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        domain_id = get_xml_int_value(xml_node, XML_Tags.Elements.DOMAIN_ID)
-        domain_name = get_xml_text_value(xml_node, XML_Tags.Elements.DOMAIN_NAME)
-        vendor = get_xml_text_value(xml_node, XML_Tags.Elements.VENDOR)
-        topology = get_xml_text_value(xml_node, XML_Tags.Elements.TOPOLOGY)
-        offline = get_xml_text_value(xml_node, XML_Tags.Elements.OFFLINE)
-        ip = get_xml_text_value(xml_node, XML_Tags.Elements.IP)
+        name = get_xml_text_value(xml_node, xml_tags.Elements.NAME)
+        model = get_xml_text_value(xml_node, xml_tags.Elements.MODEL)
+        num_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        domain_id = get_xml_int_value(xml_node, xml_tags.Elements.DOMAIN_ID)
+        domain_name = get_xml_text_value(xml_node, xml_tags.Elements.DOMAIN_NAME)
+        vendor = get_xml_text_value(xml_node, xml_tags.Elements.VENDOR)
+        topology = get_xml_text_value(xml_node, xml_tags.Elements.TOPOLOGY)
+        offline = get_xml_text_value(xml_node, xml_tags.Elements.OFFLINE)
+        ip = get_xml_text_value(xml_node, xml_tags.Elements.IP)
         return cls(model, vendor, domain_id, domain_name, num_id, name, offline, topology, ip)
 
     @classmethod
@@ -132,7 +132,7 @@ class Devices_List(XML_List):
     def __init__(self, devices, total=None):
         self.count = len(devices)
         self.total = total
-        super().__init__(XML_Tags.Elements.DEVICES, devices)
+        super().__init__(xml_tags.Elements.DEVICES, devices)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -142,9 +142,9 @@ class Devices_List(XML_List):
         :type xml_node: xml.etree.Element
         """
         devices = []
-        for device_node in xml_node.iter(tag=XML_Tags.Elements.DEVICE):
+        for device_node in xml_node.iter(tag=xml_tags.Elements.DEVICE):
             devices.append(Device.from_xml_node(device_node))
-        total = get_xml_int_value(xml_node, XML_Tags.Elements.TOTAL)
+        total = get_xml_int_value(xml_node, xml_tags.Elements.TOTAL)
         return cls(devices, total)
 
     def extend(self, iterable):
@@ -157,25 +157,25 @@ class GenericDevice(XML_Object_Base):
         self.id = device_id
         self.name = device_name
         self.customer_id = domain_id
-        super().__init__(XML_Tags.Elements.DEVICE)
+        super().__init__(xml_tags.Elements.DEVICE)
 
     @classmethod
     def from_xml_node(cls, xml_node):
-        device_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        device_name = get_xml_text_value(xml_node, XML_Tags.Elements.NAME)
-        domain_id = get_xml_int_value(xml_node, XML_Tags.Elements.CUSTOMER_ID)
+        device_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        device_name = get_xml_text_value(xml_node, xml_tags.Elements.NAME)
+        domain_id = get_xml_int_value(xml_node, xml_tags.Elements.CUSTOMER_ID)
         return cls(device_id, device_name, domain_id)
 
 
 class GenericDevicesList(XML_List):
     def __init__(self, generic_devices):
         """Initialize the object from parameters."""
-        super().__init__(XML_Tags.Elements.GENERIC_DEVICES, generic_devices)
+        super().__init__(xml_tags.Elements.GENERIC_DEVICES, generic_devices)
 
     @classmethod
     def from_xml_node(cls, xml_node):
         generic_devices = []
-        for generic_device_node in xml_node.iter(tag=XML_Tags.Elements.DEVICE):
+        for generic_device_node in xml_node.iter(tag=xml_tags.Elements.DEVICE):
             generic_devices.append(GenericDevice.from_xml_node(generic_device_node))
         return cls(generic_devices)
 
@@ -186,7 +186,7 @@ class Device_Revisions_List(XML_List):
     """
 
     def __init__(self, revisions):
-        super().__init__(XML_Tags.Elements.REVISIONS, revisions)
+        super().__init__(xml_tags.Elements.REVISIONS, revisions)
         self.sort()
 
     @classmethod
@@ -197,7 +197,7 @@ class Device_Revisions_List(XML_List):
         :type xml_node: xml.etree.Element
         """
         revisions = []
-        for revision_node in xml_node.iter(tag=XML_Tags.Elements.REVISION):
+        for revision_node in xml_node.iter(tag=xml_tags.Elements.REVISION):
             revisions.append(Device_Revision.from_xml_node(revision_node))
         return cls(revisions)
 
@@ -235,7 +235,7 @@ class Device_Revision(XML_Object_Base):
         self.revisionId = revision_id
         self.time = revision_time
         self.ready = ready
-        super().__init__(XML_Tags.Elements.REVISION)
+        super().__init__(xml_tags.Elements.REVISION)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -244,18 +244,18 @@ class Device_Revision(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        action = get_xml_text_value(xml_node, XML_Tags.Elements.ACTION)
-        admin = get_xml_text_value(xml_node, XML_Tags.Elements.ADMIN)
-        auditLog = get_xml_text_value(xml_node, XML_Tags.Elements.AUDITLOG)
-        authorizationStatus = get_xml_text_value(xml_node, XML_Tags.Elements.AUTHORIZATIONSTATUS)
-        revision_date = get_xml_text_value(xml_node, XML_Tags.Elements.DATE)
-        gui_client = get_xml_text_value(xml_node, XML_Tags.Elements.GUICLIENT)
-        num_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        modules_and_policy = get_xml_text_value(xml_node, XML_Tags.Elements.MODULES_AND_POLICY)
-        policy_package = get_xml_text_value(xml_node, XML_Tags.Elements.POLICYPACKAGE)
-        revision_id = get_xml_int_value(xml_node, XML_Tags.Elements.REVISIONID)
-        revision_time = get_xml_text_value(xml_node, XML_Tags.Elements.TIME)
-        ready = get_xml_text_value(xml_node, XML_Tags.Elements.READY)
+        action = get_xml_text_value(xml_node, xml_tags.Elements.ACTION)
+        admin = get_xml_text_value(xml_node, xml_tags.Elements.ADMIN)
+        auditLog = get_xml_text_value(xml_node, xml_tags.Elements.AUDITLOG)
+        authorizationStatus = get_xml_text_value(xml_node, xml_tags.Elements.AUTHORIZATIONSTATUS)
+        revision_date = get_xml_text_value(xml_node, xml_tags.Elements.DATE)
+        gui_client = get_xml_text_value(xml_node, xml_tags.Elements.GUICLIENT)
+        num_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        modules_and_policy = get_xml_text_value(xml_node, xml_tags.Elements.MODULES_AND_POLICY)
+        policy_package = get_xml_text_value(xml_node, xml_tags.Elements.POLICYPACKAGE)
+        revision_id = get_xml_int_value(xml_node, xml_tags.Elements.REVISIONID)
+        revision_time = get_xml_text_value(xml_node, xml_tags.Elements.TIME)
+        ready = get_xml_text_value(xml_node, xml_tags.Elements.READY)
         return cls(action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
                    revision_id, modules_and_policy, policy_package, ready)
 
@@ -293,13 +293,13 @@ class RuleSearchDevice(XML_Object_Base):
         self.device_id = device_id
         self.revision_id = revision_id
         self.rule_count = rule_count
-        super().__init__(XML_Tags.Elements.DEVICE)
+        super().__init__(xml_tags.Elements.DEVICE)
 
     @classmethod
     def from_xml_node(cls, xml_node):
-        device_id = get_xml_int_value(xml_node, XML_Tags.Elements.DEVICE_ID)
-        revision_id = get_xml_int_value(xml_node, XML_Tags.Elements.REVISION_ID)
-        rule_count = get_xml_int_value(xml_node, XML_Tags.Elements.RULE_COUNT)
+        device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
+        revision_id = get_xml_int_value(xml_node, xml_tags.Elements.REVISION_ID)
+        rule_count = get_xml_int_value(xml_node, xml_tags.Elements.RULE_COUNT)
         return cls(device_id, revision_id, rule_count)
 
 
@@ -307,13 +307,13 @@ class RuleSearchDeviceList(XML_List):
     """List of effected devices based on the rule search API"""
 
     def __init__(self, devices):
-        super().__init__(XML_Tags.Elements.DEVICES, devices)
+        super().__init__(xml_tags.Elements.DEVICES, devices)
 
     @classmethod
     def from_xml_node(cls, xml_node):
         """Return only devices that the rule_count is greater than 0"""
         devices = []
-        for device_node in xml_node.iter(tag=XML_Tags.Elements.DEVICE):
+        for device_node in xml_node.iter(tag=xml_tags.Elements.DEVICE):
             device_obj = RuleSearchDevice.from_xml_node(device_node)
             if int(device_obj.rule_count):
                 devices.append(device_obj)
@@ -322,12 +322,12 @@ class RuleSearchDeviceList(XML_List):
 
 class InternetReferralObject(XML_Object_Base):
     def __init__(self, device_id, object_name):
-        super().__init__(XML_Tags.Elements.INTERNET_REFERRAL_OBJECT)
+        super().__init__(xml_tags.Elements.INTERNET_REFERRAL_OBJECT)
         self.device_id = device_id
         self.object_name = object_name
 
     @classmethod
     def from_xml_node(cls, xml_node):
-        device_id = get_xml_int_value(xml_node, XML_Tags.Elements.DEVICE_ID)
-        object_name = get_xml_text_value(xml_node, XML_Tags.Elements.OBJECT_NAME)
+        device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
+        object_name = get_xml_text_value(xml_node, xml_tags.Elements.OBJECT_NAME)
         return cls(device_id, object_name)

@@ -4,13 +4,13 @@ import time
 import types
 
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Change_Test/"
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.Verifier import AccessRequestVerifierResult
-from pytos.common.definitions import XML_Tags
+from pytos.securechange.xml_objects.restapi.step.access_request.verifier import AccessRequestVerifierResult
+from pytos.common.definitions import xml_tags
 from pytos.securechange.helpers import Secure_Change_Helper
 from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, User_List, TicketList
-from pytos.common.functions.Config import Secure_Config_Parser
+from pytos.common.functions.config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error
-from pytos.common.logging.Logger import setup_loggers
+from pytos.common.logging.logger import setup_loggers
 import unittest
 
 conf = Secure_Config_Parser()
@@ -175,14 +175,14 @@ class Test_Secure_Change_Helper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(added_ticket_id)
         # Getting the time value from the last task
         last_task = ticket.get_last_task()
-        time_field = last_task.get_field_list_by_type(XML_Tags.Attributes.FIELD_TYPE_TIME)[0]
+        time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
         time_field.set_field_value("15:15")
 
         # assert valid request
         self.helper.put_task(last_task)
         ticket = self.helper.get_ticket_by_id(added_ticket_id)
         last_task = ticket.get_last_task()
-        time_field = last_task.get_field_list_by_type(XML_Tags.Attributes.FIELD_TYPE_TIME)[0]
+        time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
         new_time = time_field.get_field_value()
         self.assertEqual("15:15", new_time)
 
@@ -196,14 +196,14 @@ class Test_Secure_Change_Helper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(added_ticket_id)
         # Getting the time value from the last task
         last_task = ticket.get_last_task()
-        time_field = last_task.get_field_list_by_type(XML_Tags.Attributes.FIELD_TYPE_TIME)[0]
+        time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
         time_field.set_field_value("20:20")
 
         # assert valid request
         result = self.helper.put_field(time_field)
         ticket = self.helper.get_ticket_by_id(added_ticket_id)
         last_task = ticket.get_last_task()
-        time_field = last_task.get_field_list_by_type(XML_Tags.Attributes.FIELD_TYPE_TIME)[0]
+        time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
         new_time = time_field.get_field_value()
         self.assertTrue(result)
         self.assertEqual("20:20", new_time)
@@ -355,7 +355,7 @@ class Test_Secure_Change_Helper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(ticket_id)
         last_task = ticket.get_last_task()
         last_step = ticket.get_last_step()
-        ar_field = last_task.get_field_list_by_type(XML_Tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
+        ar_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
         # create a list of access request id's for calling the get_verifier_results API
         ar_ids = [ar.id for ar in ar_field.access_requests]
 

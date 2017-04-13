@@ -28,9 +28,9 @@ import requests.packages.urllib3
 import requests_toolbelt
 from requests.auth import HTTPDigestAuth
 
-from pytos.common.logging.Defines import REQUESTS_LOGGER_NAME
+from pytos.common.logging.definitions import REQUESTS_LOGGER_NAME
 from pytos.common.exceptions import REST_HTTP_Exception, REST_Bad_Gateway, REST_Service_Unavailable_Error
-from pytos.common.functions.XML import get_xml_text_value
+from pytos.common.functions.xml import get_xml_text_value
 
 requests.packages.urllib3.disable_warnings()
 try:

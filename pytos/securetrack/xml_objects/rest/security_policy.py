@@ -14,10 +14,10 @@
 import logging
 
 from pytos.common.base_types import XML_Object_Base, XML_List
-from pytos.common.logging.Defines import XML_LOGGER_NAME
-from pytos.common.definitions import XML_Tags
-from pytos.common.functions.XML import get_xml_text_value, get_xml_int_value, get_xml_node
-from pytos.securetrack.xml_objects.rest.Domain import Domain
+from pytos.common.logging.definitions import XML_LOGGER_NAME
+from pytos.common.definitions import xml_tags
+from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value, get_xml_node
+from pytos.securetrack.xml_objects.rest.domain import Domain
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
@@ -35,7 +35,7 @@ class Security_Policy_Exception(XML_Object_Base):
         self.description = description
         self.exempted_traffic_list = exempted_traffic_list
         self.domain = domain
-        super().__init__(XML_Tags.Elements.SECURITY_POLICY_EXCEPTION)
+        super().__init__(xml_tags.Elements.SECURITY_POLICY_EXCEPTION)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -44,16 +44,16 @@ class Security_Policy_Exception(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        name = get_xml_text_value(xml_node, XML_Tags.Elements.NAME)
-        expiration_date = get_xml_text_value(xml_node, XML_Tags.Elements.EXPIRATION_DATE)
-        ticket_id = get_xml_int_value(xml_node, XML_Tags.Elements.TICKET_ID)
-        created_by = get_xml_text_value(xml_node, XML_Tags.Elements.CREATED_BY)
-        approved_by = get_xml_text_value(xml_node, XML_Tags.Elements.APPROVED_BY)
-        requested_by = get_xml_text_value(xml_node, XML_Tags.Elements.REQUESTED_BY)
-        creation_date = get_xml_text_value(xml_node, XML_Tags.Elements.CREATION_DATE)
-        description = get_xml_text_value(xml_node, XML_Tags.Elements.DESCRIPTION)
-        exempted_traffic_list = XML_List.from_xml_node_by_tags(xml_node, XML_Tags.Elements.EXEMPTED_TRAFFIC_LIST,
-                                                               XML_Tags.Elements.EXEMPTED_TRAFFIC,
+        name = get_xml_text_value(xml_node, xml_tags.Elements.NAME)
+        expiration_date = get_xml_text_value(xml_node, xml_tags.Elements.EXPIRATION_DATE)
+        ticket_id = get_xml_int_value(xml_node, xml_tags.Elements.TICKET_ID)
+        created_by = get_xml_text_value(xml_node, xml_tags.Elements.CREATED_BY)
+        approved_by = get_xml_text_value(xml_node, xml_tags.Elements.APPROVED_BY)
+        requested_by = get_xml_text_value(xml_node, xml_tags.Elements.REQUESTED_BY)
+        creation_date = get_xml_text_value(xml_node, xml_tags.Elements.CREATION_DATE)
+        description = get_xml_text_value(xml_node, xml_tags.Elements.DESCRIPTION)
+        exempted_traffic_list = XML_List.from_xml_node_by_tags(xml_node, xml_tags.Elements.EXEMPTED_TRAFFIC_LIST,
+                                                               xml_tags.Elements.EXEMPTED_TRAFFIC,
                                                                Exception_Exempted_Traffic)
         domain = Domain.from_xml_node(xml_node)
         return cls(name, expiration_date, ticket_id, created_by, approved_by, requested_by, creation_date, description,
@@ -68,7 +68,7 @@ class Exception_Exempted_Traffic(XML_Object_Base):
         self.service_collection = service_collection
         self.security_requirements = security_requirements
         self.comment = comment
-        super().__init__(XML_Tags.Elements.EXEMPTED_TRAFFIC)
+        super().__init__(xml_tags.Elements.EXEMPTED_TRAFFIC)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -77,16 +77,16 @@ class Exception_Exempted_Traffic(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        source_network_collection_node = get_xml_node(xml_node, XML_Tags.Elements.SOURCE_NETWORK_COLLECTION)
+        source_network_collection_node = get_xml_node(xml_node, xml_tags.Elements.SOURCE_NETWORK_COLLECTION)
         source_network_collection = Exception_Network_Source_Collection.from_xml_node(source_network_collection_node)
-        dest_network_collection_node = get_xml_node(xml_node, XML_Tags.Elements.DEST_NETWORK_COLLECTION)
+        dest_network_collection_node = get_xml_node(xml_node, xml_tags.Elements.DEST_NETWORK_COLLECTION)
         dest_network_collection = Exception_Network_Destination_Collection.from_xml_node(dest_network_collection_node)
-        service_collection_node = get_xml_node(xml_node, XML_Tags.Elements.SERVICE_COLLECTION)
+        service_collection_node = get_xml_node(xml_node, xml_tags.Elements.SERVICE_COLLECTION)
         service_collection = Exception_Service_Collection.from_xml_node(service_collection_node)
-        security_requirements = XML_List.from_xml_node_by_tags(xml_node, XML_Tags.Elements.SECURITY_REQUIREMENTS,
-                                                               XML_Tags.Elements.ZONE_TO_ZONE_SECURITY_REQUIREMENT,
+        security_requirements = XML_List.from_xml_node_by_tags(xml_node, xml_tags.Elements.SECURITY_REQUIREMENTS,
+                                                               xml_tags.Elements.ZONE_TO_ZONE_SECURITY_REQUIREMENT,
                                                                Zone_To_Zone_Security_Requirement)
-        comment = get_xml_text_value(xml_node, XML_Tags.Elements.COMMENT)
+        comment = get_xml_text_value(xml_node, xml_tags.Elements.COMMENT)
         return cls(source_network_collection, dest_network_collection, service_collection, security_requirements,
                    comment)
 
@@ -99,7 +99,7 @@ class Exception_Network_Collection(XML_Object_Base):
 
 class Exception_Network_Source_Collection(Exception_Network_Collection):
     def __init__(self, network_items):
-        super().__init__(network_items, XML_Tags.Elements.SOURCE_NETWORK_COLLECTION)
+        super().__init__(network_items, xml_tags.Elements.SOURCE_NETWORK_COLLECTION)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -108,19 +108,19 @@ class Exception_Network_Source_Collection(Exception_Network_Collection):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        type_to_class_dict = {XML_Tags.Attributes.SUBNET: Exception_Subnet_Network_Item,
-                              XML_Tags.Attributes.ZONE: Exception_Zone_Network_Item,
-                              XML_Tags.Attributes.RANGE_NETWORK: Exception_Range_Network_Item,
-                              XML_Tags.Attributes.DNS: Exception_DNS_Network_Item,
-                              XML_Tags.Attributes.DEVICE_NETWORK: Exception_Device_Network_Item}
-        network_items = XML_List.from_xml_node_by_type_dict(xml_node, XML_Tags.Elements.NETWORK_ITEMS,
-                                                            XML_Tags.Elements.NETWORK_ITEM, type_to_class_dict)
+        type_to_class_dict = {xml_tags.Attributes.SUBNET: Exception_Subnet_Network_Item,
+                              xml_tags.Attributes.ZONE: Exception_Zone_Network_Item,
+                              xml_tags.Attributes.RANGE_NETWORK: Exception_Range_Network_Item,
+                              xml_tags.Attributes.DNS: Exception_DNS_Network_Item,
+                              xml_tags.Attributes.DEVICE_NETWORK: Exception_Device_Network_Item}
+        network_items = XML_List.from_xml_node_by_type_dict(xml_node, xml_tags.Elements.NETWORK_ITEMS,
+                                                            xml_tags.Elements.NETWORK_ITEM, type_to_class_dict)
         return cls(network_items)
 
 
 class Exception_Network_Destination_Collection(Exception_Network_Collection):
     def __init__(self, network_items):
-        super().__init__(network_items, XML_Tags.Elements.DEST_NETWORK_COLLECTION)
+        super().__init__(network_items, xml_tags.Elements.DEST_NETWORK_COLLECTION)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -129,21 +129,21 @@ class Exception_Network_Destination_Collection(Exception_Network_Collection):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        type_to_class_dict = {XML_Tags.Attributes.SUBNET: Exception_Subnet_Network_Item,
-                              XML_Tags.Attributes.ZONE: Exception_Zone_Network_Item,
-                              XML_Tags.Attributes.RANGE_NETWORK: Exception_Range_Network_Item,
-                              XML_Tags.Attributes.DNS: Exception_DNS_Network_Item,
-                              XML_Tags.Attributes.DEVICE_NETWORK: Exception_Device_Network_Item}
-        network_items = XML_List.from_xml_node_by_type_dict(xml_node, XML_Tags.Elements.NETWORK_ITEMS,
-                                                            XML_Tags.Elements.NETWORK_ITEM, type_to_class_dict)
+        type_to_class_dict = {xml_tags.Attributes.SUBNET: Exception_Subnet_Network_Item,
+                              xml_tags.Attributes.ZONE: Exception_Zone_Network_Item,
+                              xml_tags.Attributes.RANGE_NETWORK: Exception_Range_Network_Item,
+                              xml_tags.Attributes.DNS: Exception_DNS_Network_Item,
+                              xml_tags.Attributes.DEVICE_NETWORK: Exception_Device_Network_Item}
+        network_items = XML_List.from_xml_node_by_type_dict(xml_node, xml_tags.Elements.NETWORK_ITEMS,
+                                                            xml_tags.Elements.NETWORK_ITEM, type_to_class_dict)
         return cls(network_items)
 
 
 class Exception_Network_Item(XML_Object_Base):
     def __init__(self, item_id):
         self.id = item_id
-        super().__init__(XML_Tags.Elements.NETWORK_ITEM)
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
+        super().__init__(xml_tags.Elements.NETWORK_ITEM)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
 
 
 class Exception_Subnet_Network_Item(Exception_Network_Item):
@@ -152,7 +152,7 @@ class Exception_Subnet_Network_Item(Exception_Network_Item):
         self.netmask = netmask
         self.prefix = prefix
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.SUBNET)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.SUBNET)
         #BUG: Work around a bug in the validation of query network items where the mask can not be null if a prefix is sent.
         if self.prefix and not self.netmask:
             del self.netmask
@@ -170,17 +170,17 @@ class Exception_Subnet_Network_Item(Exception_Network_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        ip = get_xml_text_value(xml_node, XML_Tags.Elements.IP)
-        mask = get_xml_text_value(xml_node, XML_Tags.Elements.MASK)
-        prefix = get_xml_text_value(xml_node, XML_Tags.Elements.PREFIX)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        ip = get_xml_text_value(xml_node, xml_tags.Elements.IP)
+        mask = get_xml_text_value(xml_node, xml_tags.Elements.MASK)
+        prefix = get_xml_text_value(xml_node, xml_tags.Elements.PREFIX)
         return cls(item_id, ip, mask, prefix)
 
 
 class Exception_Any_Network_Item(Exception_Network_Item):
     def __init__(self, item_id):
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.VIOLATION_ANY_NETWORK_OBJECT)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.VIOLATION_ANY_NETWORK_OBJECT)
 
 
 
@@ -189,7 +189,7 @@ class Exception_Range_Network_Item(Exception_Network_Item):
         self.minIp = minIp
         self.maxIp = maxIp
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.RANGE_NETWORK)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.RANGE_NETWORK)
 
     def __str__(self):
         return "{}/{}".format(self.minIp, self.maxIp)
@@ -201,9 +201,9 @@ class Exception_Range_Network_Item(Exception_Network_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        minIp = get_xml_text_value(xml_node, XML_Tags.Elements.MINIP)
-        maxIp = get_xml_text_value(xml_node, XML_Tags.Elements.MAXIP)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        minIp = get_xml_text_value(xml_node, xml_tags.Elements.MINIP)
+        maxIp = get_xml_text_value(xml_node, xml_tags.Elements.MAXIP)
         return cls(item_id, minIp, maxIp)
 
 
@@ -212,7 +212,7 @@ class Exception_Zone_Network_Item(Exception_Network_Item):
         self.zone_id = zone_id
         self.zone_name = zone_name
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.ZONE)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.ZONE)
 
     def __str__(self):
         return self.zone_name
@@ -224,9 +224,9 @@ class Exception_Zone_Network_Item(Exception_Network_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        zone_id = get_xml_int_value(xml_node, XML_Tags.Elements.ZONE_ID)
-        zone_name = get_xml_text_value(xml_node, XML_Tags.Elements.ZONE_NAME)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        zone_id = get_xml_int_value(xml_node, xml_tags.Elements.ZONE_ID)
+        zone_name = get_xml_text_value(xml_node, xml_tags.Elements.ZONE_NAME)
         return cls(item_id, zone_id, zone_name)
 
 
@@ -237,7 +237,7 @@ class Exception_Device_Network_Item(Exception_Network_Item):
         self.network_name = network_name
         self.mgmt_name = mgmt_name
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.DEVICE_NETWORK)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.DEVICE_NETWORK)
 
     def __str__(self):
         return self.network_name
@@ -249,11 +249,11 @@ class Exception_Device_Network_Item(Exception_Network_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        mgmt_id = get_xml_int_value(xml_node, XML_Tags.Elements.MGMT_ID)
-        network_uid = get_xml_text_value(xml_node, XML_Tags.Elements.NETWORK_UID)
-        network_name = get_xml_text_value(xml_node, XML_Tags.Elements.NETWORK_NAME)
-        mgmt_name = get_xml_text_value(xml_node, XML_Tags.Elements.MGMT_NAME)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        mgmt_id = get_xml_int_value(xml_node, xml_tags.Elements.MGMT_ID)
+        network_uid = get_xml_text_value(xml_node, xml_tags.Elements.NETWORK_UID)
+        network_name = get_xml_text_value(xml_node, xml_tags.Elements.NETWORK_NAME)
+        mgmt_name = get_xml_text_value(xml_node, xml_tags.Elements.MGMT_NAME)
         return cls(item_id, mgmt_id, network_uid, network_name, mgmt_name)
 
 
@@ -261,7 +261,7 @@ class Exception_DNS_Network_Item(Exception_Network_Item):
     def __init__(self, item_id, dnsAddress):
         self.dnsAddress = dnsAddress
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.DNS)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.DNS)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -270,15 +270,15 @@ class Exception_DNS_Network_Item(Exception_Network_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        dnsAddress = get_xml_text_value(xml_node, XML_Tags.Elements.DNSADDRESS)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        dnsAddress = get_xml_text_value(xml_node, xml_tags.Elements.DNSADDRESS)
         return cls(item_id, dnsAddress)
 
 
 class Exception_Service_Collection(XML_Object_Base):
     def __init__(self, service_items):
         self.service_items = service_items
-        super().__init__(XML_Tags.Elements.SERVICE_COLLECTION)
+        super().__init__(xml_tags.Elements.SERVICE_COLLECTION)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -287,19 +287,19 @@ class Exception_Service_Collection(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        type_to_class_dict = {XML_Tags.Attributes.CUSTOM: Exception_Custom_Service_Item,
-                              XML_Tags.Attributes.DEVICE_SERVICE: Exception_Device_Service_Item,
-                              XML_Tags.Attributes.PREDEFINED: Exception_Predefined_Service_Item}
-        service_items = XML_List.from_xml_node_by_type_dict(xml_node, XML_Tags.Elements.SERVICE_ITEMS,
-                                                            XML_Tags.Elements.SERVICE_ITEM, type_to_class_dict)
+        type_to_class_dict = {xml_tags.Attributes.CUSTOM: Exception_Custom_Service_Item,
+                              xml_tags.Attributes.DEVICE_SERVICE: Exception_Device_Service_Item,
+                              xml_tags.Attributes.PREDEFINED: Exception_Predefined_Service_Item}
+        service_items = XML_List.from_xml_node_by_type_dict(xml_node, xml_tags.Elements.SERVICE_ITEMS,
+                                                            xml_tags.Elements.SERVICE_ITEM, type_to_class_dict)
         return cls(service_items)
 
 
 class Exception_Service_Item(XML_Object_Base):
     def __init__(self, item_id):
         self.id = item_id
-        super().__init__(XML_Tags.Elements.SERVICE_ITEM)
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
+        super().__init__(xml_tags.Elements.SERVICE_ITEM)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
 
 
 class Exception_Custom_Service_Item(Exception_Service_Item):
@@ -307,7 +307,7 @@ class Exception_Custom_Service_Item(Exception_Service_Item):
         self.protocol = protocol
         self.port = port
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.CUSTOM)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.CUSTOM)
 
     def __str__(self):
         return "{}/{}".format(self.protocol, self.port)
@@ -319,9 +319,9 @@ class Exception_Custom_Service_Item(Exception_Service_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        protocol = get_xml_text_value(xml_node, XML_Tags.Elements.PROTOCOL)
-        port = get_xml_text_value(xml_node, XML_Tags.Elements.PORT)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        protocol = get_xml_text_value(xml_node, xml_tags.Elements.PROTOCOL)
+        port = get_xml_text_value(xml_node, xml_tags.Elements.PORT)
         return cls(item_id, protocol, port)
 
 
@@ -332,7 +332,7 @@ class Exception_Device_Service_Item(Exception_Service_Item):
         self.service_name = service_name
         self.mgmt_name = mgmt_name
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.DEVICE_SERVICE)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.DEVICE_SERVICE)
 
     def __str__(self):
         return self.service_name
@@ -344,11 +344,11 @@ class Exception_Device_Service_Item(Exception_Service_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        mgmt_id = get_xml_int_value(xml_node, XML_Tags.Elements.MGMT_ID)
-        service_uid = get_xml_text_value(xml_node, XML_Tags.Elements.SERVICE_UID)
-        service_name = get_xml_text_value(xml_node, XML_Tags.Elements.SERVICE_NAME)
-        mgmt_name = get_xml_text_value(xml_node, XML_Tags.Elements.MGMT_NAME)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        mgmt_id = get_xml_int_value(xml_node, xml_tags.Elements.MGMT_ID)
+        service_uid = get_xml_text_value(xml_node, xml_tags.Elements.SERVICE_UID)
+        service_name = get_xml_text_value(xml_node, xml_tags.Elements.SERVICE_NAME)
+        mgmt_name = get_xml_text_value(xml_node, xml_tags.Elements.MGMT_NAME)
         return cls(item_id, mgmt_id, service_uid, service_name, mgmt_name)
 
 
@@ -359,7 +359,7 @@ class Exception_Predefined_Service_Item(Exception_Service_Item):
         self.predefined_service_name = predefined_service_name
         self.predefined_service_ranges = predefined_service_ranges
         super().__init__(predefined_service_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.PREDEFINED)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.PREDEFINED)
 
     def __str__(self):
         return self.predefined_service_name
@@ -371,12 +371,12 @@ class Exception_Predefined_Service_Item(Exception_Service_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        predefined_service_id = get_xml_int_value(xml_node, XML_Tags.Elements.PREDEFINED_SERVICE_ID)
-        predefined_service_name = get_xml_text_value(xml_node, XML_Tags.Elements.PREDEFINED_SERVICE_NAME)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        predefined_service_id = get_xml_int_value(xml_node, xml_tags.Elements.PREDEFINED_SERVICE_ID)
+        predefined_service_name = get_xml_text_value(xml_node, xml_tags.Elements.PREDEFINED_SERVICE_NAME)
         predefined_service_ranges = XML_List.from_xml_node_by_tags(xml_node,
-                                                                   XML_Tags.Elements.PREDEFINED_SERVICE_RANGES,
-                                                                   XML_Tags.Elements.PREDEFINED_SERVICE_RANGE,
+                                                                   xml_tags.Elements.PREDEFINED_SERVICE_RANGES,
+                                                                   xml_tags.Elements.PREDEFINED_SERVICE_RANGE,
                                                                    Exception_Predefined_Service_Range)
         return cls(item_id, predefined_service_id, predefined_service_name, predefined_service_ranges)
 
@@ -387,9 +387,9 @@ class Exception_Predefined_Service_Range(XML_Object_Base):
         self.max = port_max
         self.protocol = protocol
         self.negate = negate
-        super().__init__(XML_Tags.Elements.PREDEFINED_SERVICE_RANGE)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.PREDEFINED)
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
+        super().__init__(xml_tags.Elements.PREDEFINED_SERVICE_RANGE)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.PREDEFINED)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -398,10 +398,10 @@ class Exception_Predefined_Service_Range(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        port_min = get_xml_int_value(xml_node, XML_Tags.Elements.MIN)
-        port_max = get_xml_int_value(xml_node, XML_Tags.Elements.MAX)
-        protocol = get_xml_int_value(xml_node, XML_Tags.Elements.PROTOCOL)
-        negate = get_xml_text_value(xml_node, XML_Tags.Elements.NEGATE)
+        port_min = get_xml_int_value(xml_node, xml_tags.Elements.MIN)
+        port_max = get_xml_int_value(xml_node, xml_tags.Elements.MAX)
+        protocol = get_xml_int_value(xml_node, xml_tags.Elements.PROTOCOL)
+        negate = get_xml_text_value(xml_node, xml_tags.Elements.NEGATE)
         return cls(port_min, port_max, protocol, negate)
 
 
@@ -413,7 +413,7 @@ class Exception_Service_Range(Exception_Service_Item):
         self.minProtocol = min_protocol
         self.maxProtocol = max_protocol
         super().__init__(item_id)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, XML_Tags.Attributes.RANGE_SERVICE)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.RANGE_SERVICE)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -422,11 +422,11 @@ class Exception_Service_Range(Exception_Service_Item):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        item_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
-        port_min = get_xml_int_value(xml_node, XML_Tags.Elements.MIN)
-        port_max = get_xml_int_value(xml_node, XML_Tags.Elements.MAX)
-        min_protocol = get_xml_int_value(xml_node, XML_Tags.Elements.MIN_PROTOCOL)
-        max_protocol = get_xml_int_value(xml_node, XML_Tags.Elements.MAX_PROTOCOL)
+        item_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        port_min = get_xml_int_value(xml_node, xml_tags.Elements.MIN)
+        port_max = get_xml_int_value(xml_node, xml_tags.Elements.MAX)
+        min_protocol = get_xml_int_value(xml_node, xml_tags.Elements.MIN_PROTOCOL)
+        max_protocol = get_xml_int_value(xml_node, xml_tags.Elements.MAX_PROTOCOL)
         return cls(item_id, port_min, port_max, min_protocol, max_protocol)
 
 
@@ -439,7 +439,7 @@ class Zone_To_Zone_Security_Requirement(XML_Object_Base):
         self.policy_name = policy_name
         self.from_domain = from_domain
         self.to_domain = to_domain
-        super().__init__(XML_Tags.Elements.ZONE_TO_ZONE_SECURITY_REQUIREMENT)
+        super().__init__(xml_tags.Elements.ZONE_TO_ZONE_SECURITY_REQUIREMENT)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -448,9 +448,9 @@ class Zone_To_Zone_Security_Requirement(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        from_zone = get_xml_text_value(xml_node, XML_Tags.Elements.FROM_ZONE)
-        to_zone = get_xml_text_value(xml_node, XML_Tags.Elements.TO_ZONE)
-        policy_name = get_xml_text_value(xml_node, XML_Tags.Elements.POLICY_NAME)
-        from_domain = get_xml_text_value(xml_node, XML_Tags.Elements.FROM_DOMAIN)
-        to_domain = get_xml_text_value(xml_node, XML_Tags.Elements.TO_DOMAIN)
+        from_zone = get_xml_text_value(xml_node, xml_tags.Elements.FROM_ZONE)
+        to_zone = get_xml_text_value(xml_node, xml_tags.Elements.TO_ZONE)
+        policy_name = get_xml_text_value(xml_node, xml_tags.Elements.POLICY_NAME)
+        from_domain = get_xml_text_value(xml_node, xml_tags.Elements.FROM_DOMAIN)
+        to_domain = get_xml_text_value(xml_node, xml_tags.Elements.TO_DOMAIN)
         return cls(from_zone, to_zone, policy_name, from_domain, to_domain)

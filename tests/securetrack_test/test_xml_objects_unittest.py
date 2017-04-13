@@ -5,7 +5,7 @@ import sys
 from pytos.securetrack.xml_objects import rest
 import xml.etree.ElementTree as ET
 from pytos.common import tufin_logger
-from pytos.common.functions.Config import Secure_Config_Parser
+from pytos.common.functions.config import Secure_Config_Parser
 import unittest
 
 conf = Secure_Config_Parser()

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.initialize import *
+from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
 
 
 class Analysis_Result(XML_Object_Base):

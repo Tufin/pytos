@@ -16,7 +16,7 @@ import subprocess
 import re
 import xml.etree.ElementTree as ET
 
-from .XML import get_xml_node, get_xml_text_value
+from .xml import get_xml_node, get_xml_text_value
 
 TSS_EXECUTABLE_PATH = "/usr/sbin/tss"
 ST_CONF_XML_PATH = "/etc/sysconfig/stconf.xml"

@@ -20,8 +20,8 @@ import pwd
 import sys
 
 from pytos.common.functions import Secure_Config_Parser
-from pytos.common.functions.FileMonitor import FileMonitor
-from .Defines import LOG_FORMAT, LOG_CONFIG_FILE_PATH, LOG_LEVEL_SECTION_NAME, logger_name_to_log_domain, \
+from pytos.common.functions.file_monitor import FileMonitor
+from .definitions import LOG_FORMAT, LOG_CONFIG_FILE_PATH, LOG_LEVEL_SECTION_NAME, logger_name_to_log_domain, \
     COMMON_LOGGER_NAME, REGISTERED_LOGGER_NAMES, LOGGER_NAME_PREFIX, MAX_LOG_FILES_BACKUPS, MAX_LOG_BYTES, \
     DEFAULT_LOG_LEVEL_NAME, DEFAULT_LOG_LEVEL, LOG_FILE_OWNER, LOG_FILE_GROUP
 

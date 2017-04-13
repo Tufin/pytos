@@ -4,8 +4,8 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
-from pytos.common.logging.Logger import setup_loggers
-from pytos.common.functions.Config import Secure_Config_Parser
+from pytos.common.logging.logger import setup_loggers
+from pytos.common.functions.config import Secure_Config_Parser
 from pytos.securechange.helpers import Access_Request_Generator
 
 conf = Secure_Config_Parser()

@@ -15,7 +15,7 @@ import netaddr
 
 from importlib import import_module
 from pytos.common.base_types import XML_Object_Base, Comparable
-from pytos.common.definitions import XML_Tags
+from pytos.common.definitions import xml_tags
 
 
 class Base_Object(XML_Object_Base):
@@ -36,7 +36,7 @@ class Service(Base_Object):
     def __init__(self, xml_tag, service_id, display_name, is_global, name, service_type, attr_type):
         self.global_ = is_global
         self.type = service_type
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, attr_type)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, attr_type)
         super().__init__(xml_tag, name, display_name, service_id)
 
     def as_sa_service(self, *, alt_class_name=None):
@@ -77,8 +77,8 @@ class Network_Object(XML_Object_Base, Comparable):
 
 class URL_Link(XML_Object_Base):
     def __init__(self, url):
-        self.set_attrib(XML_Tags.Attributes.HREF, url)
-        super().__init__(XML_Tags.Elements.LINK)
+        self.set_attrib(xml_tags.Attributes.HREF, url)
+        super().__init__(xml_tags.Elements.LINK)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -87,7 +87,7 @@ class URL_Link(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        url = xml_node.attrib[XML_Tags.Attributes.HREF]
+        url = xml_node.attrib[xml_tags.Attributes.HREF]
         return cls(url)
 
 

@@ -21,7 +21,7 @@ from socket import error as socket_error
 
 import paramiko
 
-from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 

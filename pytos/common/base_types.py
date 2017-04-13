@@ -19,14 +19,14 @@ import xml.sax.saxutils
 from abc import ABCMeta, abstractmethod
 from netaddr import IPSet
 
-from pytos.common.definitions import XML_Tags
-from pytos.common.functions.XML import get_xml_node
+from pytos.common.definitions import xml_tags
+from pytos.common.functions.xml import get_xml_node
 
 SET_PARENT_NODE = "set_parent_node"
 ID = "id"
 PARENT_NODE = "_parent_node"
 
-from pytos.common.logging.Defines import XML_LOGGER_NAME
+from pytos.common.logging.definitions import XML_LOGGER_NAME
 logger = logging.getLogger(XML_LOGGER_NAME)
 
 
@@ -178,10 +178,10 @@ class XML_List(XML_Base):
         if xml_list_base_node:
             for child_node in xml_list_base_node.iter(tag=child_element_name):
                 try:
-                    type_attribute = child_node.attrib[XML_Tags.Attributes.XSI_NAMESPACE_TYPE]
+                    type_attribute = child_node.attrib[xml_tags.Attributes.XSI_NAMESPACE_TYPE]
                 except KeyError:
                     try:
-                        type_attribute = child_node.attrib[XML_Tags.TYPE_ATTRIB]
+                        type_attribute = child_node.attrib[xml_tags.TYPE_ATTRIB]
                     except KeyError:
                         message = "could not find type attribute in {},existing attributes: {}".format(child_node,
                                                                                                        child_node.attrib)
@@ -523,8 +523,8 @@ class Flat_XML_Object_Base(XML_Base):
 class XSI_Object(XML_Object_Base):
     def __init__(self, xml_tag, xsi_type):
         super().__init__(xml_tag)
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
-        self.set_attrib(XML_Tags.Attributes.XSI_TYPE, xsi_type)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xsi_type)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -540,12 +540,12 @@ class ReferenceURL(XML_Object_Base):
     def __init__(self, url, tag_name):
         super().__init__(tag_name)
         self._url = url
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
-        self.set_attrib(XML_Tags.Attributes.HREF, url)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
+        self.set_attrib(xml_tags.Attributes.HREF, url)
 
     @classmethod
     def from_xml_node(cls, xml_node):
-        url = xml_node.attrib[XML_Tags.Attributes.HREF]
+        url = xml_node.attrib[xml_tags.Attributes.HREF]
         return cls(url, xml_node.tag)
 
     @staticmethod

@@ -3,9 +3,9 @@
 import unittest
 
 from pytos.securechange.xml_objects import rest, securechange_api
-from pytos.common.functions.Config import Secure_Config_Parser
+from pytos.common.functions.config import Secure_Config_Parser
 import xml.etree.ElementTree as ET
-from pytos.common.logging.Logger import setup_loggers
+from pytos.common.logging.logger import setup_loggers
 
 
 with open('/opt/tufin/securitysuite/ps/tests/bin/Secure_Change_Test/ticket_info.xml') as f:

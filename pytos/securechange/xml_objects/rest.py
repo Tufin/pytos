@@ -22,12 +22,12 @@ import logging
 from pytos.secureapp.xml_objects.base_types import Base_Link_Target, URL_Link
 from pytos.securechange import definitions
 from pytos.securechange.xml_objects.base_types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
-from pytos.securechange.xml_objects.restapi.Step.AccessRequest.AccessRequest import *
+from pytos.securechange.xml_objects.restapi.step.access_request.accessrequest import *
 from pytos.common.base_types import XML_List, XML_Object_Base, Flat_XML_Object_Base
-from pytos.common.logging.Defines import XML_LOGGER_NAME
+from pytos.common.logging.definitions import XML_LOGGER_NAME
 from pytos.common.functions import str_to_bool, get_xml_node, get_xml_text_value, get_xml_int_value
 from pytos.common.functions import convert_timedelta_to_seconds
-from pytos.common.definitions.XML_Tags import TYPE_ANY, TYPE_ATTRIB, TYPE_DNS, TYPE_IP, TYPE_OBJECT, TYPE_NETWORK, \
+from pytos.common.definitions.xml_tags import TYPE_ANY, TYPE_ATTRIB, TYPE_DNS, TYPE_IP, TYPE_OBJECT, TYPE_NETWORK, \
     TYPE_HOST, SERVICE_OBJECT_TYPE_PREDEFINED, SERVICE_OBJECT_TYPE_PROTOCOL, Elements, Attributes
 
 logger = logging.getLogger(XML_LOGGER_NAME)

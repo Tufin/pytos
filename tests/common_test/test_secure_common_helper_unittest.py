@@ -2,9 +2,9 @@
 
 import unittest
 
-from pytos.common.logging.Logger import setup_loggers
+from pytos.common.logging.logger import setup_loggers
 from pytos.common.helpers import Secure_API_Helper
-from pytos.common.functions.Config import Secure_Config_Parser
+from pytos.common.functions.config import Secure_Config_Parser
 
 conf = Secure_Config_Parser()
 LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")

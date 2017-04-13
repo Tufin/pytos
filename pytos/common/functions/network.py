@@ -22,7 +22,7 @@ import dns
 from dns import reversename, resolver, name
 import netaddr
 
-from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
 

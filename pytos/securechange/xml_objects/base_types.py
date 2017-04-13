@@ -14,22 +14,22 @@
 import xml.sax.saxutils
 
 from pytos.common.base_types import XML_Object_Base, XML_List
-from pytos.common.definitions import XML_Tags
+from pytos.common.definitions import xml_tags
 
 
 class Step_Field_Base(XML_Object_Base):
     FIELD_CONTENT_ATTRIBUTES = None
 
     def __init__(self, num_id, name, read_only=None):
-        super().__init__(XML_Tags.Elements.FIELD)
-        self.set_attrib(XML_Tags.NAMESPACE_FIELD_ATTRIB_CONTENT, XML_Tags.XSI_NAMESPACE_URL)
+        super().__init__(xml_tags.Elements.FIELD)
+        self.set_attrib(xml_tags.NAMESPACE_FIELD_ATTRIB_CONTENT, xml_tags.XSI_NAMESPACE_URL)
         self.id = num_id
         self.name = name
         self.read_only = read_only
 
     def get_field_type(self):
         try:
-            return self._attribs[XML_Tags.Attributes.XSI_TYPE]
+            return self._attribs[xml_tags.Attributes.XSI_TYPE]
         except KeyError:
             raise KeyError("Could not find type attribute, existing attributes: {}".format(self._attribs))
 
@@ -183,11 +183,11 @@ class Step_Multi_Field_Base(Step_Field_Base):
 class Target_Base(XML_Object_Base):
     def __init__(self, xml_tag, num_id, target_type=""):
         super().__init__(xml_tag)
-        self.set_attrib(XML_Tags.TYPE_ATTRIB, target_type)
+        self.set_attrib(xml_tags.TYPE_ATTRIB, target_type)
         self.id = num_id
 
     def get_target_type(self):
-        return self._attribs[XML_Tags.TYPE_ATTRIB]
+        return self._attribs[xml_tags.TYPE_ATTRIB]
 
     def from_xml_node(self, xml_node):
         raise NotImplementedError
