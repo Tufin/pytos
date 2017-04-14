@@ -47,10 +47,12 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         except configparser.Error as config_exception:
             logger.error("Could not parse configuration file '%s'.", self.config_file_path)
             raise config_exception
-        try:
-            self.read(self.custom_config_file_path)
-        except configparser.Error:
-            logger.error("Could not parse custom configuration file '%s'.", self.custom_config_file_path)
+
+        if self.custom_config_file_path is not None:
+            try:
+                self.read(self.custom_config_file_path)
+            except configparser.Error:
+                logger.error("Could not parse custom configuration file '%s'.", self.custom_config_file_path)
 
     def _reload_modified_file(self):
         logger.debug("Reloading modified configuration files.")
