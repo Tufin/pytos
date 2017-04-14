@@ -35,10 +35,10 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         self.custom_config_file_path = custom_config_file_path
 
         if custom_config_file_path is not None:
-            args = (self.config_file_path, self.custom_config_file_path)
+            args = (config_file_path, custom_config_file_path)
         else:
-            args = (self.config_file_path, )
-        FileMonitor.__init__(self, *args)
+            args = (config_file_path, )
+        FileMonitor.__init__(self, args)
         self._read_config_files()
 
     def _read_config_files(self):
