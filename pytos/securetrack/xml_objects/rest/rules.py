@@ -128,7 +128,6 @@ class Zone_Entries_List(XML_List):
 class Zone_Entry(XML_Object_Base, Comparable, IPNetworkMixin):
     def __init__(self, item_id, comment, ip, _, netmask, zone_id):
         """
-
         :type netmask: str|int
         :type comment: str|None
         :type item_id: int|None
