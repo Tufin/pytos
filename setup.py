@@ -43,13 +43,13 @@ setup(
         'paramiko>=1.15.2',
         'requests>=2.6.0',
         'requests_toolbelt',
-        'pyinotify',
-        'cryptography',
-        'pycrypto',
-        'pbkdf2',
-        'netifaces',
-        'dnspython3',
-        'Mako',
-        'pyasn1'
+        # 'pyinotify',
+        # 'cryptography',
+        # 'pycrypto',
+        # 'pbkdf2',
+        # 'netifaces',
+        # 'dnspython3',
+        # 'Mako',
+        # 'pyasn1'
     ]
 )
