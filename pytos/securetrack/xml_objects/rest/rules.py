@@ -964,7 +964,6 @@ class Network_Objects_List(XML_List):
         """
         network_objects = []
         for network_object_node in xml_node.iter(tag=xml_tags.Elements.NETWORK_OBJECT):
-            print(network_object_node.attrib)
             network_object_type = network_object_node.attrib[xml_tags.Attributes.XSI_NAMESPACE_TYPE]
 
             network_object = Basic_Network_Object.from_xml_node(network_object_node)
