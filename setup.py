@@ -45,10 +45,10 @@ setup(
         'requests_toolbelt==0.7.1',
         'pyinotify==0.9.6',
         'netifaces==0.10.5',
+        'dnspython3==1.15.0',
         # 'cryptography',
         # 'pycrypto',
         # 'pbkdf2',
-        # 'dnspython3',
         # 'Mako',
         # 'pyasn1'
     ]
