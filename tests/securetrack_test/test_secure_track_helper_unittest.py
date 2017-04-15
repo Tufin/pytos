@@ -164,8 +164,8 @@ class TestRules(unittest.TestCase):
 
     def test_02_get_rule_by_device_and_rule_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("rules")
-        rules = self.helper.get_rule_by_device_and_rule_id(155, 1318012)
-        self.assertEqual(rules[0].id, 1318012)
+        rules = self.helper.get_rule_by_device_and_rule_id(155, 1318013)
+        self.assertEqual(rules[0].id, 1318013)
 
     def test_03_get_rules_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("rules")
