@@ -207,11 +207,7 @@ class TestRules(unittest.TestCase):
         self.assertIsInstance(rules, Rules_List)
         self.assertTrue(len(rules) > 0)
 
-    def test_10_put_rule_documentation_for_device(self):
-        # self.mock_get_uri.return_value.content = fake_request_response("rules")
-        # rule = self.helper.get_rules_for_device(155, get_documentation=True)[0]
-        # print(rule.to_xml_string())
-
+    def test_10_rule_documentation_format(self):
         src_xml = fake_request_response("rule_documentation")
         src_tree = lxml.etree.fromstring(src_xml)
         src_b = io.BytesIO()
@@ -220,44 +216,16 @@ class TestRules(unittest.TestCase):
         record_sets = [
             Record_Set("support@tufin.com", "admin", "2019-01-08T00:00:00+02:00", 1235, "this is a comment", "")
         ]
-        rd = Rule_Documentation("admi", 'Comment for unittest suit', record_sets, '', True)
+        rd = Rule_Documentation("admin", 'Comment for unittest suit', record_sets, '', True)
         dst_tree = lxml.etree.fromstring(rd.to_xml_string())
         dst_b = io.BytesIO()
         dst_tree.getroottree().write_c14n(dst_b)
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
-        # rule.documentation = rd
-        # self.helper.put_rule_documentation_for_device(155, rule)
 
-
-        # updated_rules = self.helper.get_rules_for_device(155, True)
-        # self.assertIsInstance(rules, Rules_List)
-        # self.assertTrue(len(rules) > 0)
-        # # get a single rule
-        # updated_rule = updated_rules[0:1][0]
-        # rd = updated_rule.documentation
-        # # rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(cisco_router2801_id, rule_id)
-        # self.assertEqual(rd.comment, "Comment for unittest suit")
-        # self.assertEqual(rd.tech_owner, "admin")
-        #
-        # # assert invalid request
-        # with self.assertRaises(ValueError):
-        #     self.helper.put_rule_documentation_for_device(5555, rule)
-        # with self.assertRaises(AttributeError):
-        #     self.helper.put_rule_documentation_for_device(cisco_router2801_id, "notValid")
-        # with self.assertRaises(AttributeError):
-        #     self.helper.put_rule_documentation_for_device(cisco_router2801_id, 99999)
-
-    def test_10_get_rule_documentation_by_device_id_and_rule_id(self):
-        rules = self.helper.get_rules_for_device(cisco_router2801_id, True)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.rules.Rules_List)
-        self.assertTrue(len(rules) > 0)
-        # get a single rule
-        rule = rules[0:1][0]
-        rule_id = rule.id
-
+    def test_11_get_rule_documentation_by_device_id_and_rule_id(self):
         # assert valid request
-        rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(cisco_router2801_id, rule_id)
-        self.assertIsInstance(rd, pytos.securetrack.xml_objects.rest.rules.Rule_Documentation)
+        rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(155, rule_id)
+        self.assertIsInstance(rd, Rule_Documentation)
         self.assertTrue(len(rd.record_sets) > 0)
 
         # assert valid request
