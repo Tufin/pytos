@@ -1,7 +1,7 @@
 <network_objects>
 	<count>2</count>
 	<total>2</total>
-	<network_object type="hostNetworkObjectDTO">
+	<network_object xsi:type="hostNetworkObjectDTO">
 		<id>3370405</id>
 		<name>b2JqZWN0AA==;SG9zdF9BAA==</name>
 		<display_name>Host_A</display_name>
@@ -14,7 +14,7 @@
 		<overrides>false</overrides>
 		<ip>81.81.81.5</ip>
 	</network_object>
-	<network_object type="hostNetworkObjectDTO">
+	<network_object xsi:type="hostNetworkObjectDTO">
 		<id>3365826</id>
 		<name>81.81.81.5-255.255.255.255</name>
 		<display_name>81.81.81.5</display_name>
