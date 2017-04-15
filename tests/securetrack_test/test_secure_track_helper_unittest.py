@@ -234,7 +234,7 @@ class TestRules(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.helper.get_rule_documentation_by_device_id_and_rule_id(155, 1330303)
 
-    def test_13_get_rules_for_network_object_by_id(self):
+    def test_13_get_network_objects(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects_search")
         network_objects = self.helper.network_object_text_search("81.81.81.5", "any_field")
         self.assertIsInstance(network_objects, Network_Objects_List)
