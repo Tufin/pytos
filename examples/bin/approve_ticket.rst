@@ -14,9 +14,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
-	conf = Secure_Config_Parser()
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
 
 	def get_cli_args():
@@ -30,6 +28,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 
 
 	def approve_step(ticket):
+		sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 		ticket = sc_helper.get_ticket_by_id(ticket.id)
 		approve_step_obj = ticket.get_current_step()
 		logger.debug("Current step name to approve is: '{}'".format(approve_step_obj.name))
@@ -43,6 +42,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 
 	def main():
 		cli_args = get_cli_args()
+		conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 		setup_loggers(conf.dict("log_levels"), log_to_stdout=cli_args.debug)
 		logger.info("Script called.")
 

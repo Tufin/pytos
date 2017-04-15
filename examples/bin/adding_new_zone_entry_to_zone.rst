@@ -10,13 +10,11 @@ The following example shows how to add new entry to an existing zone in SecureTr
 	from pytos.securetrack.helpers import Secure_Track_Helper
 	from pytos.securetrack.xml_objects.rest.rules import Zone_Entry
 
-	conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	st_helper = Secure_Track_Helper('127.0.0.1', ("username", "username"))
 
 
 	def add_zone_entry(zone_name, ip_address, netmask, comment):
-		setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
+		st_helper = Secure_Track_Helper('127.0.0.1', ("username", "username"))
 		zone_obj = st_helper.get_zone_by_name(zone_name, case_sensitive=True)
 		new_zone_entry = Zone_Entry(None, comment, ip_address, None, netmask, zone_obj.id)
 		try:
@@ -27,6 +25,8 @@ The following example shows how to add new entry to an existing zone in SecureTr
 
 
 	def main():
+		conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
+		setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
 		zone_name = "name"
 		ip_address = "192.168.1.1"
 		netmask = "255.255.255.255"

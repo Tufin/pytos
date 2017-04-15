@@ -9,16 +9,12 @@ read the ticket info and copy a field from previous step:
 	import sys
 	import logging
 
-
 	from pytos.common.logging.Logger import setup_loggers
 	from pytos.common.functions.Config import Secure_Config_Parser
 	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
 	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
 
-
-	conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 	src_step_name = "Source step name"
 	dst_step_name = "Destination step name"
 	src_field_name = "Source Field name"
@@ -35,6 +31,7 @@ read the ticket info and copy a field from previous step:
 
 	def copy_field(ticket):
 		logger.debug("Copy field between steps")
+		sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 		current_step_task = ticket.get_current_task()
 		previous_step_task = ticket.get_previous_step().get_last_task()
 		dst_field = current_step_task.get_field_list_by_name(dst_field_name)[0]
@@ -45,6 +42,7 @@ read the ticket info and copy a field from previous step:
 
 	def main():
 		cli_args = get_cli_args()
+		conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 		setup_loggers(conf.dict("log_levels"), log_to_stdout=cli_args.debug)
 		logger.info("Script called.")
 
