@@ -55,6 +55,8 @@ g_service_group = None
 
 
 def fake_request_response(rest_file):
+    full_path = os.path.abspath(__file__)
+    print(full_path)
     sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
     resource_file = os.path.join("resources", sub_resources_dir, "{}.xml".format(rest_file))
     with open(resource_file, mode='rb') as f:
