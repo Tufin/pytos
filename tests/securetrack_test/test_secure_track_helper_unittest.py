@@ -1,8 +1,9 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
 import sys
-
+import lxml.etree
 import pytos
 import os
+import io
 import tempfile
 import time
 import unittest
@@ -207,18 +208,25 @@ class TestRules(unittest.TestCase):
         self.assertTrue(len(rules) > 0)
 
     def test_10_put_rule_documentation_for_device(self):
-        self.mock_get_uri.return_value.content = fake_request_response("rules")
-        rule = self.helper.get_rules_for_device(155, get_documentation=True)[0]
-        print(rule.to_xml_string())
+        # self.mock_get_uri.return_value.content = fake_request_response("rules")
+        # rule = self.helper.get_rules_for_device(155, get_documentation=True)[0]
+        # print(rule.to_xml_string())
 
+        src_xml = fake_request_response("rule_documentation")
+        src_tree = lxml.etree.fromstring(src_xml)
+        src_b = io.BytesIO()
+        src_tree.getroottree().write_c14n(src_b)
         # create a new record set fot the rule documentation
         record_sets = [
             Record_Set("support@tufin.com", "admin", "2019-01-08T00:00:00+02:00", 1235, "this is a comment", "")
         ]
         rd = Rule_Documentation("admin", 'Comment for unittest suit', record_sets, '', True)
-        print(rd.to_xml_string())
-        rule.documentation = rd
-        self.helper.put_rule_documentation_for_device(155, rule)
+        dst_tree = lxml.etree.fromstring(rd.to_xml_string())
+        dst_b = io.BytesIO()
+        dst_tree.getroottree().write_c14n(dst_b)
+        self.assertEqual(src_b.getvalue(), dst_b.getvalue())
+        # rule.documentation = rd
+        # self.helper.put_rule_documentation_for_device(155, rule)
 
 
         # updated_rules = self.helper.get_rules_for_device(155, True)

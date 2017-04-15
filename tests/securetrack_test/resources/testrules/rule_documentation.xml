@@ -1,0 +1,13 @@
+<rule_documentation>
+  <comment>Comment for unittest suit</comment>
+  <record_set>
+    <automatic></automatic>
+    <businessOwnerEmail>support@tufin.com</businessOwnerEmail>
+    <businessOwnerName>admin</businessOwnerName>
+    <expireDate>2019-01-08T00:00:00+02:00</expireDate>
+    <id>1235</id>
+    <ticketCr>this is a comment</ticketCr>
+  </record_set>
+  <secure_app_applications></secure_app_applications>
+  <tech_owner>admin</tech_owner>
+</rule_documentation>
