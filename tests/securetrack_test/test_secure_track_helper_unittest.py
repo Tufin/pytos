@@ -19,7 +19,7 @@ from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.base_types import Network_Object
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List, Cleanup_Set, Rules_List
+    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List
 
 conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
                             custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
@@ -224,24 +224,20 @@ class TestRules(unittest.TestCase):
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
     def test_11_get_rule_documentation_by_device_id_and_rule_id(self):
-        # assert valid request
-        rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(155, rule_id)
+        self.mock_get_uri.return_value.content = fake_request_response("rule_documentation")
+        rd = self.helper.get_rule_documentation_by_device_id_and_rule_id(155, 1330304)
         self.assertIsInstance(rd, Rule_Documentation)
-        self.assertTrue(len(rd.record_sets) > 0)
 
-        # assert valid request
+    def test_12_failed_to_get_rule_documentation_by_device_id_and_rule_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("not_found_error")
+        self.mock_get_uri.return_value.status_code = 404
         with self.assertRaises(ValueError):
-            self.helper.get_rule_documentation_by_device_id_and_rule_id(5555, rule_id)
-        with self.assertRaises(ValueError):
-            self.helper.get_rule_documentation_by_device_id_and_rule_id(cisco_router2801_id, 9999)
+            self.helper.get_rule_documentation_by_device_id_and_rule_id(155, 1330303)
 
-    def test_11_get_rules_for_network_object_by_id(self):
-        network_objects = self.helper.network_object_text_search("192.168", "any_field")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-        self.assertTrue(len(network_objects) > 0)
-
-        rules = self.helper.get_rules_for_network_object_by_id(network_objects[0].id)
-        self.assertIsInstance(rules, pytos.securetrack.xml_objects.rest.rules.Rules_List)
+    def test_13_get_rules_for_network_object_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects_search")
+        network_objects = self.helper.network_object_text_search("81.81.81.5", "any_field")
+        self.assertIsInstance(network_objects, Network_Objects_List)
 
 
 class TestZonesPoliciesAndRevisions(unittest.TestCase):

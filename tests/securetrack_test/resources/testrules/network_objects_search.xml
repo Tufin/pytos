@@ -1,0 +1,30 @@
+<network_objects>
+	<count>2</count>
+	<total>2</total>
+	<network_object type="hostNetworkObjectDTO">
+		<id>3370405</id>
+		<name>b2JqZWN0AA==;SG9zdF9BAA==</name>
+		<display_name>Host_A</display_name>
+		<class_name>host_plain</class_name>
+		<type>host</type>
+		<device_id>156</device_id>
+		<comment/>
+		<uid>{a5200f63-1c24-4f42-90b7-6b6c3c59fe9b}</uid>
+		<implicit>false</implicit>
+		<overrides>false</overrides>
+		<ip>81.81.81.5</ip>
+	</network_object>
+	<network_object type="hostNetworkObjectDTO">
+		<id>3365826</id>
+		<name>81.81.81.5-255.255.255.255</name>
+		<display_name>81.81.81.5</display_name>
+		<class_name>host_plain</class_name>
+		<type>host</type>
+		<device_id>155</device_id>
+		<comment/>
+		<uid>{ee901936-fd18-4aa2-9f75-d9b6442fb07e}</uid>
+		<implicit>true</implicit>
+		<overrides>false</overrides>
+		<ip>81.81.81.5</ip>
+	</network_object>
+</network_objects>
