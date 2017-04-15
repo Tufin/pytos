@@ -2,7 +2,7 @@ Approve SecureChange ticket
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows a SecureChange ticket template based on XML format. The template must be align with the
-first step in the ticket workflow. The following example show the mandatory tags and one Access Request field.
+first step in the workflow. The following example show the mandatory tags and one Access Request field.
 ::
 	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<ticket>
