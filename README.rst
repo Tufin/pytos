@@ -43,20 +43,19 @@ How to use pytos Logger
 To use the pytos logging mechanism perform the following steps:
 
 The following table defines the log levels and messages, in decreasing order of severity.
-::
-	+---------------------+----------------------------------------------+
-	| Parameters          | Description                                  |
-	+=====================+==============================================+
-	| CRITICAL            | Only critical messages will present.         |
-	+---------------------+----------------------------------------------+
-	| ERROR               | Messages with error and above.               |
-	+---------------------+----------------------------------------------+
-	| WARNING             | Message with warning and above.              |
-	+---------------------+----------------------------------------------+
-	| INFO                | Messages with info and above.                |
-	+---------------------+----------------------------------------------+
-	| DEBUG               | For seeing all messages levels.              |
-	+---------------------+----------------------------------------------+
++---------------------+----------------------------------------------+
+| Parameters          | Description                                  |
++=====================+==============================================+
+| CRITICAL            | Only critical messages will present.         |
++---------------------+----------------------------------------------+
+| ERROR               | Messages with error and above.               |
++---------------------+----------------------------------------------+
+| WARNING             | Message with warning and above.              |
++---------------------+----------------------------------------------+
+| INFO                | Messages with info and above.                |
++---------------------+----------------------------------------------+
+| DEBUG               | For seeing all messages levels.              |
++---------------------+----------------------------------------------+
 
 Create an ini like configuration file with the following sections.
 ::
