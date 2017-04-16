@@ -37,7 +37,7 @@ Connecting to SecureApp with valid username and password
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_App_Helper("127.0.0.1", ("username", "passowrd"))
 
-How to use pytos Logger
+How to use pytos logger
 ***********************
 
 To use the pytos logging mechanism perform the following steps:
@@ -55,7 +55,7 @@ The following table defines the log levels and messages, in decreasing order of 
 +---------------------+----------------------------------------------+
 | INFO                | Messages with info and above.                |
 +---------------------+----------------------------------------------+
-| DEBUG               | For seeing all messages levels.              |
+| DEBUG               | All levels.                                  |
 +---------------------+----------------------------------------------+
 
 Create an ini like configuration file with the following sections.
