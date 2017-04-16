@@ -43,6 +43,14 @@ How to use pytos Logger
 To use the pytos logging mechanism perform the following steps:
 
 The following table defines the log levels and messages, in decreasing order of severity.
+  A      B    A or B
+=====  =====  ======
+False  False  False
+True   False  True
+False  True   True
+True   True   True
+=====  =====  ======
+
 +---------------------+----------------------------------------------+
 | Parameters          | Description                                  |
 +=====================+==============================================+
