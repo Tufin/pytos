@@ -19,7 +19,7 @@ SecureTrack
 Connecting to SecureTrack with valid username and password
 ::
 	from pytos.securechange.Helpers import Secure_Track_Helper
-	sc_helper = Secure_Track_Helper("127.0.0.1", ("username", "passowrd"))
+	sc_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 
 SecureChange
 ************
@@ -27,7 +27,7 @@ SecureChange
 Connecting to SecureChange with valid username and password
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "passowrd"))
+	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
 SecureApp
 *********
@@ -35,7 +35,7 @@ SecureApp
 Connecting to SecureApp with valid username and password
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
-	sc_helper = Secure_App_Helper("127.0.0.1", ("username", "passowrd"))
+	sc_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 
 How to use pytos logger
 ***********************
