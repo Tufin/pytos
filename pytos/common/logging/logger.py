@@ -20,24 +20,13 @@ import pwd
 import sys
 
 from pytos.common.functions import Secure_Config_Parser
-from pytos.common.functions.file_monitor import FileMonitor
-from .definitions import LOG_FORMAT, LOG_CONFIG_FILE_PATH, LOG_LEVEL_SECTION_NAME, logger_name_to_log_domain, \
+from .definitions import LOG_FORMAT, LOG_LEVEL_SECTION_NAME, logger_name_to_log_domain, \
     COMMON_LOGGER_NAME, REGISTERED_LOGGER_NAMES, LOGGER_NAME_PREFIX, MAX_LOG_FILES_BACKUPS, MAX_LOG_BYTES, \
     DEFAULT_LOG_LEVEL_NAME, DEFAULT_LOG_LEVEL, LOG_FILE_OWNER, LOG_FILE_GROUP
 
 FORMATTER = logging.Formatter(LOG_FORMAT)
 
 logger = logging.getLogger(COMMON_LOGGER_NAME)
-# conf = Secure_Config_Parser()
-
-
-# class LoggingConfigurationFileMonitor(FileMonitor):
-#     def __init__(self):
-#         super().__init__((LOG_CONFIG_FILE_PATH,))
-#
-#     def _reload_modified_file(self, *args, **kwargs):
-#         logger.debug("Reloading modified log file settings.")
-#         setup_loggers(conf.dict("log_levels"), monitor_log_levels_change=False)  # Does not support passing additional_log_files parameter.
 
 
 def iter_loggers():
@@ -81,9 +70,6 @@ def setup_loggers(log_levels_data=None, log_dir_path="/var/log/pytos/", log_file
             pass
 
     remove_logger_handlers()
-    # monitor_log_levels_change = kwargs.get("monitor_log_levels_change", True)
-    # if monitor_log_levels_change:
-    #     LoggingConfigurationFileMonitor()
     configured_loggers = []
     log_to_stdout = kwargs.get("log_to_stdout")
 

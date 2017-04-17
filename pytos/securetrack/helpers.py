@@ -18,7 +18,6 @@ import io
 import itertools
 import logging
 import multiprocessing.pool
-import xml.etree.ElementTree as ElementTree
 
 from requests import RequestException
 
@@ -29,7 +28,6 @@ from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error
 from pytos.common.functions import config
 from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
 from pytos.securetrack.xml_objects.rest import domain
-from pytos.securetrack.xml_objects.rest.audit import DCR_Test_Concrete, DCR_Test_Group
 from pytos.securetrack.xml_objects.rest.cleanups import Generic_Cleanup_List
 from pytos.securetrack.xml_objects.rest.device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
     RuleSearchDeviceList, Device_Revision, InternetReferralObject
@@ -1449,59 +1447,6 @@ class Secure_Track_Helper(Secure_API_Helper):
             logger.critical(message)
             raise ValueError(message)
         return True
-
-    def get_dcr_test_by_id(self, dcr_test_id):
-        """Get a DCR (Device Configuration Report) test definition from SecureTrack by its ID.
-
-        :param dcr_test_id: The ID of the DCR test to get.
-        :type dcr_test_id: int
-        :rtype: DCR_Test_Concrete|DCR_Test_Group
-        :raise RequestException: If there is a connection problem to SecureTrack.
-        :raise REST_Not_Found_Error: If a test with the specified ID was not found.
-        """
-        logger.info("Getting new DCR test with ID '%s'.", dcr_test_id)
-        try:
-            dcr_xml_string = self.get_uri("/securetrack/api/dcrTests/{}".format(dcr_test_id),
-                                          expected_status_codes=200).response.content
-            dcr_xml_node = ElementTree.fromstring(dcr_xml_string)
-            if dcr_xml_node.tag == Elements.DCR_TEST_CONCRETE:
-                return DCR_Test_Concrete.from_xml_node(dcr_xml_node)
-            elif dcr_xml_node.tag == Elements.DCR_TEST_GROUP:
-                return DCR_Test_Group.from_xml_node(dcr_xml_node)
-            else:
-                message = "Unknown DCR type '{}'.".format(dcr_xml_node.tag)
-                logger.critical(message)
-                raise ValueError(message)
-        except RequestException:
-            message = "Failed to get DCR test with ID '{}'.".format(dcr_test_id)
-            logger.critical(message)
-            raise IOError(message)
-        except REST_Not_Found_Error:
-            message = "DCR Test with ID '{}' does not exist.".format(dcr_test_id)
-            logger.critical(message)
-            raise ValueError(message)
-
-    def post_dcr_test(self, dcr_test):
-        """Create a DCR (Device Configuration Report) in SecureTrack.
-
-        :param: dcr_test: The DCR test object.
-        :type dcr_test: DCR_Test_Group|DCR_Test_Concrete
-        """
-        logger.info("Creating new DCR test.")
-        try:
-            response = self.post_uri("/securetrack/api/dcrTests/custom", dcr_test.to_xml_string(),
-                                     expected_status_codes=201)
-            dcr_test_id = response.get_created_item_id()
-            logger.info("Created a DCR test with an ID of '%s'.", dcr_test_id)
-            return dcr_test_id
-        except RequestException:
-            message = "Failed to create DCR test."
-            logger.critical(message)
-            raise IOError(message)
-        except REST_Client_Error as client_error:
-            message = "Failed to create DCR test, error was '{}'.".format(client_error.message)
-            logger.critical(message)
-            raise ValueError(message)
 
     def network_object_text_search(self, search_string, search_field, exact_match=False):
         """Search for network objects containing the specified string in the specified field.

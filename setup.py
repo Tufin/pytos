@@ -26,8 +26,6 @@ setup(
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    # package_dir={package_name: package_name},
-    # package_data={'': ['conf/tufin_api.conf.orig']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -36,7 +34,7 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.6'
     ],
     install_requires=[
         'netaddr>=0.7.14',
