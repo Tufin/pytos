@@ -25,6 +25,7 @@ setup(
     description="The Tufin TOS SDK for Python",
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests*']),
+    package_dir={package_name: package_name},
     package_data={package_name: ['securechange/templates/*.html']},
     include_package_data=True,
     classifiers=[
