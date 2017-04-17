@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<zones>
+    <count>3</count>
+    <total>3</total>
+    <zone>
+        <id>1</id>
+        <name>Internet</name>
+        <comment>Internet zone is all public addresses, excluding the addresses defined in all other zones</comment>
+        <shared>false</shared>
+        <internet>true</internet>
+        <userNetworks>false</userNetworks>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+    </zone>
+    <zone>
+        <id>36</id>
+        <name>Users Networks</name>
+        <comment>Users Networks zone should include the address space from which users can come within your organization</comment>
+        <shared>false</shared>
+        <internet>false</internet>
+        <userNetworks>true</userNetworks>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+    </zone>
+    <zone>
+        <id>16</id>
+        <name>DMZ</name>
+        <shared>false</shared>
+        <internet>false</internet>
+        <userNetworks>false</userNetworks>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+    </zone>
+</zones>

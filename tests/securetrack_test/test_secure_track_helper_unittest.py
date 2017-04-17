@@ -19,11 +19,8 @@ from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.base_types import Network_Object
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List
+    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List
 
-conf = Secure_Config_Parser(config_file_path="/opt/tufin/securitysuite/ps/conf/tufin_api.conf",
-                            custom_config_file_path="/opt/tufin/securitysuite/ps/conf/custom.conf")
-LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
 # existing device -  need to change these ID's when we'll have final version of the TOS for the testing suit
@@ -242,50 +239,58 @@ class TestRules(unittest.TestCase):
 
 class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
+
+    def test_01_get_zones(self):
+        self.mock_get_uri.return_value.content = fake_request_response("zones")
+        zones = self.helper.get_zones()
+        self.assertIsInstance(zones, Zone_List)
+
+    def test_02_post_zone(self):
+        self.mock_get_uri.return_value.content = fake_request_response("zones")
+        zone_name = "New Zone Name"
+        comment = 'Name: {}, Created at: {}'.format(zone_name, time.strftime('%Y-%m-%d %H:%M:%S'))
+        zone_obj = Zone(None, zone_name, comment)
+        print(zone_obj.to_xml_string())
+        zone_id = self.helper.post_zone(zone_obj)
 
     def test_01_post_security_policy_matrix(self):
-        global security_policy_name
-        ZONES_IN_TEST = ('internal', 'external', 'dmz')
-        zones = self.helper.get_zones()
-        LOGGER.debug('Present zones: {}'.format([zone.name for zone in zones]))
-        LOGGER.debug('\n' + '\n'.join([zone.to_xml_string() for zone in zones]))
-        # if a zone doesn't exist, add it.
-        for zone in ZONES_IN_TEST:
-            if zone not in [z.name for z in zones]:
-                LOGGER.debug('Adding zone: "{}"'.format(zone))
-                zone_to_add = Zone(None, zone,
-                                   'Name: {}, Created at: {}'.format(zone, time.strftime('%Y-%m-%d %H:%M:%S')))
-                LOGGER.debug('Xml of the zone being added:\n{}'.format(zone_to_add.to_xml_string()))
-                try:
-                    zone_id = self.helper.post_zone(zone_to_add)
-                except Exception as error:
-                    message = "Failed to post zone '{}', error was: {}".format(zone, error)
-                    LOGGER.critical(message)
-                    raise Exception(message)
-                else:
-                    message = "zone '{}' added successfully, ID = {}.".format(zone, zone_id)
-                    LOGGER.debug(message)
-            else:
-                LOGGER.debug('Zone "{}" is already present.'.format(zone))
-
-        security_policy_name = 'POLICY NAME 123 {}'.format(time.strftime('%Y-%m-%d %H:%M:%S'))
-
-        SECURITY_POLICY = {'internal': {'external': {'severity': 'critical',
-                                                     'access_type': 'ignored',
-                                                     'allowed_services': ''}},
-                           'external': {'internal': {'severity': 'high',
-                                                     'access_type': 'restricted',
-                                                     'allowed_services': 'https;Other 53;AOL;udp 88'}},
-                           'dmz': {'internal': {'severity': 'critical',
-                                                'access_type': 'blocked',
-                                                'allowed_services': ''},
-                                   'dmz': {'severity': 'low',
-                                           'access_type': 'ignored',
-                                           'allowed_services': ''}}}
-        self.helper.post_security_policy_matrix(security_policy_name, SECURITY_POLICY)
+        security_policy_name = 'Some Policy Name'
+        security_policy = {
+            'internal': {
+                'external': {
+                    'severity': 'critical',
+                    'access_type': 'ignored',
+                    'allowed_services': ''
+                }
+            },
+            'external': {
+                'internal': {
+                    'severity': 'high',
+                    'access_type': 'restricted',
+                    'allowed_services': 'https;Other 53;AOL;udp 88'
+                }
+            },
+            'dmz': {
+                'internal': {
+                    'severity': 'critical',
+                    'access_type': 'blocked',
+                    'allowed_services': ''
+                },
+                'dmz': {
+                    'severity': 'low',
+                    'access_type': 'ignored',
+                    'allowed_services': ''
+                }
+            }
+        }
+        self.helper.post_security_policy_matrix(security_policy_name, security_policy)
 
     def test_02_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
@@ -303,19 +308,10 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         zone_id = zones[-1].id
         zone_name = zones[-1].name
         entries = self.helper.get_entries_for_zone_id(zones[-1].id)
-        LOGGER.debug('\nAll entried:\n{}'.format('\n'.join([entry.to_xml_string() for entry in all_entries])))
-        LOGGER.debug('\nExiting entries under zone \'{}\' ID {}:\n'.format(zone_name, zone_id) +
-                     '\n'.join([entry.to_xml_string() for entry in entries]))
         zone_entry = Zone_Entry(entry_id, entry_description, entry_ip, entry_negate, entry_mask, zone_id)
-        LOGGER.debug('\nEntry being added under zone ID {}, \'{}\':\n'.format(zone_name, zone_id) +
-                     zone_entry.to_xml_string())
-
         entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
-
-        LOGGER.debug('Waiting for 2 seconds to let database update.')
         time.sleep(2)
         entries = self.helper.get_entries_for_zone_id(zone_id)
-        LOGGER.debug('\nEntries received:\n{}'.format('\n'.join([entry.to_xml_string() for entry in entries])))
         all_ids_returned = [entry.id for entry in entries]
         try:
             returned_entry = [entry for entry in entries if int(entry.id) == entry_id][0]
@@ -339,11 +335,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         zone_entry.ip = entry_ip
         zone_entry.negate = entry_negate
         zone_entry.netmask = entry_mask
-        LOGGER.debug('\nEntry before modification {}:\n{}'.format(returned_entry.id, returned_entry.to_xml_string()))
-        LOGGER.debug('\nEntry after modification {}:\n{}'.format(returned_entry.id, zone_entry.to_xml_string()))
         self.helper.put_zone_entry(zone_id, zone_entry)
-
-        LOGGER.debug('Waiting for 2 seconds to let database update.')
         time.sleep(2)
         entries = self.helper.get_entries_for_zone_id(zone_id)
         try:
