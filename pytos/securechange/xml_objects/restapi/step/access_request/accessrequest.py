@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+from pathlib import Path
 from mako.template import Template
 from pytos.securechange.xml_objects.restapi.step.access_request.designer import *
 from pytos.securechange.xml_objects.restapi.step.access_request.verifier import *
 from pytos.securechange.xml_objects.restapi.step.access_request.risk import *
 
-
 logger = logging.getLogger(XML_LOGGER_NAME)
-RISK_ANALYSIS_HTML_PATH = '/opt/tufin/securitysuite/ps/templates/risk_analysis_template.html'
+RISK_ANALYSIS_HTML_PATH = os.path.join(*Path(os.path.abspath(__file__)).parts[:-5], 'templates/risk_analysis_template.html')
+
 
 class Label(Flat_XML_Object_Base):
     def __init__(self, label):

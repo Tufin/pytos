@@ -48,19 +48,6 @@ The following example shows how to approve ticket in SecureChange by using the A
 
 		ticket = sc_helper.get_ticket_by_id(cli_args.ticket_id)
 		approve_step(ticket)
-		sys.exit()
-
-		# Get the ticket infromation from the STDIN
-		try:
-			ticket_info = sc_helper.read_ticket_info()
-		except (ValueError, AttributeError) as e:
-			logger.info(e)
-			sys.exit(0)
-
-		ticket = sc_helper.get_ticket_by_id(ticket_info.id)
-		ticket_handler = Secure_Change_API_Handler(ticket)
-		ticket_handler.register_step(approval_step_name, approve_step, ticket)
-		ticket_handler.run()
 
 
 	if __name__ == '__main__':
