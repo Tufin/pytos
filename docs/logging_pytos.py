@@ -18,8 +18,8 @@ def get_risk_results_as_html(ticket):
     step_task = ticket.get_current_task()
     access_requests = step_task.get_field_list_by_type(Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0].access_requests
     for ar in access_requests:
-        print(ar)
-        print(ar.get_risk_analysis_result_as_html())
+        with open('/var/tmp/risk_416.html', 'wt') as f:
+            f.write(ar.get_risk_analysis_result_as_html())
 
 
 def add_zone_entry(zone_name, ip_address, netmask, comment):
@@ -39,7 +39,7 @@ def main():
     # netmask = "255.255.255.255"
     # comment = "Automatically added by script"
     # add_zone_entry(zone_name, ip_address, netmask, comment)
-    ticket = sc_helper.get_ticket_by_id("416")
+    ticket = sc_helper.get_ticket_by_id(416)
     get_risk_results_as_html(ticket)
 
 
