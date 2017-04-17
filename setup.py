@@ -25,6 +25,7 @@ setup(
     description="The Tufin TOS SDK for Python",
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests*']),
+    package_data={package_name: ['securechange/templates/*']},
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -44,10 +45,10 @@ setup(
         'pyinotify==0.9.6',
         'netifaces==0.10.5',
         'dnspython3==1.15.0',
+        'Mako',
         # 'cryptography',
         # 'pycrypto',
         # 'pbkdf2',
-        # 'Mako',
         # 'pyasn1'
     ]
 )

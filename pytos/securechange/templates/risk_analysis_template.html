@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Risk Analysis Result</title>
+    <style>
+        table {margin: 0 auto; width: 905px}
+        table tr td:nth-child(2) {
+            width: 350px;
+        }
+        header {
+            padding: 5px 0;
+            background-color: #3b3b3b;
+            margin-bottom: 10px;
+        }
+        #header {
+            width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        img {
+            vertical-align: middle;
+            margin-bottom: 0.75em;
+        }
+        header h1 {
+            color: #f2f2f2;
+            display: inline-block;
+            font-size: 36px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="header">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDozMjZFNENFREExQ0VFMzExQjVGRkVENEIzOTBBMTI5QSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEQzdFMTQzRTcxOTcxMUU1OTU4REQ3QzQyNEIwODRFNyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEQzdFMTQzRDcxOTcxMUU1OTU4REQ3QzQyNEIwODRFNyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkYwNEQzRjJDMUU2Q0U1MTFCQjA3QTVBQThDRDE0MkVEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjMwNkU0Q0VEQTFDRUUzMTFCNUZGRUQ0QjM5MEExMjlBIi8+IDwvcmRmOkRlc2NyaXB0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" alt="tufin-suite-logo.png" />
+            <h1>Risk Analysis Result</h1>
+        </div>
+    </header>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        % for ar_order, ar, compliance_policies in ars:
+            <tr><td><p>&nbsp;</p></td></tr>
+            <tr>
+                <td>
+                    <table width="900" align="left" border="1" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <th colspan="3">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <th>Access Request: ${ar_order}</th>
+                                        <th>Application Name: ${app_name}</th>
+                                    </tr>
+                                </table>
+                            </th>
+                        </tr>
+                        <tr>
+                            % for header in headers:
+                                <td valign="center" align="center" style="padding-left: 10px; font-size: 16px;">
+                                    <p style="font-weight: bold; margin: 5px">${header}</p>
+                                </td>
+                            % endfor
+                        </tr>
+                        %for row in ar:
+                            <tr>
+                                %for column in row:
+                                    <td valign="center" style="padding-left: 10px; font-size: 14px;">
+                                    <p style="margin: 5px">${column}</p>
+                                </td>
+                                %endfor
+                            </tr>
+                        %endfor
+                        %if compliance_policies:
+                            <tr><td colspan="3"><p>&nbsp;</p></td></tr>
+                            <tr>
+                                <th colspan="3">Compliance Policy</th>
+                            </tr>
+                            <tr>
+                                % for header in compliance_headers:
+                                    <td valign="center" align="center" style="padding-left: 10px; font-size: 16px;">
+                                        <p style="font-weight: bold; margin: 5px">${header}</p>
+                                    </td>
+                                % endfor
+                            </tr>
+                            %for name, type, rules in compliance_policies:
+                                <tr>
+                                    <td valign="center" style="padding-left: 10px; font-size: 14px;">
+                                        <p style="margin: 5px">${name}</p>
+                                    </td>
+                                    <td valign="center" style="padding-left: 10px; font-size: 14px;">
+                                        <p style="margin: 5px">${type}</p>
+                                    </td>
+                                    %for num, name in rules:
+                                        <td valign="center" style="padding-left: 10px; font-size: 14px;">
+                                            <p style="margin: 5px">#${num} name</p>
+                                        </td>
+                                    %endfor
+                                </tr>
+                            %endfor
+                        %endif
+                    </table>
+                </td>
+            </tr>
+        %endfor
+    </table>
+</body>
+</html>
