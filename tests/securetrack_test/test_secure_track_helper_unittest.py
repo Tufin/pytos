@@ -259,6 +259,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         src_tree.getroottree().write_c14n(src_b)
         comment = 'Name: {}, Created at: {}'.format("New Zone", "2017-04-22 10:09:18")
         zone_obj = Zone(None, "New Zone", comment)
+        print(zone_obj.to_xml_string())
         dst_tree = lxml.etree.fromstring(zone_obj.to_xml_string())
         dst_b = io.BytesIO()
         dst_tree.getroottree().write_c14n(dst_b)
