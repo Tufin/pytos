@@ -304,8 +304,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_04_post_zone_entry(self):
         self.mock_get_uri.return_value.status_code = 201
         zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
-        entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
             mock_post_uri.assert_called_with('POST',
                                              'https://localhost/securetrack/api/zones/36/entries?context=1',
                                               auth=('username', 'password'),
