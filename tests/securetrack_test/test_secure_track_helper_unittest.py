@@ -243,6 +243,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
+        self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
+        self.mock_post_uri = self.post_patcher.start()
 
     def tearDown(self):
         self.patcher.stop()
@@ -259,7 +261,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         src_tree.getroottree().write_c14n(src_b)
         comment = 'Name: {}, Created at: {}'.format("New Zone", "2017-04-22 10:09:18")
         zone_obj = Zone(None, "New Zone", comment)
-        print(zone_obj.to_xml_string())
         dst_tree = lxml.etree.fromstring(zone_obj.to_xml_string())
         dst_b = io.BytesIO()
         dst_tree.getroottree().write_c14n(dst_b)
@@ -300,7 +301,13 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         policy_id = self.helper.post_security_policy_matrix(security_policy_name, security_policy)
         self.assertEqual(policy_id, 1)
 
-    def test_02_post_put_delete_zone_entry(self):
+    def test_04_post_zone_entry(self):
+        self.mock_get_uri.return_value.status_code = 201
+        zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
+        entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
+        self.mock_post_uri.assert_called_with("POST")
+
+    def test_04_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
         zones = [zone for zone in self.helper.get_zones() if zone.name != 'Internet']
         all_entries = []
