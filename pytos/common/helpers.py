@@ -101,7 +101,8 @@ class Secure_API_Helper:
                                                 session=session, max_retries=max_retries)
         return get_request
 
-    def post_uri(self, uri, body=None, multi_part_form_params=None, expected_status_codes=None, cgi=None, headers=None, timeout=None, session=None):
+    def post_uri(self, uri, body=None, params_dict=None, multi_part_form_params=None, expected_status_codes=None,
+                 cgi=None, headers=None, timeout=None, session=None):
         """Make a POST request to a URI for the configured host.
 
         :param headers: Additional headers to add to the request.
@@ -131,22 +132,30 @@ class Secure_API_Helper:
         if timeout is None:
             timeout = self.timeout
 
-        if multi_part_form_params is not None:
-            logger.debug("Sending multi part request, data is " + str(multi_part_form_params))
-            post_request = rest_requests.POST_Request(self._real_hostname, uri, body, headers=headers,
-                                                                    multi_part_form_params=multi_part_form_params,
-                                                                    cgi=cgi, login_data=self.login_data,
-                                                                    verify_ssl=False,
-                                                                    expected_status_codes=expected_status_codes,
-                                                                    timeout=timeout, cookies=self.cookie_jar,
-                                                                    session=session)
-        else:
-            logger.debug("Sending regular POST.")
-            post_request = rest_requests.POST_Request(self._real_hostname, uri, body, headers=headers,
-                                                      login_data=self.login_data, verify_ssl=False,
+        if params_dict:
+            post_request = rest_requests.POST_Request(self._real_hostname, uri, body, cgi=cgi,
+                                                      params=params_dict, headers=headers,
+                                                      verify_ssl=False,
                                                       expected_status_codes=expected_status_codes,
                                                       timeout=timeout, cookies=self.cookie_jar,
-                                                      session=session, cgi=cgi)
+                                                      session=session)
+        else:
+            if multi_part_form_params is not None:
+                logger.debug("Sending multi part request, data is " + str(multi_part_form_params))
+                post_request = rest_requests.POST_Request(self._real_hostname, uri, body, headers=headers,
+                                                          multi_part_form_params=multi_part_form_params,
+                                                          cgi=cgi, login_data=self.login_data,
+                                                          verify_ssl=False,
+                                                          expected_status_codes=expected_status_codes,
+                                                          timeout=timeout, cookies=self.cookie_jar,
+                                                          session=session)
+            else:
+                logger.debug("Sending regular POST.")
+                post_request = rest_requests.POST_Request(self._real_hostname, uri, body, headers=headers,
+                                                          login_data=self.login_data, verify_ssl=False,
+                                                          expected_status_codes=expected_status_codes,
+                                                          timeout=timeout, cookies=self.cookie_jar,
+                                                          session=session, cgi=cgi)
         return post_request
 
     def put_uri(self, uri, body=None, expected_status_codes=None, headers=None, timeout=None,
