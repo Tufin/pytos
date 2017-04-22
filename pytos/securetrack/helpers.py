@@ -1054,8 +1054,8 @@ class Secure_Track_Helper(Secure_API_Helper):
             policy_id = response.get_created_item_id()
             logger.info("Created security policy with ID '%s'.", policy_id)
             return policy_id
-        except RequestException:
-            message = "Failed to create security policy."
+        except RequestException as e:
+            message = "Failed to create security policy, Error: '{}'".format(e)
             logger.critical(message)
             raise IOError(message)
         except REST_Client_Error as client_error:
