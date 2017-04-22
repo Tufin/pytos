@@ -305,7 +305,10 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.mock_get_uri.return_value.status_code = 201
         zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
         entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
-        self.mock_post_uri.assert_called_with("POST")
+        self.mock_post_uri.assert_called_with('POST',
+                                              'https://192.168.204.161/securetrack/api/zones/36/entries?context=1',
+                                              auth=('username', 'password'),
+                                              data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
 
     def test_04_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
