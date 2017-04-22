@@ -301,6 +301,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             }
         }
         self.helper.post_security_policy_matrix(security_policy_name, security_policy)
+        self.mock_post_request()
 
     def test_02_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
