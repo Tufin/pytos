@@ -260,12 +260,10 @@ class REST_Request(object):
             return True
 
     def _perform_request(self):
-        print("perform request ", self.request)
         start_time = datetime.datetime.now()
         exception_copy = None
         for retry_count in range(self.max_retries + 1):
             try:
-                print("before sending")
                 self.response = self.session.send(self.request, verify=self.verify_ssl, timeout=self.timeout)
             except requests.exceptions.SSLError as request_exception:
                 exception_copy = request_exception
