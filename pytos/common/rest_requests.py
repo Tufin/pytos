@@ -395,7 +395,7 @@ class POST_Request(REST_Request):
             multi_part_form = requests_toolbelt.MultipartEncoder(fields=multi_part_form_params)
             self.headers["Content-Type"] = multi_part_form.content_type
             self.body = multi_part_form.to_string()
-            self.headers["Content-Size"] = len(multi_part_form)
+            self.headers["Content-Size"] = multi_part_form.len
             self.headers["Accept"] = "*/*"
         else:
             if params is not None:
