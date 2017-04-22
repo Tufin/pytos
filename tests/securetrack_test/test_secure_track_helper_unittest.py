@@ -301,7 +301,13 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             }
         }
         self.helper.post_security_policy_matrix(security_policy_name, security_policy)
-        self.mock_post_request()
+        body = b'--99a5063856d34d9fa0bca890ecb00e30\r\nContent-Disposition: form-data; name="security_policy_name"\r\n\r\nSome Policy Name\r\n--99a5063856d34d9fa0bca890ecb00e30\r\nContent-Disposition: form-data; name="file"; filename="security_policy"\r\nContent-Type: text/csv\r\n\r\nfrom zone,to zone,severity,access type,allowed services\r\ndmz,dmz,low,ignored,\r\ndmz,internal,critical,blocked,\r\nexternal,internal,high,restricted,https;Other 53;AOL;udp 88\r\ninternal,external,critical,ignored,\r\n\r\n--99a5063856d34d9fa0bca890ecb00e30--\r\n'
+        header = {'Content-Type': 'multipart/form-data; boundary=99a5063856d34d9fa0bca890ecb00e30', 'Content-Size': '501', 'Accept': '*/*'}
+        self.mock_post_request.assert_called_with("POST",
+                                                  "https://192.168.204.161/securetrack/api/security_policies",
+                                                  data=body,
+                                                  auth=('username', 'password'),
+                                                  headers=header)
 
     def test_02_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
