@@ -266,6 +266,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
     def test_03_post_security_policy_matrix(self):
+        self.mock_get_uri.return_value.content = fake_request_response("zones")
         security_policy_name = 'Some Policy Name'
         security_policy = {
             'internal': {

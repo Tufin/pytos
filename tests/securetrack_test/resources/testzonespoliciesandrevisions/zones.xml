@@ -4,8 +4,8 @@
     <total>3</total>
     <zone>
         <id>1</id>
-        <name>Internet</name>
-        <comment>Internet zone is all public addresses, excluding the addresses defined in all other zones</comment>
+        <name>internal</name>
+        <comment>Internal zones</comment>
         <shared>false</shared>
         <internet>true</internet>
         <userNetworks>false</userNetworks>
@@ -16,8 +16,8 @@
     </zone>
     <zone>
         <id>36</id>
-        <name>Users Networks</name>
-        <comment>Users Networks zone should include the address space from which users can come within your organization</comment>
+        <name>external</name>
+        <comment>External zone</comment>
         <shared>false</shared>
         <internet>false</internet>
         <userNetworks>true</userNetworks>
@@ -28,7 +28,7 @@
     </zone>
     <zone>
         <id>16</id>
-        <name>DMZ</name>
+        <name>dmz</name>
         <shared>false</shared>
         <internet>false</internet>
         <userNetworks>false</userNetworks>
