@@ -16,7 +16,7 @@ import netaddr
 
 from pytos.secureapp.xml_objects.base_types import Base_Link_Target, Base_Object, URL_Link, Network_Object, Service_Object
 from pytos.common.base_types import XML_Object_Base, XML_List, Group_Service_Type, Single_Service_Type, \
-    Range_Service_Type, Any_Service_Type
+    Range_Service_Type, Any_Service_Type, Comparable
 from pytos.common.definitions.xml_tags import Attributes, Elements
 from pytos.common.functions import str_to_bool, XML_LOGGER_NAME
 from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value, get_xml_node
@@ -44,7 +44,7 @@ class Applications_List(XML_List):
         return cls(applications)
 
 
-class Application(XML_Object_Base):
+class Application(XML_Object_Base, Comparable):
     def __init__(self, app_id, name, comment, decommissioned, owner, editors, created, modified, status, connections,
                  open_tickets, customer=None, connection_to_application_packs=None):
         self.id = app_id
@@ -104,8 +104,13 @@ class Application(XML_Object_Base):
         return str_to_bool(self.decommissioned)
 
     def _key(self):
-        return self.id, self.name, self.comment, self.decommissioned, self.owner, self.editors, self.created, \
-               self.status, self.connections, self.customer, self.connection_to_application_packs
+        return self.id, self.name
+
+    def __repr__(self):
+        return 'Application. Name: {}, Owner: {}'.format(self.name, self.owner.display_name)
+
+    def __str__(self):
+        return repr(self)
 
 
 class Application_Reference(Base_Link_Target):
@@ -584,6 +589,19 @@ class Detailed_Application_Connection(XML_Object_Base):
         return cls(connection_id, name, external, sources, services, destinations, comment, status, open_tickets,
                    connection_to_application)
 
+    def __repr__(self):
+        srcs_string = ','.join(str(src) for src in self.sources)
+        dsts_string = ','.join(str(dst) for dst in self.destinations)
+        srvs_string = ','.join(str(srv) for srv in self.services)
+        return 'Detailed Application Connection. Name: {}, <Sources: {}>, <Destinations: {}>, <Services: {}>'.format(
+                                                                                                     self.name,
+                                                                                                     srcs_string,
+                                                                                                     dsts_string,
+                                                                                                     srvs_string)
+
+    def __str__(self):
+        return repr(self)
+
 
 class Interface_Connection(XML_Object_Base):
     def __init__(self, interface_connection_id, name, sources, services, comment, open_tickets, connected_servers):
@@ -763,6 +781,18 @@ class Single_Service(Service_Object):
     def _key(self):
         return self.protocol, self.min, self.max, self.negate, self.uid, self.comment, self.timeout
 
+    @classmethod
+    def from_st_service_object(cls, st_service_object):
+        return cls(st_service_object.display_name, st_service_object.global_, None,
+                   st_service_object.name, st_service_object.type, st_service_object.protocol, st_service_object.min,
+                   st_service_object.max, st_service_object.negate, None, st_service_object.comment)
+
+    def __repr__(self):
+        return 'type: {}, {}'.format(self.type, self.display_name)
+
+    def __str__(self):
+        return repr(self)
+
 
 class Group_Service(Service_Object):
     class_identifier = Attributes.SERVICE_TYPE_GROUP
@@ -778,7 +808,7 @@ class Group_Service(Service_Object):
         return Group_Service_Type(self.members)
 
     def _key(self):
-        return self.members, self.uid
+        return self.id, self.uid, self.name, self.application_id, self.global_
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -803,6 +833,23 @@ class Group_Service(Service_Object):
             members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link))
         return cls(display_name, is_global, connection_id, name, service_type, members, uid, app_id)
 
+    @classmethod
+    def from_st_service_object(cls, st_service_object):
+        members = []
+        for member in st_service_object.members:
+            members.append(Base_Link_Target(Elements.MEMBER, None, member.display_name, member.name, None))
+
+        return cls(st_service_object.display_name, st_service_object.global_, None, st_service_object.name,
+                   st_service_object.type, members, None)
+
+
+    def __repr__(self):
+        return 'Service Group: {}. members: {}'.format(self.display_name, ', '.join(str(member)
+                                                                                    for member in self.members))
+
+    def __str__(self):
+        return repr(self)
+
 
 class Source(Base_Link_Target):
     def __init__(self, connection_id, display_name, name, link, source_type):
@@ -823,6 +870,12 @@ class Source(Base_Link_Target):
         source_type = get_xml_text_value(xml_node, Elements.TYPE)
         return cls(connection_id, display_name, name, link, source_type)
 
+    def __repr__(self):
+        return self.display_name
+
+    def __str__(self):
+        return repr(self)
+
 
 class Destination(Base_Link_Target):
     def __init__(self, connection_id, display_name, name, link, destination_type):
@@ -842,6 +895,12 @@ class Destination(Base_Link_Target):
         link = URL_Link.from_xml_node(get_xml_node(xml_node, Elements.LINK))
         dest_type = get_xml_text_value(xml_node, Elements.TYPE)
         return cls(connection_id, display_name, name, link, dest_type)
+
+    def __repr__(self):
+        return self.display_name
+
+    def __str__(self):
+        return repr(self)
 
 
 class Network_Objects_List(XML_List):
@@ -946,8 +1005,20 @@ class Range_Network_Object(Network_Object):
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
         return cls(display_name, is_global, object_id, name, object_type, first_ip, last_ip, application_id)
 
+    @classmethod
+    def from_st_network_object(cls, st_network_obj):
+        return cls(st_network_obj.display_name, st_network_obj.global_, None, st_network_obj.name, st_network_obj.type,
+                   st_network_obj.first_ip, st_network_obj.last_ip)
+
     def as_netaddr_obj(self):
         return netaddr.IPRange(self.first_ip, self.last_ip)
+
+    def __repr__(self):
+        return 'Range Network Object. Name: {}, First IP: {}, Last IP: {}'.format(self.display_name, self.first_ip,
+                                                                                  self.last_ip)
+
+    def __str__(self):
+        return repr(self)
 
 
 class Host_Network_Object(Network_Object):
@@ -974,11 +1045,22 @@ class Host_Network_Object(Network_Object):
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
         return cls(display_name, is_global, object_id, name, object_type, ip, application_id)
 
+    @classmethod
+    def from_st_network_object(cls, st_network_obj):
+        return cls(st_network_obj.display_name, st_network_obj.global_, None, st_network_obj.name, st_network_obj.type,
+                   st_network_obj.ip)
+
     def as_netaddr_obj(self):
         return netaddr.IPNetwork(self.ip)
 
     def _key(self):
         return self.ip,
+
+    def __repr__(self):
+        return 'Host Network Object. Name: {}, IP: {}'.format(self.display_name, self.ip)
+
+    def __str__(self):
+        return repr(self)
 
 
 class Subnet_Network_Object(Network_Object):
@@ -1007,11 +1089,22 @@ class Subnet_Network_Object(Network_Object):
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
         return cls(display_name, is_global, object_id, name, object_type, ip, netmask, application_id)
 
+    @classmethod
+    def from_st_network_object(cls, st_network_obj):
+        return cls(st_network_obj.display_name, st_network_obj.global_, None, st_network_obj.name, st_network_obj.type,
+                   st_network_obj.ip, st_network_obj.netmask)
+
     def as_netaddr_obj(self):
         return netaddr.IPNetwork(str(self.ip) + "/" + str(self.netmask))
 
     def _key(self):
         return self.ip, self.netmask
+
+    def __repr__(self):
+        return 'Subnet Network Object. Name: {}, IP: {}, Netmask: {}'.format(self.display_name, self.ip, self.netmask)
+
+    def __str__(self):
+        return repr(self)
 
 
 # TODO: Validate with real device. NOT TESTED!
@@ -1244,7 +1337,6 @@ class Interface_IPs(XML_List):
         return cls(interface_ips)
 
 
-
 class Group_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_GROUP
 
@@ -1275,6 +1367,24 @@ class Group_Network_Object(Network_Object):
             members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link))
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
         return cls(display_name, is_global, connection_id, name, service_type, members, application_id)
+
+    @classmethod
+    def from_st_network_object(cls, st_network_obj):
+        members = []
+        for member in st_network_obj.members:
+            members.append(Base_Link_Target(Elements.MEMBER, None, member.display_name, member.name, None))
+
+        sa_group_obj = cls(st_network_obj.display_name, st_network_obj.global_, None, st_network_obj.name,
+                           st_network_obj.type, members)
+
+        return sa_group_obj
+
+    def __repr__(self):
+        return 'Group Network Object. Name: {},Members: {}'.format(self.display_name,
+                                                                   ','.join(str(member) for member in self.members))
+
+    def __str__(self):
+        return repr(self)
 
 
 class Customers_List(XML_List):

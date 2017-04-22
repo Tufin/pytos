@@ -66,8 +66,8 @@ class Network_Object(XML_Object_Base, Comparable):
         """This returns a netaddr set representing the Network_Object"""
         return netaddr.IPSet(self.as_netaddr_obj())
 
-    def __key(self):
-        return self.id, self.device_id
+    def _key(self):
+        return self.id, self.name, self.device_id, self.global_
 
     def as_sa_object(self, *, alt_class_name=None):
         module = import_module('Secure_App.XML_Objects.REST')

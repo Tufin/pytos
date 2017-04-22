@@ -68,7 +68,7 @@ class Comparable:
             raise TypeError("Unorderable types: {} < {}".format(type(self), type(other)))
 
 
-class XML_Base(Comparable):
+class XML_Base:
     SPACER_SIZE = 2
 
     def __init__(self, xml_tag, attribs=None):
@@ -100,9 +100,6 @@ class XML_Base(Comparable):
     def get_xml_tag(self):
         """Get the XML tag for the current element."""
         return self._xml_tag
-
-    def _key(self):
-        return self._xml_tag, self._attribs
 
     def get_attribs(self):
         return self._attribs

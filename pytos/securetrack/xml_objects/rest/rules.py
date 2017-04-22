@@ -98,7 +98,7 @@ class Zone(XML_Object_Base, Comparable):
         return cls(zone_id, name, domain)
 
     def _key(self):
-        return self.name
+        return self.id, self.name
 
     def __repr__(self):
         return "Zone({id},{name},{comment},{domain})".format(**self.__dict__)
@@ -163,7 +163,7 @@ class Zone_Entry(XML_Object_Base, Comparable, IPNetworkMixin):
         return ip_network
 
     def _key(self):
-        return self.zoneId, self.get_ip_network()
+        return self.id, self.zoneId
 
     def __repr__(self):
         return "Zone_Entry({id},{comment},{ip},{netmask},{zoneId})".format(**self.__dict__)
@@ -427,7 +427,7 @@ class Application(XML_Object_Base):
         return self.display_name
 
 
-class Rule(XML_Object_Base):
+class Rule(XML_Object_Base, Comparable):
     def __init__(self, num_id, uid, cp_uid, order, binding, action, comment, dst_networks, dst_networks_negated,
                  dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                  src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
@@ -459,6 +459,17 @@ class Rule(XML_Object_Base):
         self.application = application
         self.vpn = vpn
         super().__init__(xml_tags.Elements.RULE)
+
+    def _key(self):
+        hash_keys = [self.id, self.uid]
+        if self.device_id:
+            hash_keys.append(self.device_id)
+        if self.binding:
+            try:
+                hash_keys.append(self.binding.uid)
+            except AttributeError:
+                pass
+        return tuple(hash_keys)
 
     @classmethod
     def from_xml_node(cls, xml_node):

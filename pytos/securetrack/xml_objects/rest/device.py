@@ -14,7 +14,7 @@
 import logging
 from datetime import datetime
 
-from pytos.common.base_types import XML_Object_Base, XML_List
+from pytos.common.base_types import XML_Object_Base, XML_List, Comparable
 from pytos.common.definitions import xml_tags
 from pytos.common.functions import str_to_bool, XML_LOGGER_NAME
 from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value
@@ -22,7 +22,7 @@ from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value
 logger = logging.getLogger(XML_LOGGER_NAME)
 
 
-class Device(XML_Object_Base):
+class Device(XML_Object_Base, Comparable):
     def __init__(self, model, vendor, domain_id, domain_name, num_id, name, offline, topology=None, ip=None,
                  virtual_type=None):
         self.model = model
@@ -41,7 +41,7 @@ class Device(XML_Object_Base):
         super().__init__(xml_tags.Elements.DEVICE)
 
     def _key(self):
-        return self.id, self.domain_id, self.domain_id
+        return self.id, self.name
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -110,12 +110,6 @@ class Device(XML_Object_Base):
 
     def add_child(self, child):
         self._children.append(child)
-
-    def __hash__(self):
-        return hash(self._key())
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
 
     def __repr__(self):
         return "Device('{}','{}','{}','{}','{}','{}','{}','{}','{}',{})".format(self.model, self.vendor, self.domain_id,
