@@ -260,6 +260,7 @@ class REST_Request(object):
             return True
 
     def _perform_request(self):
+        print("perform request")
         start_time = datetime.datetime.now()
         exception_copy = None
         for retry_count in range(self.max_retries + 1):
