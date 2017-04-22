@@ -260,7 +260,7 @@ class REST_Request(object):
             return True
 
     def _perform_request(self):
-        print("perform request")
+        print("perform request ", self.request)
         start_time = datetime.datetime.now()
         exception_copy = None
         for retry_count in range(self.max_retries + 1):
@@ -414,6 +414,7 @@ class POST_Request(REST_Request):
         request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
         print(" request obj", self.body)
         self.request = request_obj.prepare()
+        print(self.request)
         self._perform_request()
 
 
