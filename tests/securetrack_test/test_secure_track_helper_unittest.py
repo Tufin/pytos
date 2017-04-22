@@ -243,8 +243,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
-        self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
-        self.mock_post_uri = self.post_patcher.start()
+        # self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
+        # self.mock_post_uri = self.post_patcher.start()
 
     def tearDown(self):
         self.patcher.stop()
@@ -305,8 +305,9 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.mock_get_uri.return_value.status_code = 201
         zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
         entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
-        self.mock_post_uri.assert_called_with('POST',
-                                              'https://192.168.204.161/securetrack/api/zones/36/entries?context=1',
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            mock_post_uri.assert_called_with('POST',
+                                             'https://localhost/securetrack/api/zones/36/entries?context=1',
                                               auth=('username', 'password'),
                                               data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
 
