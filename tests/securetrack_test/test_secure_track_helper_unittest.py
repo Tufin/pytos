@@ -265,7 +265,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         dst_tree.getroottree().write_c14n(dst_b)
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
-    def test_01_post_security_policy_matrix(self):
+    def test_03_post_security_policy_matrix(self):
         security_policy_name = 'Some Policy Name'
         security_policy = {
             'internal': {
