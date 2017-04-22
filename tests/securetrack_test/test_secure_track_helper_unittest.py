@@ -243,8 +243,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
-        self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
-        self.mock_post_request = self.post_patcher.start()
 
     def tearDown(self):
         self.patcher.stop()
@@ -268,7 +266,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
     def test_03_post_security_policy_matrix(self):
-        # self.mock_get_uri.return_value.status_code = 201
         self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.content = fake_request_response("zones")
         security_policy_name = 'Some Policy Name'
@@ -302,13 +299,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         }
         policy_id = self.helper.post_security_policy_matrix(security_policy_name, security_policy)
         self.assertEqual(policy_id, 1)
-        # body = b'--99a5063856d34d9fa0bca890ecb00e30\r\nContent-Disposition: form-data; name="security_policy_name"\r\n\r\nSome Policy Name\r\n--99a5063856d34d9fa0bca890ecb00e30\r\nContent-Disposition: form-data; name="file"; filename="security_policy"\r\nContent-Type: text/csv\r\n\r\nfrom zone,to zone,severity,access type,allowed services\r\ndmz,dmz,low,ignored,\r\ndmz,internal,critical,blocked,\r\nexternal,internal,high,restricted,https;Other 53;AOL;udp 88\r\ninternal,external,critical,ignored,\r\n\r\n--99a5063856d34d9fa0bca890ecb00e30--\r\n'
-        # header = {'Content-Type': 'multipart/form-data; boundary=99a5063856d34d9fa0bca890ecb00e30', 'Content-Size': '501', 'Accept': '*/*'}
-        # self.mock_post_request.assert_called_with("POST",
-        #                                           "https://192.168.204.161/securetrack/api/security_policies",
-        #                                           data=body,
-        #                                           auth=('username', 'password'),
-        #                                           headers=header)
 
     def test_02_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
