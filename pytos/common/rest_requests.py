@@ -411,6 +411,7 @@ class POST_Request(REST_Request):
 
         logger.info("Sending POST request to '%s'", self.url)
         request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
+        print(" request obj", self.body)
         self.request = request_obj.prepare()
         self._perform_request()
 
