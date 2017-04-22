@@ -243,6 +243,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
+        self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
+        self.mock_post_request = self.post_patcher.start()
 
     def tearDown(self):
         self.patcher.stop()
