@@ -1050,7 +1050,7 @@ class Secure_Track_Helper(Secure_API_Helper):
         logger.info("Posting new security policy rule matrix.")
         try:
             response = self.post_uri("/securetrack/api/security_policies", multi_part_form_params=multi_part_form_dict,
-                                     expected_status_codes=201)
+                                     expected_status_codes=200)
             policy_id = response.get_created_item_id()
             logger.info("Created security policy with ID '%s'.", policy_id)
             return policy_id
