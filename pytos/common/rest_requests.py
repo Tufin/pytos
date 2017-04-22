@@ -409,6 +409,7 @@ class POST_Request(REST_Request):
                     self.headers["Content-Type"] = "application/xml"
 
         logger.info("Sending POST request to '%s'", self.url)
+        print("POST", self.url, "data=", self.body, "auth=", self.auth_tuple, "headers=",self.headers)
         request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
         self.request = request_obj.prepare()
         self._perform_request()
