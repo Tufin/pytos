@@ -1046,10 +1046,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise ValueError("Unknown type '{}' for security policy.".format(type(security_policy)))
         multi_part_form_dict = {"security_policy_name": security_policy_name,
                                 "file": ("security_policy", security_policy_buffer, "text/csv")}
-
-        with open("/tmp/multi.txt", mode='wt') as f:
-            f.write(multi_part_form_dict)
-
+        raise ValueError(multi_part_form_dict)
         logger.info("Posting new security policy rule matrix.")
         try:
             response = self.post_uri("/securetrack/api/security_policies", multi_part_form_params=multi_part_form_dict,
