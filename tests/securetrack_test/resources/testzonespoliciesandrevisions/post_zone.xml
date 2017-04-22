@@ -1,9 +1,9 @@
 <zone>
-	<comment>Name: New Zone, Created at: 2017-04-22 10:09:18</comment>
-	<domain>
-		<id>1</id>
-		<name>Default</name>
-	</domain>
-	<id/>
-	<name>New Zone</name>
+  <comment>Name: New Zone, Created at: 2017-04-22 10:09:18</comment>
+  <domain>
+    <id>1</id>
+    <name>Default</name>
+  </domain>
+  <id/>
+  <name>New Zone</name>
 </zone>
