@@ -254,7 +254,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
     def test_02_post_zone(self):
         self.mock_get_uri.return_value.content = fake_request_response("zones")
-        zone_name = "New Zone Name"
+        zone_name = "New Zone"
         comment = 'Name: {}, Created at: {}'.format(zone_name, time.strftime('%Y-%m-%d %H:%M:%S'))
         zone_obj = Zone(None, zone_name, comment)
         print(zone_obj.to_xml_string())
