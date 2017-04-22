@@ -253,12 +253,17 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertIsInstance(zones, Zone_List)
 
     def test_02_post_zone(self):
+        src_xml = fake_request_response("post_zone")
+        src_tree = lxml.etree.fromstring(src_xml)
+        src_b = io.BytesIO()
+        src_tree.getroottree().write_c14n(src_b)
         self.mock_get_uri.return_value.content = fake_request_response("zones")
-        zone_name = "New Zone"
-        comment = 'Name: {}, Created at: {}'.format(zone_name, time.strftime('%Y-%m-%d %H:%M:%S'))
-        zone_obj = Zone(None, zone_name, comment)
-        print(zone_obj.to_xml_string())
-        zone_id = self.helper.post_zone(zone_obj)
+        comment = 'Name: {}, Created at: {}'.format("New Zone", time.strftime('%Y-%m-%d %H:%M:%S'))
+        zone_obj = Zone(None, "New Zone", comment)
+        dst_tree = lxml.etree.fromstring(zone_obj.to_xml_string())
+        dst_b = io.BytesIO()
+        dst_tree.getroottree().write_c14n(dst_b)
+        self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
     def test_01_post_security_policy_matrix(self):
         security_policy_name = 'Some Policy Name'
