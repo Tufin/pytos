@@ -243,8 +243,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
-        # self.post_patcher = patch('pytos.common.rest_requests.requests.Request')
-        # self.mock_post_uri = self.post_patcher.start()
 
     def tearDown(self):
         self.patcher.stop()
@@ -302,14 +300,22 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertEqual(policy_id, 1)
 
     def test_04_post_zone_entry(self):
+        self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.status_code = 201
         zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
+            self.assertEqual(entry_id, 1)
             mock_post_uri.assert_called_with('POST',
                                              'https://localhost/securetrack/api/zones/36/entries?context=1',
                                               auth=('username', 'password'),
                                               data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
+
+    def test_05_delete_zone_entry(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            result = self.helper.delete_zone_entry_by_zone_and_entry_id(1, 1)
+            self.assertTrue(result)
+            mock_post_uri.assert_called_with('DELETE')
 
     def test_04_post_put_delete_zone_entry(self):
         # taking only zones that are not the "internet zone"
