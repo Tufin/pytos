@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<zone_entries>
+    <count>3</count>
+    <total>3</total>
+    <zone_entry>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+        <id>54</id>
+        <ip>172.16.0.0</ip>
+        <netmask>255.255.255.0</netmask>
+        <prefix>24</prefix>
+        <zoneId>13</zoneId>
+        <zoneName>External</zoneName>
+    </zone_entry>
+    <zone_entry>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+        <id>55</id>
+        <ip>88.88.88.88</ip>
+        <netmask>255.255.255.255</netmask>
+        <prefix>32</prefix>
+        <zoneId>13</zoneId>
+        <zoneName>External</zoneName>
+    </zone_entry>
+    <zone_entry>
+        <domain>
+            <id>1</id>
+            <name>Default</name>
+        </domain>
+        <id>65</id>
+        <ip>198.36.195.0</ip>
+        <netmask>255.255.255.0</netmask>
+        <prefix>24</prefix>
+        <zoneId>13</zoneId>
+        <zoneName>External</zoneName>
+    </zone_entry>
+</zone_entries>
