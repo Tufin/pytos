@@ -323,7 +323,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def test_06_modify_zone_entry(self):
         self.mock_get_uri.return_value.content = fake_request_response("zone_entries")
         zone_entries = self.helper.get_entries_for_zone_id(13)
-        print(zone_entries)
         zone_entry = zone_entries[0]
         zone_entry.comment = "Modified entry"
         zone_entry.ip = '101.101.101.101'
@@ -332,81 +331,20 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             result = self.helper.put_zone_entry(13, zone_entry)
             self.assertTrue(result)
-            mock_post_uri.assert_called_with('DELETE',
-                                             'https://localhost/securetrack/api/zones/1/entries/1?context=1',
+            mock_post_uri.assert_called_with('PUT',
+                                             'https://localhost/securetrack/api/zones/13/entries/54?context=1',
                                              auth=('username', 'password'),
-                                             headers={'Content-Type': 'application/xml'})
+                                             data='<zone_entry>\n  <comment>Modified entry</comment>\n  <id>54</id>\n  <ip>101.101.101.101</ip>\n  <negate>0</negate>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>13</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
 
-    def test_04_post_put_delete_zone_entry(self):
-        # taking only zones that are not the "internet zone"
-        zones = [zone for zone in self.helper.get_zones() if zone.name != 'Internet']
-        all_entries = []
-        for zone in zones:
-            all_entries.extend(self.helper.get_entries_for_zone_id(zone.id))
-        all_ids = [entry.id for entry in all_entries]
-        entry_id = len(all_ids) + 1
-        entry_description = time.strftime('%Y-%m-%d %H:%M:%S')
-        entry_ip = '1.1.1.{}'.format(entry_id)
-        entry_negate = 0
-        entry_mask = '255.255.255.255'
-
-        zone_id = zones[-1].id
-        zone_name = zones[-1].name
-        entries = self.helper.get_entries_for_zone_id(zones[-1].id)
-        zone_entry = Zone_Entry(entry_id, entry_description, entry_ip, entry_negate, entry_mask, zone_id)
-        entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
-        time.sleep(2)
-        entries = self.helper.get_entries_for_zone_id(zone_id)
-        all_ids_returned = [entry.id for entry in entries]
-        try:
-            returned_entry = [entry for entry in entries if int(entry.id) == entry_id][0]
-        except IndexError:
-            message = ('failed to receive newly created entry with ID {} under zone ID {}.'.format(entry_id, zone_id) +
-                       '\nAll entries ids received are:\n{}'.format(all_ids_returned))
-            LOGGER.critical(message)
-            raise IOError(message)
-        self.assertTrue(returned_entry.comment == str(entry_description))
-        self.assertTrue(returned_entry.ip == str(entry_ip))
-        self.assertTrue(returned_entry.zoneId == zone_id)
-
-        # Changes that are being made to the entry.
-        entry_description = entry_description + '\n' + time.strftime('%Y-%m-%d %H:%M:%S') + ': Queued for deletion.'
-        entry_ip = '101.101.101.101'.format(entry_id)
-        entry_negate = 1
-        entry_mask = '255.255.255.0'
-
-        zone_entry = returned_entry
-        zone_entry.comment = entry_description
-        zone_entry.ip = entry_ip
-        zone_entry.negate = entry_negate
-        zone_entry.netmask = entry_mask
-        self.helper.put_zone_entry(zone_id, zone_entry)
-        time.sleep(2)
-        entries = self.helper.get_entries_for_zone_id(zone_id)
-        try:
-            returned_entry = [entry for entry in entries if int(entry.id) == entry_id][0]
-        except IndexError:
-            message = 'Failed to receive newly modified entry with ID {} under zone ID {}'.format(entry_id, zone_id)
-            LOGGER.critical(message)
-            raise IOError(message)
-        self.assertTrue(returned_entry.comment == str(entry_description))
-        self.assertTrue(returned_entry.ip == str(entry_ip))
-        self.assertTrue(returned_entry.netmask == str(entry_mask))
-        self.assertTrue(returned_entry.zoneId == zone_id)
-
-        self.helper.delete_zone_entry_by_zone_and_entry_id(zone_id, entry_id)
-        entries = self.helper.get_entries_for_zone_id(zone_id)
-        self.assertTrue(len([entry for entry in entries if entry.id == entry_id]) == 0)
-
-    def test_03_get_zone_by_name(self):
-        # assert valid request
+    def test_07_get_zone_by_name(self):
+        self.mock_get_uri.return_value.content = fake_request_response("zones")
         zone = self.helper.get_zone_by_name("dmz")
-        self.assertIsInstance(zone, pytos.securetrack.xml_objects.rest.rules.Zone)
+        self.assertIsInstance(zone, Zone)
         self.assertEqual(zone.name, "dmz")
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_zone_by_name("NotExsistingZone")
+        # # assert invalid request
+        # with self.assertRaises(ValueError):
+        #     self.helper.get_zone_by_name("NotExsistingZone")
 
     def test_04_get_entries_for_zones(self):
         # assert valid request
