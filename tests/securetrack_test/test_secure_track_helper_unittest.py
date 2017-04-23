@@ -377,7 +377,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.status_code = 201
         xml = fake_request_response("exception")
-        policy_exception = security_policy.Security_Policy_Exception.from_xml_string(str(xml))
+        policy_exception = security_policy.Security_Policy_Exception.from_xml_string(xml.decode("utf-8"))
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.helper.post_security_policy_exception(policy_exception)
             mock_post_uri.assert_called_with('PUT')
