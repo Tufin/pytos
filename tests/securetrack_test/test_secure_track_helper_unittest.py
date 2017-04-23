@@ -355,46 +355,37 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         policy_analysis = self.helper.get_policy_analysis(155)
         self.assertIsInstance(policy_analysis, Policy_Analysis_Query_Result)
 
-    def test_07_get_security_policies(self):
+    def test_10_get_security_policies(self):
         self.mock_get_uri.return_value.content = fake_request_response("securitypolicylist")
         policies = self.helper.get_security_policies()
         self.assertIsInstance(policies, Security_Policies_List)
 
-    def test_08_get_security_policy_by_name(self):
+    def test_11_get_security_policy_by_name(self):
         self.mock_get_uri.return_value.content = fake_request_response("securitypolicylist")
         policy = self.helper.get_security_policy_by_name("policy")
         self.assertIsInstance(policy, Security_Policy)
         self.assertEqual(policy.name, "policy")
 
-    def test_09_get_security_policy_by_id(self):
-        # assert valid request
-        policy = self.helper.get_security_policy_by_id(security_policy_id, default_domain_id)
-        self.assertIsInstance(policy, pytos.securetrack.xml_objects.rest.rules.Security_Policy)
-        self.assertEqual(policy.id, security_policy_id)
+    def test_12_get_security_policy_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("securitypolicylist")
+        policy = self.helper.get_security_policy_by_id(3)
+        self.assertEqual(policy.id, 3)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_security_policy_by_id(5555, default_domain_id)
+    # def test_13_get_security_policy_matrix_csv(self):
+    #     # assert valid request
+    #     file = self.helper.get_security_policy_matrix_csv(security_policy_id)
+    #     self.assertIsInstance(file, bytes)
+    #     self.assertTrue(file)
+    #
+    #     # assert invalid request
+    #     with self.assertRaises(ValueError):
+    #         self.helper.get_security_policy_matrix_csv(5555)
 
-    def test_10_get_security_policy_matrix_csv(self):
-        # assert valid request
-        file = self.helper.get_security_policy_matrix_csv(security_policy_id)
-        self.assertIsInstance(file, bytes)
-        self.assertTrue(file)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_security_policy_matrix_csv(5555)
-
-    def test_11_delete_security_policy_matrix(self):
-        # assert valid request
-        self.helper.delete_security_policy_matrix(security_policy_id)
-        with self.assertRaises(ValueError):
-            self.helper.get_security_policy_by_id(security_policy_id, default_domain_id)
-
-        # assert invalid request
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.delete_security_policy_matrix(security_policy_id)
+    def test_13_delete_security_policy_matrix(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            result = self.helper.delete_security_policy_matrix(3)
+            self.assertTrue(result)
+            mock_post_uri.assert_called_with('DELETE')
 
     def test_12_get_revision_by_id(self):
         # assert valid request
