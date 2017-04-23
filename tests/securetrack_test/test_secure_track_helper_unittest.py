@@ -20,7 +20,8 @@ from pytos.securetrack.xml_objects.base_types import Network_Object
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
     Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result
+    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result, \
+    Security_Policies_List, Security_Policy
 
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
@@ -355,22 +356,15 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertIsInstance(policy_analysis, Policy_Analysis_Query_Result)
 
     def test_07_get_security_policies(self):
+        self.mock_get_uri.return_value.content = fake_request_response("securitypolicylist")
         policies = self.helper.get_security_policies()
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.rules.Security_Policies_List)
-        self.assertTrue(len(policies) > 0)
+        self.assertIsInstance(policies, Security_Policies_List)
 
     def test_08_get_security_policy_by_name(self):
-        global security_policy_id
-
-        # assert valid request
-        policy = self.helper.get_security_policy_by_name(security_policy_name, default_domain_id)
-        self.assertIsInstance(policy, pytos.securetrack.xml_objects.rest.rules.Security_Policy)
-        self.assertEqual(policy.name, security_policy_name)
-        security_policy_id = policy.id
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_security_policy_by_name("NotExistingPolicy", default_domain_id)
+        self.mock_get_uri.return_value.content = fake_request_response("securitypolicylist")
+        policy = self.helper.get_security_policy_by_name("policy")
+        self.assertIsInstance(policy, Security_Policy)
+        self.assertEqual(policy.name, "policy")
 
     def test_09_get_security_policy_by_id(self):
         # assert valid request
