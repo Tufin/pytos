@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policies>
+    <policy>
+        <id>39975</id>
+        <itg_id>634</itg_id>
+        <itg>CL1</itg>
+        <name>TEST</name>
+        <unique_active_in_itg>true</unique_active_in_itg>
+    </policy>
+    <policy>
+        <id>39973</id>
+        <itg_id>417</itg_id>
+        <itg>Cluster1</itg>
+        <name>TEST2</name>
+        <unique_active_in_itg>true</unique_active_in_itg>
+    </policy>
+</policies>

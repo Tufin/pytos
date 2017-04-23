@@ -21,7 +21,7 @@ from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, D
     Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result, \
-    Security_Policies_List, Security_Policy
+    Security_Policies_List, Security_Policy, SecurityPolicyDeviceViolations, Policy_List
 
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
@@ -371,83 +371,30 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         policy = self.helper.get_security_policy_by_id(3)
         self.assertEqual(policy.id, 3)
 
-    # def test_13_get_security_policy_matrix_csv(self):
-    #     # assert valid request
-    #     file = self.helper.get_security_policy_matrix_csv(security_policy_id)
-    #     self.assertIsInstance(file, bytes)
-    #     self.assertTrue(file)
-    #
-    #     # assert invalid request
-    #     with self.assertRaises(ValueError):
-    #         self.helper.get_security_policy_matrix_csv(5555)
-
     def test_13_delete_security_policy_matrix(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             result = self.helper.delete_security_policy_matrix(3)
             self.assertTrue(result)
-            mock_post_uri.assert_called_with('DELETE')
+            mock_post_uri.assert_called_with('DELETE',
+                                             'https://localhost/securetrack/api/security_policies/3',
+                                             auth=('username', 'password'),
+                                             headers={'Content-Type': 'application/xml'})
 
-    def test_12_get_revision_by_id(self):
-        # assert valid request
-        revision = self.helper.get_revision_by_id(1)
+    def test_14_get_revision_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("revision")
+        revision = self.helper.get_revision_by_id(5685)
         self.assertIsInstance(revision, Device_Revision)
-        self.assertTrue(revision.id, 1)
+        self.assertTrue(revision.id, 5685)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_revision_by_id(9999)
+    def test_15_get_security_policy_device_violations_by_severity(self):
+        self.mock_get_uri.return_value.content = fake_request_response("security_policy_device_violations")
+        violations = self.helper.get_security_policy_device_violations_by_severity(159, "CRITICAL", "SECURITY_POLICY")
+        self.assertIsInstance(violations, SecurityPolicyDeviceViolations)
 
-    def test_13_get_revisions_base(self):
-        revision_base = self.helper.get_revisions_base()
-        self.assertIsInstance(revision_base, dict)
-        self.assertTrue(len(revision_base) > 0)
-
-    def test_14_get_policies_base(self):
-        policies_base = self.helper.get_policies_base()
-        self.assertIsInstance(policies_base, dict)
-        self.assertTrue(len(policies_base) > 0)
-
-    def test_15_get_security_policy_violations_for_all_devices(self):
-        policy_violations = self.helper.get_security_policy_violations_for_all_devices()
-        for device, device_violations in policy_violations.items():
-            if device.name == offline_device_name:
-                violations = device_violations["MEDIUM"]
-                self.assertIsInstance(violations.violating_rules,
-                                      pytos.securetrack.xml_objects.rest.rules.ViolatingRules)
-                self.assertIsInstance(violations.violating_rules.violating_rule_list, list)
-                self.assertTrue(len(violations.violating_rules.violating_rule_list) > 0)
-
-    def test_16_get_security_policy_device_violations_by_severity(self):
-        # assert valid requests
-        device_id = self.helper.get_device_id_by_name(offline_device_name)
-        violations = self.helper.get_security_policy_device_violations_by_severity(device_id,
-                                                                                   "MEDIUM", "SECURITY_POLICY")
-        self.assertIsInstance(violations.violating_rules, pytos.securetrack.xml_objects.rest.rules.ViolatingRules)
-        self.assertIsInstance(violations.violating_rules.violating_rule_list, list)
-        self.assertTrue(len(violations.violating_rules.violating_rule_list) > 0)
-
-        # assert valid requests
-        with self.assertRaises(REST_Not_Found_Error):
-            self.helper.get_security_policy_device_violations_by_severity(5555, "MEDIUM", "SECURITY_POLICY")
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_security_policy_device_violations_by_severity(5555, "NotExistsSeverity", "SECURITY_POLICY")
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_security_policy_device_violations_by_severity(5555, "MEDIUM", "NotExistsSECURITY_POLICY")
-
-    def test_17_get_policies_for_revision(self):
-        # get revisions for device
-        revisions = self.helper.get_device_revisions_by_id(device_id=checkpoint_device_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.device.Device_Revisions_List)
-        self.assertTrue(len(revisions) > 0)
-
-        # assert valid request
-        policies = self.helper.get_policies_for_revision(revisions[0].id)
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.rules.Policy_List)
-        self.assertTrue(len(policies) > 0)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_policies_for_revision(5555)
+    def test_16_get_policies_for_revision(self):
+        self.mock_get_uri.return_value.content = fake_request_response("policies")
+        policies = self.helper.get_policies_for_revision(1)
+        self.assertIsInstance(policies, Policy_List)
 
     def test_18_get_policies_for_device(self):
         # assert valid request

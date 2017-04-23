@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<revision>
+    <action>automatic</action>
+    <admin>-</admin>
+    <auditLog>-</auditLog>
+    <authorizationStatus>authorized</authorizationStatus>
+    <date>2017-04-23</date>
+    <firewall_status>true</firewall_status>
+    <guiClient>-</guiClient>
+    <id>5685</id>
+    <modules_and_policy/>
+    <policyPackage>Standard</policyPackage>
+    <ready>true</ready>
+    <revisionId>10</revisionId>
+    <tickets/>
+    <time>16:01:53.000</time>
+</revision>
