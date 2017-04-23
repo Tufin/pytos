@@ -23,35 +23,6 @@ from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result, \
     Security_Policies_List, Security_Policy, SecurityPolicyDeviceViolations, Policy_List
 
-test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
-
-# existing device -  need to change these ID's when we'll have final version of the TOS for the testing suit
-cisco_ASA_id = 1
-cisco_router2801_id = 2
-cisco_ASA_rules_UIDs = []
-added_offline_device_id = 0
-added_generic_device_id = 0
-added_supported_device_id = 0
-added_generic_device_name = ""
-checkpoint_device_id = 5
-offline_device_name = "offline"
-
-default_domain_id = 1
-
-security_policy_name = ""
-security_policy_id = 0
-# need to remove it when go to live
-
-report_id = 0
-dcr_id = 0
-
-g_network_object = Network_Object(*(10 * [""]))
-g_network_object_group = None
-g_topology_edges_ids = []
-
-g_service = None
-g_service_group = None
-
 
 def fake_request_response(rest_file):
     full_path = os.path.dirname(os.path.abspath(__file__))
@@ -396,23 +367,20 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         policies = self.helper.get_policies_for_revision(1)
         self.assertIsInstance(policies, Policy_List)
 
-    def test_18_get_policies_for_device(self):
-        # assert valid request
-        policies = self.helper.get_policies_for_device(checkpoint_device_id)
-        self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.rules.Policy_List)
-        self.assertTrue(len(policies) > 0)
+    # def test_18_get_policies_for_device(self):
+    #     # assert valid request
+    #     policies = self.helper.get_policies_for_device(checkpoint_device_id)
+    #     self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.rules.Policy_List)
+    #     self.assertTrue(len(policies) > 0)
 
-    def test_19_post_security_policy_exception(self):
-        # assert valid request
-        with open(test_data_dir + "exception.xml") as f:
-            xml = f.read()
-
-        policy_exception = security_policy.Security_Policy_Exception.from_xml_string(xml)
-        self.helper.post_security_policy_exception(policy_exception)
-
-        # assert invalid request - duplicate name
-        with self.assertRaises(ValueError):
+    def test_17_post_security_policy_exception(self):
+        self.mock_get_uri.return_value.headers = {'location': '1'}
+        self.mock_get_uri.return_value.status_code = 201
+        xml = fake_request_response("exception")
+        policy_exception = security_policy.Security_Policy_Exception.from_xml_string(str(xml))
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.helper.post_security_policy_exception(policy_exception)
+            mock_post_uri.assert_called_with('PUT')
 
     def test_20_delete_zone_by_zone_id(self):
         zone = self.helper.get_zone_by_name("external")
