@@ -17,9 +17,10 @@ from pytos.common.functions.config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.base_types import Network_Object
-from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList
+from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
+    Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List
+    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result
 
 test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Track_Test/"
 
@@ -342,50 +343,16 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertIsInstance(zone, Zone)
         self.assertEqual(zone.name, "dmz")
 
-        # # assert invalid request
-        # with self.assertRaises(ValueError):
-        #     self.helper.get_zone_by_name("NotExsistingZone")
-
-    def test_04_get_entries_for_zones(self):
-        # assert valid request
-        zone_data = self.helper.get_entries_for_zones()
-        self.assertIsInstance(zone_data, dict)
-        self.assertTrue(zone_data)
-
-        zone_entries = [x.zone_entries for x in zone_data.values() if x.zone_entries]
-
-        self.assertIsInstance(zone_entries[0][0], pytos.securetrack.xml_objects.rest.rules.Zone_Entry)
-        self.assertTrue(zone_entries[0][0].ip)
-
-    def test_05_get_device_revisions_by_id(self):
-        # assert an existing device
-        revisions = self.helper.get_device_revisions_by_id(device_id=cisco_ASA_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.device.Device_Revisions_List)
+    def test_08_get_device_revisions_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("revisons")
+        revisions = self.helper.get_device_revisions_by_id(device_id=155)
+        self.assertIsInstance(revisions, Device_Revisions_List)
         self.assertTrue(len(revisions) > 0)
 
-        # assert non existing device - this should throw a ValueError but instead returns an empty result
-        revisions = self.helper.get_device_revisions_by_id(device_id=55555)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.device.Device_Revisions_List)
-        self.assertTrue(len(revisions) == 0)
-
-        '''
-        with self.assertRaises(ValueError):
-            self.helper.get_device_revisions_by_id(device_id=55555)
-        '''
-
-    def test_06_get_policy_analysis(self):
-        # assert valid request
-        policy_analysis = self.helper.get_policy_analysis(cisco_ASA_id)
-        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.rest.rules.Policy_Analysis_Query_Result)
-        self.assertTrue(len(policy_analysis.devices_and_bindings) == 1)
-
-        policy_analysis = self.helper.get_policy_analysis([cisco_ASA_id, cisco_router2801_id])
-        self.assertIsInstance(policy_analysis, pytos.securetrack.xml_objects.rest.rules.Policy_Analysis_Query_Result)
-        self.assertTrue(len(policy_analysis.devices_and_bindings) == 2)
-
-        # assert invalid request
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_policy_analysis(5555)
+    def test_09_get_policy_analysis(self):
+        self.mock_get_uri.return_value.content = fake_request_response("policy_analysis_query_result")
+        policy_analysis = self.helper.get_policy_analysis(155)
+        self.assertIsInstance(policy_analysis, Policy_Analysis_Query_Result)
 
     def test_07_get_security_policies(self):
         policies = self.helper.get_security_policies()
