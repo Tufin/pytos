@@ -19,9 +19,11 @@ from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.base_types import Network_Object
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
     Device_Revisions_List
-from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Zone, Zone_Entry, Bindings_List, \
-    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Zone_List, Policy_Analysis_Query_Result, \
-    Security_Policies_List, Security_Policy, SecurityPolicyDeviceViolations, Policy_List
+from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Bindings_List, \
+    Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Policy_Analysis_Query_Result, \
+    SecurityPolicyDeviceViolations, Policy_List
+from pytos.securetrack.xml_objects.rest.security_policy import Security_Policies_List, Security_Policy
+from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry
 
 
 def fake_request_response(rest_file):
@@ -424,33 +426,6 @@ class TestTopology(unittest.TestCase):
         with self.assertRaises(REST_Bad_Request_Error):
             # noinspection PyTypeChecker
             self.helper.get_topology_interfaces("NotValidRequest")
-
-
-class TestReports(unittest.TestCase):
-    def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
-
-    def test_04_post_dcr_test(self):
-        global dcr_id
-        with open(test_data_dir + "cisco_ASA.xml") as file:
-            xml_string = file.read()
-            dcr_test_id = self.helper.post_dcr_test(
-                pytos.securetrack.xml_objects.rest.Audit.DCR_Test_Group.from_xml_string(xml_string))
-            self.assertTrue(dcr_test_id)
-            self.assertIsInstance(dcr_test_id, int)
-            dcr_id = dcr_test_id
-
-    def test_05_get_dcr_test_by_id(self):
-        # assert valid request
-        dcr = self.helper.get_dcr_test_by_id(dcr_id)
-        self.assertIsInstance(dcr, pytos.securetrack.xml_objects.rest.Audit.DCR_Test_Group)
-        self.assertEqual(int(dcr.id), dcr_id)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_dcr_test_by_id(1000)
 
 
 class TestDomains(unittest.TestCase):
