@@ -955,6 +955,11 @@ class Basic_Network_Object(Network_Object):
         else:
             return netaddr.IPNetwork("0.0.0.0/0")
 
+    @classmethod
+    def from_st_network_object(cls, st_network_obj):
+        return cls(st_network_obj.display_name, st_network_obj.global_, None, st_network_obj.name, st_network_obj.type,
+                   st_network_obj.ip, application_id=None)
+
 
 class Internet_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_INTERNET
