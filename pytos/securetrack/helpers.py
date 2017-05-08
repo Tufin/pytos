@@ -35,8 +35,11 @@ from pytos.securetrack.xml_objects.rest.domain import Domains
 from pytos.securetrack.xml_objects.rest.routes import RoutesList
 from pytos.securetrack.xml_objects.rest.rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
     Interfaces_List, Topology_Interfaces_List, Policy_Analysis_Query_Result, Network_Objects_List, Services_List, \
-    Security_Policies_List, Rule_Documentation, Zone_Entries_List, SecurityPolicyDeviceViolations, Change_Authorization, \
-    Zone_List
+    Rule_Documentation, SecurityPolicyDeviceViolations, Change_Authorization
+from pytos.securetrack.xml_objects.rest.security_policy import SecurityPolicyExceptionList, Security_Policy_Exception, \
+    Security_Policies_List
+from pytos.securetrack.xml_objects.rest.zones import Zone_Entries_List, Zone_List, \
+    ZoneDescendantsList
 
 logger = logging.getLogger(HELPERS_LOGGER_NAME)
 
@@ -893,6 +896,32 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise ValueError(msg)
         return service
 
+    def get_security_policy_exceptions(self, domain_id=DEFAULT_DOMAIN_ID):
+        logger.info("Getting security policy exceptions for domain id '{}'".format(domain_id))
+        url = "/securetrack/api/security_policies/exceptions?context={}".format(domain_id)
+        try:
+            response_string = self.get_uri(url, expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of exceptions for domain ID {}.".format(domain_id)
+            logger.critical(message)
+            raise IOError(message)
+        return SecurityPolicyExceptionList.from_xml_string(response_string)
+
+    def get_security_policy_exception(self, exception_id, domain_id=DEFAULT_DOMAIN_ID):
+        logger.info("Getting security policy exception id '{}' for domain id '{}'".format(exception_id, domain_id))
+        url = "/securetrack/api/security_policies/exceptions/{}?context={}".format(exception_id, domain_id)
+        try:
+            response_string = self.get_uri(url, expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of exceptions for domain ID {}.".format(domain_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Exception with ID {} does not exist.".format(exception_id)
+            logger.critical(message)
+            raise ValueError(message)
+        return Security_Policy_Exception.from_xml_string(response_string)
+
     def post_security_policy_exception(self, exception, domain_id=DEFAULT_DOMAIN_ID):
         """Create a new Unified Security Policy exception in SecureTrack.
 
@@ -917,6 +946,26 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to create security policy exception, error was '{}'.".format(client_error.message)
             logger.critical(message)
             raise ValueError(message)
+
+    def delete_security_policy_exception(self, exception_id):
+        """
+        :param exception_id: Exception ID
+        :type exception_id: int
+        :return: 
+        """
+        logger.info("Deleting security policy exception id '{}'".format(exception_id))
+        url = "/securetrack/api/security_policies/exceptions/{}".format(exception_id)
+        try:
+            self.delete_uri(url, expected_status_codes=[200, 204])
+        except RequestException:
+            message = "Failed to delete security policy exception with ID {}.".format(exception_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Security Policy Exception with ID {} doesn't exist.".format(exception_id)
+            logger.critical(message)
+            raise ValueError(message)
+        return True
 
     def get_security_policies(self, domain_id=DEFAULT_DOMAIN_ID):
         """Get unified security policies from SecureTrack.
@@ -1266,6 +1315,27 @@ class Secure_Track_Helper(Secure_API_Helper):
             if match:
                 return zone
         raise ValueError("Could not find a zone with the name '{}'.".format(zone_name))
+
+    def get_zone_descendants(self, zone_ids, domain_id=DEFAULT_DOMAIN_ID):
+        """Get the zones descendants.
+        :param zone_ids: comma separated list of id, list of ids or single id
+        :type: string, list
+        :param domain_id: return zones in this domain
+        :type: int
+        :return: The list of zones configured in SecureTrack.
+        :rtype: Zone_List
+        """
+        logger.info("Getting SecureTrack Zones descendants")
+        if isinstance(zone_ids, list):
+            zone_ids = ','.join(zone_ids)
+        url = "/securetrack/api/zones/{}/descendants?context={}".format(zone_ids, domain_id)
+        try:
+            response_string = self.get_uri(url, expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of zones descendants"
+            logger.critical(message)
+            raise IOError(message)
+        return ZoneDescendantsList.from_xml_string(response_string)
 
     def get_entries_for_zone_id(self, zone_id, domain_id=DEFAULT_DOMAIN_ID):
         """Get the zone entries for a zone by its ID.

@@ -22,6 +22,67 @@ from pytos.securetrack.xml_objects.rest.domain import Domain
 logger = logging.getLogger(XML_LOGGER_NAME)
 
 
+class Security_Policy(XML_Object_Base):
+    def __init__(self, policy_id, policy_name, domain_id, domain_name, attr_type=None):
+        self.id = policy_id
+        self.name = policy_name
+        self.domain_id = domain_id
+        self.domain_name = domain_name
+        super().__init__(Elements.SECURITY_POLICY)
+        self.set_attrib(Attributes.XSI_TYPE, attr_type)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+        policy_id = get_xml_int_value(xml_node, Elements.ID)
+        policy_name = get_xml_text_value(xml_node, Elements.NAME)
+        domain_id = get_xml_int_value(xml_node, Elements.DOMAIN_ID)
+        domain_name = get_xml_text_value(xml_node, Elements.DOMAIN_NAME)
+        try:
+            attr_type = xml_node.attrib[Attributes.XSI_NAMESPACE_TYPE]
+        except (AttributeError, KeyError):
+            attr_type = None
+        return cls(policy_id, policy_name, domain_id, domain_name, attr_type)
+
+
+class Security_Policies_List(XML_List):
+    def __init__(self, policies):
+        """
+        :type policies: list[Security_Policy]
+        """
+        self.policies = policies
+        super().__init__(Elements.SECURITY_POLICY_LIST, policies)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize object from XML node
+        :param xml_node:  The XML node with the object
+        :type xml_node: xml.etree.Element
+        """
+        policies = []
+        for policy_node in xml_node.iter(tag=Elements.SECURITY_POLICY):
+            policies.append(Security_Policy.from_xml_node(policy_node))
+        return cls(policies)
+
+
+class SecurityPolicyExceptionList(XML_List):
+    def __init__(self, security_policy_exception_list):
+        self.security_policy_exception_list = security_policy_exception_list
+        super().__init__(xml_tags.Elements.SECURITY_POLICY_EXCEPTION_LIST, security_policy_exception_list)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        security_policy_exception_list = []
+        for security_policy_exception in xml_node.iter(xml_tags.Elements.SECURITY_POLICY_EXCEPTION):
+            security_policy_exception_list.append(Security_Policy_Exception.from_xml_node(security_policy_exception))
+        return cls(security_policy_exception_list)
+
+
 class Security_Policy_Exception(XML_Object_Base):
     def __init__(self, name, expiration_date, ticket_id, created_by, approved_by, requested_by, creation_date,
                  description, exempted_traffic_list, domain=None):
@@ -181,7 +242,6 @@ class Exception_Any_Network_Item(Exception_Network_Item):
     def __init__(self, item_id):
         super().__init__(item_id)
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.VIOLATION_ANY_NETWORK_OBJECT)
-
 
 
 class Exception_Range_Network_Item(Exception_Network_Item):
