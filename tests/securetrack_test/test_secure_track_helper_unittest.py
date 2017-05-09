@@ -386,7 +386,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
     # @patch('pytos.common.rest_requests.requests.Request')
     # @patch('Secure_Track_Helper.get_entries_for_zone_id')
-    def test_18_delete_zone_by_zone_id(self, zone_en):
+    def test_18_delete_zone_by_zone_id(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             self.helper.delete_zone_by_zone_id(1, True)
             mock_delete_uri.assert_called_with(
