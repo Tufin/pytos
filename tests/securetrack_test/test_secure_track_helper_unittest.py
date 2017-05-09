@@ -391,7 +391,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             self.helper.delete_zone_by_zone_id(1, True)
             mock_delete_uri.assert_called_with(
                 'DELETE',
-                'https://localhost/securetrack/api/security_policies/exceptions/?context=1',
+                'https://localhost/securetrack/api/zones/1',
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
