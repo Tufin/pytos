@@ -364,12 +364,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         policies = self.helper.get_policies_for_revision(1)
         self.assertIsInstance(policies, Policy_List)
 
-    # def test_18_get_policies_for_device(self):
-    #     # assert valid request
-    #     policies = self.helper.get_policies_for_device(checkpoint_device_id)
-    #     self.assertIsInstance(policies, pytos.securetrack.xml_objects.rest.rules.Policy_List)
-    #     self.assertTrue(len(policies) > 0)
-
     def test_17_post_security_policy_exception(self):
         self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.status_code = 201
@@ -395,21 +389,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
-
-
-        # with self.assertRaises(ValueError):
-        #     self.helper.get_zone_by_name("external")
-        #
-        # zone = self.helper.get_zone_by_name("dmz")
-        # # assert valid requests - delete zone with entries
-        # self.helper.delete_zone_by_zone_id(zone.id, True)
-        #
-        # # assert invalid request
-        # with self.assertRaises(ValueError):
-        #     self.helper.get_zone_by_name("dmz")
-        #
-        # with self.assertRaises(ValueError):
-        #     self.helper.delete_zone_by_zone_id(5555)
 
 
 class TestTopology(unittest.TestCase):
