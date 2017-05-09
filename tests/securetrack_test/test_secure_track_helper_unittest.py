@@ -4,19 +4,14 @@ import lxml.etree
 import pytos
 import os
 import io
-import tempfile
-import time
 import unittest
 from unittest.mock import patch
 
 from pytos.securetrack.helpers import Secure_Track_Helper
 from pytos.securetrack.xml_objects.rest.cleanups import Generic_Cleanup_List
 from pytos.securetrack.xml_objects.rest.domain import Domains
-from pytos.common.logging.logger import setup_loggers
-from pytos.common.functions.config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.rest import security_policy
-from pytos.securetrack.xml_objects.base_types import Network_Object
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
     Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Bindings_List, \
@@ -387,23 +382,28 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                                              auth=('username', 'password'),
                                              data='<security_policy_exception>\n  <approved_by>admin</approved_by>\n  <created_by>admin</created_by>\n  <creation_date>2016-01-01</creation_date>\n  <description>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</description>\n  <domain>\n    <description>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</description>\n    <id/>\n    <name>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</name>\n  </domain>\n  <exempted_traffic_list>\n    <exempted_traffic>\n      <comment>Creating USP exception for ticket 123</comment>\n      <dest_network_collection>\n        <network_items>\n          <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">\n            <id/>\n            <ip>192.168.1.2</ip>\n            <prefix>32</prefix>\n          </network_item>\n        </network_items>\n      </dest_network_collection>\n      <security_requirements>\n        <zone_to_zone_security_requirement>\n          <from_domain/>\n          <from_zone>30.100.30.0</from_zone>\n          <policy_name>Test</policy_name>\n          <to_domain/>\n          <to_zone>200.200.200.0</to_zone>\n        </zone_to_zone_security_requirement>\n      </security_requirements>\n      <service_collection>\n        <service_items>\n          <service_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="custom">\n            <id/>\n            <port>4321</port>\n            <protocol>tcp</protocol>\n          </service_item>\n        </service_items>\n      </service_collection>\n      <source_network_collection>\n        <network_items>\n          <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">\n            <id/>\n            <ip>192.168.1.1</ip>\n            <prefix>32</prefix>\n          </network_item>\n        </network_items>\n      </source_network_collection>\n    </exempted_traffic>\n  </exempted_traffic_list>\n  <expiration_date>2025-01-01</expiration_date>\n  <name>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</name>\n  <requested_by>admin</requested_by>\n  <ticket_id>123</ticket_id>\n</security_policy_exception>', headers={'Content-Type': 'application/xml'})
 
-    def test_20_delete_zone_by_zone_id(self):
-        zone = self.helper.get_zone_by_name("external")
-        # assert valid requests - delete zone without entries
-        self.helper.delete_zone_by_zone_id(zone.id)
-        with self.assertRaises(ValueError):
-            self.helper.get_zone_by_name("external")
+    def test_18_delete_zone_by_zone_id(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            self.helper.delete_zone_by_zone_id(1)
+            mock_delete_uri.assert_called_with('DELETE',
+                                             'https://localhost/securetrack/api/security_policies/exceptions/?context=1',
+                                             auth=('username', 'password'),
+                                             data='<security_policy_exception>\n  <approved_by>admin</approved_by>\n  <created_by>admin</created_by>\n  <creation_date>2016-01-01</creation_date>\n  <description>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</description>\n  <domain>\n    <description>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</description>\n    <id/>\n    <name>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</name>\n  </domain>\n  <exempted_traffic_list>\n    <exempted_traffic>\n      <comment>Creating USP exception for ticket 123</comment>\n      <dest_network_collection>\n        <network_items>\n          <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">\n            <id/>\n            <ip>192.168.1.2</ip>\n            <prefix>32</prefix>\n          </network_item>\n        </network_items>\n      </dest_network_collection>\n      <security_requirements>\n        <zone_to_zone_security_requirement>\n          <from_domain/>\n          <from_zone>30.100.30.0</from_zone>\n          <policy_name>Test</policy_name>\n          <to_domain/>\n          <to_zone>200.200.200.0</to_zone>\n        </zone_to_zone_security_requirement>\n      </security_requirements>\n      <service_collection>\n        <service_items>\n          <service_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="custom">\n            <id/>\n            <port>4321</port>\n            <protocol>tcp</protocol>\n          </service_item>\n        </service_items>\n      </service_collection>\n      <source_network_collection>\n        <network_items>\n          <network_item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnet">\n            <id/>\n            <ip>192.168.1.1</ip>\n            <prefix>32</prefix>\n          </network_item>\n        </network_items>\n      </source_network_collection>\n    </exempted_traffic>\n  </exempted_traffic_list>\n  <expiration_date>2025-01-01</expiration_date>\n  <name>Allow traffic from 192.168.1.1 to 192.168.1.2 on TCP port 4321</name>\n  <requested_by>admin</requested_by>\n  <ticket_id>123</ticket_id>\n</security_policy_exception>', headers={'Content-Type': 'application/xml'})
 
-        zone = self.helper.get_zone_by_name("dmz")
-        # assert valid requests - delete zone with entries
-        self.helper.delete_zone_by_zone_id(zone.id, True)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_zone_by_name("dmz")
-
-        with self.assertRaises(ValueError):
-            self.helper.delete_zone_by_zone_id(5555)
+        # with self.assertRaises(ValueError):
+        #     self.helper.get_zone_by_name("external")
+        #
+        # zone = self.helper.get_zone_by_name("dmz")
+        # # assert valid requests - delete zone with entries
+        # self.helper.delete_zone_by_zone_id(zone.id, True)
+        #
+        # # assert invalid request
+        # with self.assertRaises(ValueError):
+        #     self.helper.get_zone_by_name("dmz")
+        #
+        # with self.assertRaises(ValueError):
+        #     self.helper.delete_zone_by_zone_id(5555)
 
 
 class TestTopology(unittest.TestCase):
