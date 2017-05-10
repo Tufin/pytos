@@ -507,7 +507,7 @@ class TestNetworkObjects(unittest.TestCase):
             network_object = self.helper.get_network_object_by_device_and_object_id(173, 3418214)
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://192.168.204.161/securetrack/api/devices/173/network_objects/3418214',
+                'https://localhost/securetrack/api/devices/173/network_objects/3418214',
                 auth=('username', 'password'),
                 headers={},
                 params=None
