@@ -519,6 +519,7 @@ class TestNetworkObjects(unittest.TestCase):
         print(g_network_object)
         members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 158)
         print(members)
+        raise ValueError(members)
 
 
 class TestServices(unittest.TestCase):
