@@ -1,0 +1,4 @@
+<result>
+	<code>BAD_REQUEST_ERROR</code>
+	<message>Some bad request message</message>
+</result>

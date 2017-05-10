@@ -16,7 +16,7 @@ from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, D
     Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Policy_Analysis_Query_Result, \
-    SecurityPolicyDeviceViolations, Policy_List
+    SecurityPolicyDeviceViolations, Policy_List, Topology_Interfaces_List
 from pytos.securetrack.xml_objects.rest.security_policy import Security_Policies_List, Security_Policy
 from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry, ZoneDescendantsList
 
@@ -393,8 +393,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
     def test_19_get_zone_descendants(self):
         self.mock_get_uri.return_value.content = fake_request_response("zone_descendants")
-        Zone_descendants_list = self.helper.get_zone_descendants("16")
-        self.assertIsInstance(Zone_descendants_list, ZoneDescendantsList)
+        zone_descendants_list = self.helper.get_zone_descendants("16")
+        self.assertIsInstance(zone_descendants_list, ZoneDescendantsList)
 
     def test_20_delete_security_policy_exception(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
@@ -409,24 +409,24 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
 class TestTopology(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_03_get_topology_interfaces(self):
-        # assert valid request
-        topology_interfaces = self.helper.get_topology_interfaces(cisco_ASA_id)
-        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.rest.rules.Topology_Interfaces_List)
-        self.assertTrue(len(topology_interfaces) > 0)
+        self.mock_get_uri.return_value.content = fake_request_response("interfaces")
+        topology_interfaces_list = self.helper.get_topology_interfaces(173)
+        self.assertIsInstance(topology_interfaces_list, Topology_Interfaces_List)
 
-        topology_interfaces = self.helper.get_topology_interfaces(5555)
-        self.assertIsInstance(topology_interfaces, pytos.securetrack.xml_objects.rest.rules.Topology_Interfaces_List)
-        self.assertTrue(len(topology_interfaces) == 0)
-
-        # assert valid request
+    def test_03_failed_to_get_topology_interfaces(self):
+        self.mock_get_uri.return_value.content = fake_request_response("bad_request_error")
+        self.mock_get_uri.return_value.status_code = 400
         with self.assertRaises(REST_Bad_Request_Error):
-            # noinspection PyTypeChecker
-            self.helper.get_topology_interfaces("NotValidRequest")
+            self.helper.get_topology_interfaces(173)
 
 
 class TestDomains(unittest.TestCase):
