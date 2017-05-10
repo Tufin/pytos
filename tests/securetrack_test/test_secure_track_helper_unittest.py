@@ -477,7 +477,7 @@ class TestNetworkObjects(unittest.TestCase):
             network_objects = self.helper.network_object_text_search("192.168", "any_field")
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.168',
+                'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.169',
                 auth=('username', 'password'),
                 headers={},
                 params=None
