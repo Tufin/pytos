@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<zones>
+    <zone>
+        <clouds/>
+        <id>16</id>
+        <name>DMZ</name>
+        <zones>
+            <zone>
+                <clouds/>
+                <id>21</id>
+                <name>DMZ-A</name>
+                <zones/>
+            </zone>
+        </zones>
+    </zone>
+</zones>

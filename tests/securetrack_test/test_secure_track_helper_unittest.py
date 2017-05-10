@@ -18,7 +18,7 @@ from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Policy_Analysis_Query_Result, \
     SecurityPolicyDeviceViolations, Policy_List
 from pytos.securetrack.xml_objects.rest.security_policy import Security_Policies_List, Security_Policy
-from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry
+from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry, ZoneDescendantsList
 
 
 def fake_request_response(rest_file):
@@ -390,6 +390,12 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
+
+    def test_19_get_zone_descendants(self):
+        self.mock_get_uri.return_value.content = fake_request_response("zone_descendants")
+        Zone_descendants_list = self.helper.get_zone_descendants("16")
+        self.assertIsInstance(Zone_descendants_list, ZoneDescendantsList)
+        self.mock_get_uri.assert_called_with("GET")
 
 
 class TestTopology(unittest.TestCase):
