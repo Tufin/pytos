@@ -27,11 +27,10 @@ from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error
     REST_Request_URI_Too_Long, REST_Client_Error, ItemAlreadyExists, REST_Internal_Server_Error, REST_HTTP_Exception
 from pytos.common.functions import config
 from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
-from pytos.securetrack.xml_objects.rest import domain
 from pytos.securetrack.xml_objects.rest.cleanups import Generic_Cleanup_List
 from pytos.securetrack.xml_objects.rest.device import Devices_List, Device, Device_Revisions_List, GenericDevicesList, \
     RuleSearchDeviceList, Device_Revision, InternetReferralObject
-from pytos.securetrack.xml_objects.rest.domain import Domains
+from pytos.securetrack.xml_objects.rest.domain import Domains, Domain
 from pytos.securetrack.xml_objects.rest.routes import RoutesList
 from pytos.securetrack.xml_objects.rest.rules import Rules_List, Cleanup_Set, Policy_List, Bindings_List, \
     Interfaces_List, Topology_Interfaces_List, Policy_Analysis_Query_Result, Network_Objects_List, Services_List, \
@@ -1826,7 +1825,7 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param domain_id: the Id of the domain
         :type domain_id: int
         :return: Domain information
-        :rtype: domain
+        :rtype: Domain
         """
         logger.info("Getting domain with ID {}".format(domain_id))
         try:
@@ -1836,7 +1835,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to get domain with ID {}".format(domain_id)
             logger.critical(message)
             raise ValueError(message)
-        return domain.from_xml_string(response_string)
+        return Domain.from_xml_string(response_string)
 
     def get_security_policy_device_violations_by_severity(self, device_id, severity, policy_type=None):
         logger.info("Getting rule violation by device id '{}' and severity '{}'".format(device_id, severity))
