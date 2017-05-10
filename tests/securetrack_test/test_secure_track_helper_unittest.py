@@ -313,7 +313,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertEqual(zone.name, "dmz")
 
     def test_08_get_device_revisions_by_id(self):
-        self.mock_get_uri.return_value.content = fake_request_response("revisons")
+        self.mock_get_uri.return_value.content = fake_request_response("revisions")
         revisions = self.helper.get_device_revisions_by_id(device_id=155)
         self.assertIsInstance(revisions, Device_Revisions_List)
         self.assertTrue(len(revisions) > 0)
