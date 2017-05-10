@@ -1545,7 +1545,6 @@ class Secure_Track_Helper(Secure_API_Helper):
         logger.info("Searching for network object with the string '%s' in %s field.", search_string, search_field)
         try:
             response = self.get_uri(search_url, expected_status_codes=200).response.content
-            return Network_Objects_List.from_xml_string(response)
         except RequestException as error:
             message = "Failed to search for network object, error was '{}'.".format(error)
             logger.critical(message)
@@ -1554,6 +1553,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to search for network object, error was '{}'.".format(client_error.message)
             logger.critical(message)
             raise ValueError(message)
+        return Network_Objects_List.from_xml_string(response)
 
     def network_object_subnet_search(self, search_subnet, search_type):
         """Search for network objects with the specified subnet.

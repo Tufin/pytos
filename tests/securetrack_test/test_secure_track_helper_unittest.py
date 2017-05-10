@@ -379,8 +379,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    # @patch('pytos.common.rest_requests.requests.Request')
-    # @patch('Secure_Track_Helper.get_entries_for_zone_id')
     def test_18_delete_zone_by_zone_id(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             self.helper.delete_zone_by_zone_id(1, True)
@@ -460,82 +458,73 @@ class TestDomains(unittest.TestCase):
 
 class TestNetworkObjects(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_01_get_network_objects_for_device(self):
-        global g_network_object
-        global g_network_object_group
-
-        # assert valid request
-        network_objects = self.helper.get_network_objects_for_device(cisco_ASA_id)
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-        self.assertTrue(len(network_objects) > 0)
-
-        # save a single network object for later uses
-        g_network_object = network_objects[0]
-        # save a single network object group for later uses
-        for network_object in network_objects:
-            if network_object.type == "group" and len(network_object.members) > 1:
-                g_network_object_group = network_object
-
-        # assert invalid request
-        network_objects = self.helper.get_network_objects_for_device(5555)
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-        self.assertFalse(len(network_objects))
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects")
+        network_objects = self.helper.get_network_objects_for_device(173)
+        self.assertIsInstance(network_objects, Network_Objects_List)
 
     def test_02_network_object_text_search(self):
-        # assert valid request
-        network_objects = self.helper.network_object_text_search("192.168", "any_field")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-        self.assertTrue(len(network_objects) > 0)
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects")
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            network_objects = self.helper.network_object_text_search("192.168", "any_field")
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.168',
+                auth=('username', 'password'),
+                headers={},
+                params=None
+            )
+        self.assertIsInstance(network_objects, Network_Objects_List)
 
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.network_object_text_search("", "")
-
-    def test_03_network_object_subnet_search(self):
-        # assert valid request
-        network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
-        self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-        self.assertTrue(len(network_objects) > 0)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.network_object_subnet_search("", "")
-
-    def test_04_get_network_objects(self):
-        network_objects = self.helper.get_network_objects()
-        self.assertIsInstance(network_objects, dict)
-        self.assertTrue(len(network_objects) > 0)
-
-    def test_05_get_network_object_by_device_and_object_id(self):
-        # assert valid request
-        network_object = self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, g_network_object.id)
-        self.assertIsInstance(network_object, pytos.securetrack.xml_objects.rest.rules.Basic_Network_Object)
-        self.assertTrue(network_object.id and network_object.name)
-
-        # assert invalid requests
-        with self.assertRaises(ValueError):
-            self.helper.get_network_object_by_device_and_object_id(5555, g_network_object.id)
-
-        with self.assertRaises(ValueError):
-            self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, 55555)
-
-    def test_06_get_member_network_objects_for_group_network_object(self):
-        # assert valid request
-        members = self.helper.get_member_network_objects_for_group_network_object(g_network_object_group, cisco_ASA_id)
-        for member in members:
-            self.assertIsInstance(member, (pytos.securetrack.xml_objects.rest.rules.Host_Network_Object,
-                                           pytos.securetrack.xml_objects.rest.rules.Subnet_Network_Object))
-            self.assertTrue(member.id and member.name)
-
-        # assert invalid request
-        with self.assertRaises(KeyError):
-            self.helper.get_member_network_objects_for_group_network_object(g_network_object_group, 5555)
-        with self.assertRaises(AttributeError):
-            self.helper.get_member_network_objects_for_group_network_object(g_network_object, cisco_ASA_id)
+    # def test_03_network_object_subnet_search(self):
+    #     # assert valid request
+    #     network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
+    #     self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
+    #     self.assertTrue(len(network_objects) > 0)
+    #
+    #     # assert invalid request
+    #     with self.assertRaises(ValueError):
+    #         self.helper.network_object_subnet_search("", "")
+    #
+    # def test_04_get_network_objects(self):
+    #     network_objects = self.helper.get_network_objects()
+    #     self.assertIsInstance(network_objects, dict)
+    #     self.assertTrue(len(network_objects) > 0)
+    #
+    # def test_05_get_network_object_by_device_and_object_id(self):
+    #     # assert valid request
+    #     network_object = self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, g_network_object.id)
+    #     self.assertIsInstance(network_object, pytos.securetrack.xml_objects.rest.rules.Basic_Network_Object)
+    #     self.assertTrue(network_object.id and network_object.name)
+    #
+    #     # assert invalid requests
+    #     with self.assertRaises(ValueError):
+    #         self.helper.get_network_object_by_device_and_object_id(5555, g_network_object.id)
+    #
+    #     with self.assertRaises(ValueError):
+    #         self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, 55555)
+    #
+    # def test_06_get_member_network_objects_for_group_network_object(self):
+    #     # assert valid request
+    #     members = self.helper.get_member_network_objects_for_group_network_object(g_network_object_group, cisco_ASA_id)
+    #     for member in members:
+    #         self.assertIsInstance(member, (pytos.securetrack.xml_objects.rest.rules.Host_Network_Object,
+    #                                        pytos.securetrack.xml_objects.rest.rules.Subnet_Network_Object))
+    #         self.assertTrue(member.id and member.name)
+    #
+    #     # assert invalid request
+    #     with self.assertRaises(KeyError):
+    #         self.helper.get_member_network_objects_for_group_network_object(g_network_object_group, 5555)
+    #     with self.assertRaises(AttributeError):
+    #         self.helper.get_member_network_objects_for_group_network_object(g_network_object, cisco_ASA_id)
 
 
 class TestServices(unittest.TestCase):
