@@ -468,7 +468,7 @@ class TestNetworkObjects(unittest.TestCase):
 
     def test_01_get_network_objects_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
-        network_objects = self.helper.get_network_objects_for_device(173)
+        network_objects = self.helper.get_network_objects_for_device(158)
         self.assertIsInstance(network_objects, Network_Objects_List)
 
     def test_02_network_object_text_search(self):
@@ -504,7 +504,7 @@ class TestNetworkObjects(unittest.TestCase):
     def test_05_get_network_object_by_device_and_object_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            network_object = self.helper.get_network_object_by_device_and_object_id(173, 3418214)
+            network_object = self.helper.get_network_object_by_device_and_object_id(158, 3418214)
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/devices/173/network_objects/3418214',
@@ -515,9 +515,9 @@ class TestNetworkObjects(unittest.TestCase):
 
     def test_06_get_member_network_objects_for_group_network_object(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
-        g_network_object = self.helper.get_network_objects_for_device(173)[2]
+        g_network_object = self.helper.get_network_objects_for_device(158)[-1]
         print(g_network_object)
-        members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 173)
+        members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 158)
         print(members)
 
 
