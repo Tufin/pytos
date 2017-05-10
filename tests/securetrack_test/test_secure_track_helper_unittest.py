@@ -396,6 +396,16 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         Zone_descendants_list = self.helper.get_zone_descendants("16")
         self.assertIsInstance(Zone_descendants_list, ZoneDescendantsList)
 
+    def test_20_delete_security_policy_exception(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            self.helper.delete_security_policy_exception(1)
+            mock_delete_uri.assert_called_with(
+                'DELETE',
+                'https://localhost/securetrack/api/zones/1',
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
+
 
 class TestTopology(unittest.TestCase):
     def setUp(self):
