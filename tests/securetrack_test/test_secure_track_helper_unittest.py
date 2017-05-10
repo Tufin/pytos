@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 from pytos.securetrack.helpers import Secure_Track_Helper
 from pytos.securetrack.xml_objects.rest.cleanups import Generic_Cleanup_List
-from pytos.securetrack.xml_objects.rest.domain import Domains
+from pytos.securetrack.xml_objects.rest.domain import Domains, Domain
 from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
@@ -444,14 +444,15 @@ class TestDomains(unittest.TestCase):
         domains = self.helper.get_domains()
         self.assertIsInstance(domains, Domains)
 
-    def test_02_get_domain_by_id(self):
+    @patch('pytos.securetrack.helpers.Domain.from_xml_string')
+    def test_02_get_domain_by_id(self, mock_domain):
+        mock_domain.return_value = Domain(1, 'default')
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
             self.helper.get_domain_by_id(1)
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://192.168.204.161/securetrack/api/domains/1',
+                'https://localhost/securetrack/api/domains/1',
                 auth=('username', 'password'),
-                data='',
                 headers={'Content-Type': 'application/xml'}
             )
 
