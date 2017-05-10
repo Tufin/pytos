@@ -401,7 +401,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             self.helper.delete_security_policy_exception(1)
             mock_delete_uri.assert_called_with(
                 'DELETE',
-                'https://localhost/securetrack/api/zones/1',
+                'https://localhost/securetrack/api/security_policies/exceptions//1',
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
