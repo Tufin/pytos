@@ -490,7 +490,7 @@ class TestNetworkObjects(unittest.TestCase):
             network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://localhost/securetrack/api/network_objects/search?filter=text&contained_in=192.168.0.0',
+                'https://localhost/securetrack/api/network_objects/search?filter=subnet&contained_in=192.168.0.0',
                 auth=('username', 'password'),
                 headers={},
                 params=None
