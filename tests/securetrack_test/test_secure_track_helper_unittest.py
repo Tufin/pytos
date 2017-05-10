@@ -477,22 +477,24 @@ class TestNetworkObjects(unittest.TestCase):
             network_objects = self.helper.network_object_text_search("192.168", "any_field")
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.169',
+                'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.168',
                 auth=('username', 'password'),
                 headers={},
                 params=None
             )
         self.assertIsInstance(network_objects, Network_Objects_List)
 
-    # def test_03_network_object_subnet_search(self):
-    #     # assert valid request
-    #     network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
-    #     self.assertIsInstance(network_objects, pytos.securetrack.xml_objects.rest.rules.Network_Objects_List)
-    #     self.assertTrue(len(network_objects) > 0)
-    #
-    #     # assert invalid request
-    #     with self.assertRaises(ValueError):
-    #         self.helper.network_object_subnet_search("", "")
+    def test_03_network_object_subnet_search(self):
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects")
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://localhost/securetrack/api/network_objects/search?filter=text&contained_in=192.168.0.0',
+                auth=('username', 'password'),
+                headers={},
+                params=None
+            )
     #
     # def test_04_get_network_objects(self):
     #     network_objects = self.helper.get_network_objects()
