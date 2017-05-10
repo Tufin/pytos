@@ -375,7 +375,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 'POST',
                 'https://localhost/securetrack/api/security_policies/exceptions/?context=1',
                 auth=('username', 'password'),
-                data=policy_exception,
+                data=policy_exception.to_xml_string(),
                 headers={'Content-Type': 'application/xml'}
             )
 
