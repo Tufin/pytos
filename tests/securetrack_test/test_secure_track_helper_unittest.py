@@ -515,7 +515,7 @@ class TestNetworkObjects(unittest.TestCase):
 
     def test_06_get_member_network_objects_for_group_network_object(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
-        g_network_object = self.helper.get_network_objects_for_device(173)[0]
+        g_network_object = self.helper.get_network_objects_for_device(173)[2]
         print(g_network_object)
         members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 173)
         print(members)
