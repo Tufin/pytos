@@ -395,7 +395,6 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("zone_descendants")
         Zone_descendants_list = self.helper.get_zone_descendants("16")
         self.assertIsInstance(Zone_descendants_list, ZoneDescendantsList)
-        self.mock_get_uri.assert_called_with("GET")
 
 
 class TestTopology(unittest.TestCase):
