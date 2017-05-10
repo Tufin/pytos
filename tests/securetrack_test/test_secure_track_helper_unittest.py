@@ -495,17 +495,23 @@ class TestNetworkObjects(unittest.TestCase):
                 headers={},
                 params=None
             )
-    #
+
     # def test_04_get_network_objects(self):
     #     network_objects = self.helper.get_network_objects()
     #     self.assertIsInstance(network_objects, dict)
     #     self.assertTrue(len(network_objects) > 0)
     #
-    # def test_05_get_network_object_by_device_and_object_id(self):
-    #     # assert valid request
-    #     network_object = self.helper.get_network_object_by_device_and_object_id(cisco_ASA_id, g_network_object.id)
-    #     self.assertIsInstance(network_object, pytos.securetrack.xml_objects.rest.rules.Basic_Network_Object)
-    #     self.assertTrue(network_object.id and network_object.name)
+    def test_05_get_network_object_by_device_and_object_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects")
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            network_object = self.helper.get_network_object_by_device_and_object_id(173, 3418214)
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://192.168.204.161/securetrack/api/devices/173/network_objects/3418214',
+                auth=('username', 'password'),
+                headers={},
+                params=None
+            )
     #
     #     # assert invalid requests
     #     with self.assertRaises(ValueError):
