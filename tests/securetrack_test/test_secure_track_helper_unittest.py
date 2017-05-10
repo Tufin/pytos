@@ -453,7 +453,8 @@ class TestDomains(unittest.TestCase):
                 'GET',
                 'https://localhost/securetrack/api/domains/1',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={},
+                params=None
             )
 
 
