@@ -431,24 +431,29 @@ class TestTopology(unittest.TestCase):
 
 class TestDomains(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_01_get_domains(self):
+        self.mock_get_uri.return_value.content = fake_request_response("domains")
         domains = self.helper.get_domains()
         self.assertIsInstance(domains, Domains)
-        self.assertTrue(domains[0].name, "Default")
 
     def test_02_get_domain_by_id(self):
-        # assert valid request
-        domain = self.helper.get_domain_by_id(default_domain_id)
-        self.assertIsInstance(domain, pytos.securetrack.xml_objects.rest.domain.Domain)
-        self.assertTrue(domain.name, "Default")
-
-        # assert invalid request
-        with self.assertRaises(REST_Bad_Request_Error):
-            self.helper.get_domain_by_id(9999)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            self.helper.get_domain_by_id(1)
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://192.168.204.161/securetrack/api/domains/1',
+                auth=('username', 'password'),
+                data='',
+                headers={'Content-Type': 'application/xml'}
+            )
 
 
 class TestNetworkObjects(unittest.TestCase):

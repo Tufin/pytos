@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domains>
+    <domain>
+        <id>1</id>
+        <name>Default</name>
+    </domain>
+    <domain>
+        <id>3</id>
+        <name>exmple.com</name>
+        <address>some location</address>
+        <description>No description for domain</description>
+    </domain>
+</domains>
