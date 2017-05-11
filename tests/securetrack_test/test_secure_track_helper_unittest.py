@@ -560,8 +560,9 @@ class TestServices(unittest.TestCase):
             )
 
     def test_04_get_member_services_for_group_service(self):
-        self.mock_get_uri.return_value.content = fake_request_response("services")
+        self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         g_network_object = self.helper.get_network_objects_for_device(158)[-1]
+        self.mock_get_uri.return_value.content = fake_request_response("services")
         members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 158)
         self.assertIsInstance(members, list)
 

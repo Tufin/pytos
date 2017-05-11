@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<network_objects>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hostNetworkObjectDTO">
+        <id>3433949</id>
+        <name>13.15.1.2 (trust)</name>
+        <display_name>13.15.1.2</display_name>
+        <class_name>host_plain</class_name>
+        <type>host</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{3c93e411-e8ac-4fc3-9d44-45295fe252e9}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <ip>13.15.1.2</ip>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="networkObjectGroupDTO">
+        <id>3433950</id>
+        <name>15.15.15.2/32 (global)</name>
+        <display_name>15.15.15.2/32</display_name>
+        <class_name>network_object_group</class_name>
+        <type>group</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{fbb10135-e2a0-4cb4-8be3-41786d30ad0c}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <member>
+            <id>3433951</id>
+            <display_name>Global_Address</display_name>
+            <name>Global_Address (global)</name>
+        </member>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnetNetworkObjectDTO">
+        <id>3433962</id>
+        <name>99.99.99.0/255.255.255.0 (trust)</name>
+        <display_name>99.99.99.0/255.255.255.0</display_name>
+        <class_name>network</class_name>
+        <type>subnet</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{194f2bc3-4d34-4535-bd73-40c13dc067ed}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <ip>99.99.99.0</ip>
+        <netmask>255.255.255.0</netmask>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="basicNetworkObjectDTO">
+        <id>3433938</id>
+        <name>Any</name>
+        <display_name>Any</display_name>
+        <class_name>any_object</class_name>
+        <type>basic</type>
+        <global>false</global>
+        <uid>{97AEB369-9AEA-11D5-BD16-0090272CCB30}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="rangeNetworkObjectDTO">
+        <id>3435787</id>
+        <name>src_pool_PoolA_member_1.1.1.1_1.1.1.127</name>
+        <display_name>1.1.1.1-1.1.1.127</display_name>
+        <class_name>address_range</class_name>
+        <type>range</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{f67ae414-412e-4b1a-aa16-7ef0a9f74111}</uid>
+        <implicit>true</implicit>
+        <overrides>false</overrides>
+        <last_ip>1.1.1.127</last_ip>
+        <first_ip>1.1.1.1</first_ip>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="networkObjectGroupDTO">
+        <id>3435788</id>
+        <name>src_pool_PoolB_group</name>
+        <display_name>PoolB</display_name>
+        <class_name>network_object_group</class_name>
+        <type>group</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{c9224efd-00fb-4cb1-9864-badf7be23af8}</uid>
+        <implicit>true</implicit>
+        <overrides>false</overrides>
+        <member>
+            <id>3435789</id>
+            <display_name>15.15.15.0/255.255.255.248</display_name>
+            <name>src_pool_PoolB_member_15.15.15.0/255.255.255.248</name>
+        </member>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="subnetNetworkObjectDTO">
+        <id>3435789</id>
+        <name>src_pool_PoolB_member_15.15.15.0/255.255.255.248</name>
+        <display_name>15.15.15.0/255.255.255.248</display_name>
+        <class_name>network</class_name>
+        <type>subnet</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{3e51d3c2-36a2-4f0d-930d-c0680c468137}</uid>
+        <implicit>true</implicit>
+        <overrides>false</overrides>
+        <ip>15.15.15.0</ip>
+        <netmask>255.255.255.248</netmask>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hostNetworkObjectDTO">
+        <id>3435860</id>
+        <name>zion (trust)</name>
+        <display_name>zion</display_name>
+        <class_name>host_plain</class_name>
+        <type>host</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{b7dbb833-c1d3-45a9-81b9-102dec2056c0}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <ip>1.1.1.3</ip>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="basicNetworkObjectDTO">
+        <id>3435862</id>
+        <name>zionHost (shelly)</name>
+        <display_name>zionHost</display_name>
+        <class_name>domain</class_name>
+        <type>basic</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{0a6623e9-0a25-4436-be17-84b614db9148}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="networkObjectGroupDTO">
+        <id>3435861</id>
+        <name>ziongr (shelly)</name>
+        <display_name>ziongr</display_name>
+        <class_name>network_object_group</class_name>
+        <type>group</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{30a63b49-4698-4bca-ab40-c1ea0870734f}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <member>
+            <id>3435862</id>
+            <display_name>zionHost</display_name>
+            <name>zionHost (shelly)</name>
+        </member>
+    </network_object>
+</network_objects>
