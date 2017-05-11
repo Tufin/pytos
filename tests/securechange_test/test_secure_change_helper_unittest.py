@@ -59,8 +59,9 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(441)
         step_task_obj = ticket.get_current_task()
+        target_task_id = ticket.get_previous_step()
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            self.helper.redo_step(step_task_obj, 1941, 'Redoing step')
+            self.helper.redo_step(step_task_obj, target_task_id, 'Redoing step')
             mock_post_uri.assert_called_with(
                 'PUT',
                 'https://localhost/securechangeworkflow/api/securechange/tickets/441/steps/1942/tasks/2009/redo/1941',
