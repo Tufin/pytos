@@ -45,7 +45,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 'POST',
                 'https://localhost/securechangeworkflow/api/securechange/tickets/',
                 auth=('username', 'password'),
-                data=ticket_obj.to_xml_string(),
+                data=ticket_obj.to_xml_string().decode("utf-8"),
                 headers={'Content-Type': 'application/xml'}
             )
 
