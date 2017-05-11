@@ -85,7 +85,7 @@ class TestSecureChangeHelper(unittest.TestCase):
 
     @patch('pytos.securechange.helpers.Secure_Change_Helper.get_sc_user_by_id')
     def test_06_reassign_task(self, mock_user_obj):
-        mock_user_obj.return_value = User.from_xml_node(fake_request_response("user"))
+        mock_user_obj.return_value = User.from_xml_string(fake_request_response("user").decode())
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
