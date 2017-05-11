@@ -1,7 +1,6 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
 import sys
 import lxml.etree
-import pytos
 import os
 import io
 import unittest

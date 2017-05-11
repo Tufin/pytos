@@ -1,42 +1,53 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
-
+import os
 import time
 import types
+import unittest
+from unittest.mock import patch
 
-test_data_dir = "/opt/tufin/securitysuite/ps/tests/bin/Secure_Change_Test/"
+import sys
+
 from pytos.securechange.xml_objects.restapi.step.access_request.verifier import AccessRequestVerifierResult
 from pytos.common.definitions import xml_tags
 from pytos.securechange.helpers import Secure_Change_Helper
 from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, User_List, TicketList
-from pytos.common.functions.config import Secure_Config_Parser
 from pytos.common.exceptions import REST_Bad_Request_Error
-from pytos.common.logging.logger import setup_loggers
-import unittest
 
-conf = Secure_Config_Parser()
-LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
 
-# setting global variables that going to be used in the unittest suit
-added_ticket_id = 0
-canceled_ticked_id = 0
-access_request_ticket_id = 1
+def fake_request_response(rest_file):
+    full_path = os.path.dirname(os.path.abspath(__file__))
+    sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
+    resource_file = os.path.join(full_path, "resources", sub_resources_dir, "{}.xml".format(rest_file))
+    with open(resource_file, mode='rb') as f:
+        return f.read()
 
 
 class Test_Secure_Change_Helper(unittest.TestCase):
     def setUp(self):
-        try:
-            self.helper = Secure_Change_Helper.from_secure_config_parser(conf)
-        except KeyError:
-            self.helper = Secure_Change_Helper.from_secure_config_parser(conf)
+        self.helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_01_post_ticket(self):
-        global added_ticket_id
-        ticket_obj = self.helper.read_ticket_template(test_data_dir + 'new_ticket.xml')
-        # set the requester to user name 'a'
-        user = 'a'
-        ticket_obj.requester = user
-        added_ticket_id = self.helper.post_ticket(ticket_obj)
-        self.assertIsInstance(int, added_ticket_id)
+        self.mock_get_uri.return_value.headers = {'location': '1'}
+        self.mock_get_uri.return_value.status_code = 201
+        full_path = os.path.dirname(os.path.abspath(__file__))
+        sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
+        resource_file = os.path.join(full_path, "resources", sub_resources_dir, "{}.xml".format('new_ticket'))
+        ticket_obj = self.helper.read_ticket_template(resource_file)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            self.helper.post_ticket(ticket_obj)
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securechangeworkflow/api/securechange/tickets/',
+                auth=('username', 'password'),
+                data=ticket_obj.to_xml_string(),
+                headers={'Content-Type': 'application/xml'}
+            )
 
     def test_02_get_ticket(self):
         # assert valid request
