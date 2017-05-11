@@ -24,7 +24,7 @@ def fake_request_response(rest_file):
 
 class TestSecureChangeHelper(unittest.TestCase):
     def setUp(self):
-        self.helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
+        self.helper = Secure_Change_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
         self.mock_get_uri.return_value.status_code = 200
