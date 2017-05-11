@@ -51,15 +51,9 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.assertEqual(ticket_id, 1)
 
     def test_02_get_ticket(self):
-        # assert valid request
-        ticket_id = added_ticket_id
-        ticket = self.helper.get_ticket_by_id(ticket_id)
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(441)
         self.assertIsInstance(ticket, Ticket)
-        self.assertEqual(int(ticket.id), ticket_id)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_ticket_by_id(124381212)
 
     def test_03_redo_step(self):
 
