@@ -16,7 +16,7 @@ from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, D
     Device_Revisions_List
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Policy_Analysis_Query_Result, \
-    SecurityPolicyDeviceViolations, Policy_List, Topology_Interfaces_List
+    SecurityPolicyDeviceViolations, Policy_List, Topology_Interfaces_List, Services_List
 from pytos.securetrack.xml_objects.rest.security_policy import Security_Policies_List, Security_Policy
 from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry, ZoneDescendantsList
 
@@ -501,7 +501,7 @@ class TestNetworkObjects(unittest.TestCase):
     #     self.assertIsInstance(network_objects, dict)
     #     self.assertTrue(len(network_objects) > 0)
     #
-    def test_05_get_network_object_by_device_and_object_id(self):
+    def test_04_get_network_object_by_device_and_object_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
             network_object = self.helper.get_network_object_by_device_and_object_id(158, 3418214)
@@ -513,7 +513,7 @@ class TestNetworkObjects(unittest.TestCase):
                 params=None
             )
 
-    def test_06_get_member_network_objects_for_group_network_object(self):
+    def test_05_get_member_network_objects_for_group_network_object(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         g_network_object = self.helper.get_network_objects_for_device(158)[-1]
         members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 158)
@@ -522,66 +522,48 @@ class TestNetworkObjects(unittest.TestCase):
 
 class TestServices(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_01_get_services_for_device(self):
-        global g_service
-        global g_service_group
-
-        # assert valid request
-        services = self.helper.get_services_for_device(cisco_ASA_id)
-        self.assertIsInstance(services, pytos.securetrack.xml_objects.rest.rules.Services_List)
-        self.assertTrue(len(services) > 0)
-
-        # save a single service for later uses
-        g_service = services.services[0]
-        # save a single service group for later uses
-        for service in services:
-            if service.type == "group" and len(service.members) > 1:
-                g_service_group = service
-
-        # assert invalid request
-        services = self.helper.get_services_for_device(5555)
-        self.assertIsInstance(services, pytos.securetrack.xml_objects.rest.rules.Services_List)
-        self.assertFalse(len(services))
+        self.mock_get_uri.return_value.content = fake_request_response("services")
+        services = self.helper.get_services_for_device(158)
+        self.assertIsInstance(services, Services_List)
 
     def test_02_get_service_for_device_by_name(self):
-        # assert valid request
-        service = self.helper.get_service_for_device_by_name(cisco_ASA_id, g_service.display_name)
-        self.assertIsInstance(service, pytos.securetrack.xml_objects.rest.rules.Single_Service)
-        self.assertTrue(service)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_service_for_device_by_name(cisco_ASA_id, "NotExsistingService")
+        self.mock_get_uri.return_value.content = fake_request_response("services")
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            service = self.helper.get_service_for_device_by_name(158, 'service1')
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://localhost/securetrack/api/devices/158/services?name=service1',
+                auth=('username', 'password'),
+                headers={},
+                params=None
+            )
 
     def test_03_get_service_by_device_and_object_id(self):
-        # assert valid request
-        service = self.helper.get_service_by_device_and_object_id(cisco_ASA_id, g_service.id)
-        self.assertIsInstance(service, pytos.securetrack.xml_objects.rest.rules.Single_Service)
-        # self.assertTrue(service.name, "!80 (tcp)")
-        self.assertTrue(service.name, g_service.name)
-
-        # assert invalid request
-        with self.assertRaises(ValueError):
-            self.helper.get_service_by_device_and_object_id(cisco_ASA_id, 9999999)
-        with self.assertRaises(ValueError):
-            self.helper.get_service_by_device_and_object_id(0, 467677)
+        self.mock_get_uri.return_value.content = fake_request_response("services")
+        with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
+            service = self.helper.get_service_by_device_and_object_id(158, 17973529)
+            mock_get_uri.assert_called_with(
+                'GET',
+                'https://localhost/securetrack/api/devices/158/services/17973529',
+                auth=('username', 'password'),
+                headers={},
+                params=None
+            )
 
     def test_04_get_member_services_for_group_service(self):
-        # assert valid request
-        member_services = self.helper.get_member_services_for_group_service(g_service_group, cisco_ASA_id)
-        for member in member_services:
-            self.assertIsInstance(member, pytos.securetrack.xml_objects.rest.rules.Single_Service)
-            self.assertTrue(member.id and member.name)
-
-        # assert valid request
-        with self.assertRaises(KeyError):
-            self.helper.get_member_services_for_group_service(g_service_group, 5555)
-        with self.assertRaises(AttributeError):
-            self.helper.get_member_services_for_group_service(g_service, cisco_ASA_id)
+        self.mock_get_uri.return_value.content = fake_request_response("services")
+        g_network_object = self.helper.get_network_objects_for_device(158)[-1]
+        members = self.helper.get_member_network_objects_for_group_network_object(g_network_object, 158)
+        self.assertIsInstance(members, list)
 
 
 class TestGeneralSettings(unittest.TestCase):

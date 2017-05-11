@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<services>
+    <service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="singleServiceDTO">
+        <id>17973529</id>
+        <name>service1</name>
+        <display_name>service1</display_name>
+        <class_name>tcp_service</class_name>
+        <type>tcp_service</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{40d3c49f-12af-4506-851c-b2ba2ae27a4a}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <max>8900</max>
+        <min>8900</min>
+        <negate>false</negate>
+        <protocol>6</protocol>
+        <timeout>0</timeout>
+    </service>
+    <service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="serviceGroupDTO">
+        <id>17973530</id>
+        <name>service2</name>
+        <display_name>service2</display_name>
+        <class_name>service_group</class_name>
+        <type>group</type>
+        <global>false</global>
+        <comment></comment>
+        <uid>{f0605f71-edfb-4b96-8c45-a512bd0bc0c3}</uid>
+        <implicit>false</implicit>
+        <overrides>false</overrides>
+        <member>
+            <id>17973535</id>
+            <display_name>AOL</display_name>
+            <name>AOL</name>
+        </member>
+        <member>
+            <id>17973536</id>
+            <display_name>AP-Defender</display_name>
+            <name>AP-Defender</name>
+        </member>
+        <member>
+            <id>17973548</id>
+            <display_name>junos-bgp</display_name>
+            <name>junos-bgp</name>
+        </member>
+        <member>
+            <id>17973549</id>
+            <display_name>junos-biff</display_name>
+            <name>junos-biff</name>
+        </member>
+    </service>
+</services>
