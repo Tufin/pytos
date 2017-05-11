@@ -85,10 +85,10 @@ class TestSecureChangeHelper(unittest.TestCase):
 
     @patch('pytos.securechange.helpers.Secure_Change_Helper.get_sc_user_by_id')
     def test_06_reassign_task(self, mock_user_obj):
+        mock_user_obj.return_value = User.from_xml_node(fake_request_response("user"))
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
-        mock_user_obj.return_value = User.from_xml_node(fake_request_response("user"))
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}"
