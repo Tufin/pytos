@@ -24,6 +24,7 @@ def fake_request_response(rest_file):
 
 class TestSecureChangeHelper(unittest.TestCase):
     def setUp(self):
+        self.ticket_id = 444
         self.helper = Secure_Change_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
@@ -52,13 +53,12 @@ class TestSecureChangeHelper(unittest.TestCase):
 
     def test_02_get_ticket(self):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
-        ticket = self.helper.get_ticket_by_id(441)
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
         self.assertIsInstance(ticket, Ticket)
 
     def test_03_redo_step(self):
-        ticket_id = 441
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
-        ticket = self.helper.get_ticket_by_id(ticket_id)
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
         target_task_id = ticket.get_previous_step()
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
@@ -66,7 +66,7 @@ class TestSecureChangeHelper(unittest.TestCase):
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/redo/{}"
             mock_post_uri.assert_called_with(
                 'PUT',
-                url.format(ticket_id, ticket.get_current_step().id, step_task_obj.id, target_task_id),
+                url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, target_task_id),
                 auth=('username', 'password'),
                 data='<redo_step_comment>\n  <comment>Redoing step</comment>\n</redo_step_comment>',
                 headers={'Content-Type': 'application/xml'}
