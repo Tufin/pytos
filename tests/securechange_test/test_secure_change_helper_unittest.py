@@ -66,7 +66,7 @@ class TestSecureChangeHelper(unittest.TestCase):
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/redo/{}"
             mock_post_uri.assert_called_with(
                 'PUT',
-                url.format(ticket_id, step_task_obj, step_task_obj, target_task_id),
+                url.format(ticket_id, ticket.get_current_step().id, step_task_obj.id, target_task_id),
                 auth=('username', 'password'),
                 data='<redo_step_comment>\n  <comment>Redoing step</comment>\n</redo_step_comment>',
                 headers={'Content-Type': 'application/xml'}
