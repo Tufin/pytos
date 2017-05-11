@@ -40,7 +40,7 @@ class TestSecureChangeHelper(unittest.TestCase):
         resource_file = os.path.join(full_path, "resources", sub_resources_dir, "{}.xml".format('new_ticket'))
         ticket_obj = self.helper.read_ticket_template(resource_file)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            self.helper.post_ticket(ticket_obj)
+            ticket_id = self.helper.post_ticket(ticket_obj)
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/securechange/tickets/',
@@ -48,6 +48,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 data=ticket_obj.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
+        self.assertEqual(ticket_id, 1)
 
     def test_02_get_ticket(self):
         # assert valid request
