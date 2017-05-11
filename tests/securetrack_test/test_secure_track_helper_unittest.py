@@ -41,7 +41,7 @@ class TestDevices(unittest.TestCase):
 
     def test_01_get_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("device_by_id")
-        device_by_id = self.helper.get_device_by_id(added_offline_device_id)
+        device_by_id = self.helper.get_device_by_id(159)
         self.assertIsInstance(device_by_id, Device)
 
     def test_02_get_devices_list(self):
@@ -96,7 +96,7 @@ class TestDevices(unittest.TestCase):
         self.assertTrue(len(interfaces) > 0)
 
     def test_09_get_device_config(self):
-        self.assertEqual(self.helper.get_device_config_by_id(added_offline_device_id), b'\x00')
+        self.assertEqual(self.helper.get_device_config_by_id(159), b'\x00')
 
     def test_10_add_offline_device(self):
         global added_offline_device_id
