@@ -569,33 +569,18 @@ class TestServices(unittest.TestCase):
 
 class TestGeneralSettings(unittest.TestCase):
     def setUp(self):
-        self.helper = pytos.securetrack.helpers.Secure_Track_Helper(conf.get("securetrack", "hostname"),
-                                                                    (conf.get_username("securetrack"),
-                                                                     conf.get_password("securetrack")))
+        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        self.mock_get_uri = self.patcher.start()
+        self.mock_get_uri.return_value.status_code = 200
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_03_get_change_authorization_status(self):
-        # get revisions for device
-        revisions = self.helper.get_device_revisions_by_id(device_id=cisco_ASA_id)
-        self.assertIsInstance(revisions, pytos.securetrack.xml_objects.rest.device.Device_Revisions_List)
-        self.assertTrue(len(revisions) > 1)
-
-        # sort the revision by id
-        revisions = sorted(revisions, key=lambda x: x.date, reverse=False)
-        # get the old and new version we want to check
-        old_revision = revisions[0]
-        new_revision = revisions[1]
-
-        # assert valid request
-        status = self.helper.get_change_authorization_status(old_revision.id, new_revision.id)
-        self.assertIsInstance(status.new_revision, pytos.securetrack.xml_objects.rest.device.Device_Revision)
-        self.assertIsInstance(status.old_revision, pytos.securetrack.xml_objects.rest.device.Device_Revision)
-        self.assertIsInstance(status.change_authorization_bindings,
-                              pytos.securetrack.xml_objects.rest.rules.ChangeAuthorizationBindings)
-        self.assertTrue(status.old_revision.id and status.new_revision.id)
-
-        # assert invalid request
-        with self.assertRaises(REST_Not_Found_Error):
-            self.helper.get_change_authorization_status(9999, 9999)
+        self.mock_get_uri.return_value.content = fake_request_response("revisions")
+        revisions = self.helper.get_device_revisions_by_id(device_id=158)
+        self.assertIsInstance(revisions, Device_Revisions_List)
 
 
 if __name__ == '__main__':

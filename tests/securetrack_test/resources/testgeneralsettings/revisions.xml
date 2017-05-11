@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<revisions>
+    <revision>
+        <action>automatic</action>
+        <admin>-</admin>
+        <auditLog>-</auditLog>
+        <authorizationStatus>unauthorized</authorizationStatus>
+        <date>2017-05-09</date>
+        <firewall_status>true</firewall_status>
+        <guiClient>-</guiClient>
+        <id>5732</id>
+        <modules_and_policy/>
+        <policyPackage>Standard</policyPackage>
+        <ready>true</ready>
+        <revisionId>20</revisionId>
+        <tickets/>
+        <time>18:52:06.000</time>
+    </revision>
+    <revision>
+        <action>automatic</action>
+        <admin>-</admin>
+        <auditLog>-</auditLog>
+        <authorizationStatus>unauthorized</authorizationStatus>
+        <date>2017-05-09</date>
+        <firewall_status>true</firewall_status>
+        <guiClient>-</guiClient>
+        <id>5730</id>
+        <modules_and_policy/>
+        <policyPackage>Standard</policyPackage>
+        <ready>true</ready>
+        <revisionId>19</revisionId>
+        <tickets/>
+        <time>17:52:05.000</time>
+    </revision>
+</revisions>
