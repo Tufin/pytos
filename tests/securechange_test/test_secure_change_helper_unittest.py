@@ -87,7 +87,6 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
-        target_task_id = ticket.get_previous_step()
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}"
