@@ -62,10 +62,10 @@ class TestSecureChangeHelper(unittest.TestCase):
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.helper.redo_step(step_task_obj, 1941, 'Redoing step')
             mock_post_uri.assert_called_with(
-                'POST',
-                'https://localhost/securechangeworkflow/api/securechange/tickets/',
+                'PUT',
+                'https://localhost/securechangeworkflow/api/securechange/tickets/441/steps/1942/tasks/2009/redo/1941',
                 auth=('username', 'password'),
-                data='',
+                data='<redo_step_comment>\n  <comment>Redoing step</comment>\n</redo_step_comment>',
                 headers={'Content-Type': 'application/xml'}
             )
 
