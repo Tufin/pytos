@@ -56,27 +56,18 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.assertIsInstance(ticket, Ticket)
 
     def test_03_redo_step(self):
-
-        ticket_id = added_ticket_id
-
-        ticket = self.helper.get_ticket_by_id(ticket_id)
-        from_task = ticket.get_current_task()
-        try:
-            to_step_id = ticket.get_previous_step().id
-        except IndexError:
-            from_task.mark_as_done()
-            self.helper.put_task(from_task)
-            ticket = self.helper.get_ticket_by_id(ticket_id)
-            from_task = ticket.get_current_task()
-            to_step_id = ticket.get_previous_step().id
-
-        self.helper.redo_step(from_task, to_step_id,
-                              'redoing task with ID {} to step ID {}'.format(from_task.id, to_step_id))
-
-        time.sleep(2)
-        # Re-fetching ticket from database
-        ticket = self.helper.get_ticket_by_id(ticket_id)
-        self.assertEqual(ticket.get_current_task().id, to_step_id)
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(441)
+        step_task_obj = ticket.get_current_task()
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            self.helper.redo_step(step_task_obj, 1941, 'Redoing step')
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securechangeworkflow/api/securechange/tickets/',
+                auth=('username', 'password'),
+                data='',
+                headers={'Content-Type': 'application/xml'}
+            )
 
     def test_04_get_ticket_history_by_id(self):
 
