@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ticket_history_activities>
+    <ticket_id>444</ticket_id>
+    <ticket_history_activity>
+        <date>2017-05-11T11:46:09.235+03:00</date>
+        <performed_by>System</performed_by>
+        <description>Ticket automatically assigned to requester</description>
+        <step_name>Technical Design</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+    <ticket_history_activity>
+        <date>2017-05-11T11:46:09.189+03:00</date>
+        <performed_by>System</performed_by>
+        <description>Move to the next step</description>
+        <step_name>Business Approval</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+    <ticket_history_activity>
+        <date>2017-05-11T11:46:09.185+03:00</date>
+        <performed_by>requester</performed_by>
+        <description>Complete request's task</description>
+        <step_name>Business Approval</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+    <ticket_history_activity>
+        <date>2017-05-11T11:45:08.726+03:00</date>
+        <performed_by>System</performed_by>
+        <description>Ticket automatically assigned to requester</description>
+        <step_name>Business Approval</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+    <ticket_history_activity>
+        <date>2017-05-11T11:45:08.698+03:00</date>
+        <performed_by>System</performed_by>
+        <description>Move to the next step</description>
+        <step_name>Open Request</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+    <ticket_history_activity>
+        <date>2017-05-11T11:45:08.692+03:00</date>
+        <performed_by>requester</performed_by>
+        <description>Create request</description>
+        <step_name>Open Request</step_name>
+        <task_name>Default</task_name>
+    </ticket_history_activity>
+</ticket_history_activities>

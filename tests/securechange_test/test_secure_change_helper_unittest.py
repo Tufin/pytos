@@ -25,6 +25,7 @@ def fake_request_response(rest_file):
 class TestSecureChangeHelper(unittest.TestCase):
     def setUp(self):
         self.ticket_id = 444
+        self.user_id = 11
         self.helper = Secure_Change_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_get_uri = self.patcher.start()
@@ -73,43 +74,30 @@ class TestSecureChangeHelper(unittest.TestCase):
             )
 
     def test_04_get_ticket_history_by_id(self):
-
-        ticket_id = added_ticket_id
-        ticket_history = self.helper.get_ticket_history_by_id(ticket_id)
+        self.mock_get_uri.return_value.content = fake_request_response("ticket_history_activities")
+        ticket_history = self.helper.get_ticket_history_by_id(self.ticket_id)
         self.assertIsInstance(ticket_history, Ticket_History_Activities)
-        self.assertEqual(int(ticket_history.ticket_id), ticket_id)
 
-        with self.assertRaises(ValueError):
-            self.helper.get_ticket_history_by_id(124381212)
+    def test_05_get_sc_user_by_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("user")
+        user = self.helper.get_sc_user_by_id(self.user_id)
+        self.assertIsInstance(user, User)
 
-    def test_06_reassign_task_by_username(self):
-
-        ticket_obj = self.helper.read_ticket_template(test_data_dir  + 'new_ticket.xml')
-
-        orig_user_name = 'a'
-        reassigned_user_name = 'b'
-        reassigned_user_id = 4
-
-        ticket_obj.requester = orig_user_name
-
-        ticket_id = self.helper.post_ticket(ticket_obj)
-
-        ticket = self.helper.get_ticket_by_id(ticket_id)
-        current_task = ticket.get_current_task()
-
-        # in order to re-assign the card we must mark the current task as done
-        current_task.mark_as_done()
-        self.helper.put_task(current_task)
-        # Re-fetching ticket from database.
-        ticket = self.helper.get_ticket_by_id(ticket_id)
-        current_task = ticket.get_current_task()
-
-        self.helper.reassign_task_by_username(current_task, reassigned_user_name, "Cake!")
-        # Re-fetching ticket from database.
-        ticket = self.helper.get_ticket_by_id(ticket_id)
-        current_task = ticket.get_current_task()
-        self.assertEqual(current_task.assignee, reassigned_user_name)
-        self.assertEqual(int(current_task.assignee_id), reassigned_user_id)
+    def test_06_reassign_task(self):
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        step_task_obj = ticket.get_current_task()
+        target_task_id = ticket.get_previous_step()
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}"
+            mock_post_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, self.user_id),
+                auth=('username', 'password'),
+                data='<redo_step_comment>\n  <comment>Reassign message</comment>\n</redo_step_comment>',
+                headers={'Content-Type': 'application/xml'}
+            )
 
     def test_07_change_requester(self):
 
@@ -211,20 +199,6 @@ class TestSecureChangeHelper(unittest.TestCase):
         # assert invalid requests
         with self.assertRaises(ValueError):
             self.helper.put_field("wrong value")
-
-    def test_13_get_sc_user_by_id(self):
-        # user 'a'
-        user_id = 3
-
-        # assert valid request
-        user = self.helper.get_sc_user_by_id(user_id)
-        self.assertIsInstance(user, User)
-        self.assertEqual("a", user.name)
-        self.assertEqual(int(user.id), 3)
-
-        # assert invalid requests
-        with self.assertRaises(ValueError):
-            self.helper.get_sc_user_by_id(123)
 
     def test_14_get_user_by_username(self):
 

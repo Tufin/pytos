@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<user>
+    <id>11</id>
+    <type>user</type>
+    <display_name>user</display_name>
+    <name>adam</name>
+    <origin_type>Local</origin_type>
+    <first_name>User</first_name>
+    <last_name>Name</last_name>
+    <roles>
+        <role>
+            <id>3</id>
+            <name>System Administrator</name>
+        </role>
+        <role>
+            <id>4</id>
+            <name>Security Administrator</name>
+        </role>
+        <role>
+            <id>5</id>
+            <name>Requester</name>
+        </role>
+        <role>
+            <id>6</id>
+            <name>Auditor</name>
+        </role>
+        <role>
+            <id>7</id>
+            <name>Business Owner</name>
+        </role>
+    </roles>
+    <member_of>
+        <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="group">
+            <id>12</id>
+            <type>group</type>
+            <name>Approver</name>
+            <link href="https://localhost/securechangeworkflow/api/securechange/users/12"/>
+        </user>
+    </member_of>
+    <authentication_method>Local</authentication_method>
+</user>
