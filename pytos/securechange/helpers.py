@@ -490,6 +490,8 @@ class Secure_Change_Helper(Secure_API_Helper):
         members = []
         logger.debug("Retrieving all members of the group '{}'".format(group_name))
         group = self.get_user_by_username(group_name, exact_match=True)
+        print(group)
+        print(group_name)
         if not isinstance(group, Group):
             raise ValueError("User '{}' is not of type Group".format(group_name))
         for member in group.members:
