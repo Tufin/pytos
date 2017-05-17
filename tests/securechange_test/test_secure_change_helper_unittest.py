@@ -109,7 +109,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 'PUT',
                 url.format(self.ticket_id, requester_id),
                 auth=('username', 'password'),
-                data='<reassign_task_comment>\n  <comment>Reassign message</comment>\n</reassign_task_comment>',
+                data='<comment>\n  <comment>Modify requester</comment>\n</comment>',
                 headers={'Content-Type': 'application/xml'}
             )
     #
