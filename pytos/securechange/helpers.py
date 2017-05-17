@@ -549,18 +549,6 @@ class Secure_Change_Helper(Secure_API_Helper):
             logger.error(message)
             raise IOError(message)
 
-    def get_ticket_ids_by_workflow_name(self, workflow_name):
-        """
-        Get a list of tickets IDs by the name of their workflow.
-        """
-        ticket_id_query = "SELECT id from ticket WHERE workflow_id IN (SELECT id from workflow WHERE name=%s);"
-        with self._db_handler as cursor:
-            cursor.execute(ticket_id_query, (workflow_name,))
-            tickets = cursor.fetchall()
-            ticket_ids = [record.id for record in tickets]
-        logger.debug("Got the following ticket IDs: '%s'.", ticket_ids)
-        return ticket_ids
-
     def get_ticket_ids_by_status(self, status):
         url = "/securechangeworkflow/api/securechange/tickets?status={}".format(status)
         try:

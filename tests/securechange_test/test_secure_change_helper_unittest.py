@@ -166,35 +166,12 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("users")
         user = self.helper.get_user_by_username("user")
         self.assertIsInstance(user, User)
-    #
-    # def test_17_get_ticket_ids_by_workflow_name(self):
-    #     # assert valid request
-    #     workflow_name = "My workflow"
-    #     ticket_ids = self.helper.get_ticket_ids_by_workflow_name(workflow_name)
-    #
-    #     self.assertIsInstance(ticket_ids, list)
-    #     self.assertTrue(added_ticket_id in ticket_ids)
-    #
-    #     # assert invalid request
-    #     ticket_ids = self.helper.get_ticket_ids_by_workflow_name("NonExistsWorkflow")
-    #     self.assertFalse(ticket_ids)
-    #
-    # def test_18_get_ticket_ids_by_status(self):
-    #
-    #     status = "In Progress&desc=True"
-    #     # assert valid request
-    #     tickets = self.helper.get_ticket_ids_by_status(status)
-    #     self.assertIsInstance(tickets, TicketList)
-    #     # check that the ticket id  that was created in the tests is indeed inside the list the API returns
-    #     ticket_found_in_list = False
-    #     for ticket in tickets:
-    #         if int(ticket.id) == added_ticket_id:
-    #             ticket_found_in_list = True
-    #     self.assertTrue(ticket_found_in_list)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(REST_Bad_Request_Error):
-    #         self.helper.get_ticket_ids_by_status("Not Exsisting Status")
+
+    def test_12_get_ticket_ids_by_status(self):
+        self.mock_get_uri.return_value.content = fake_request_response("tickets")
+        status = "In Progress&desc=True"
+        tickets = self.helper.get_ticket_ids_by_status(status)
+        self.assertIsInstance(tickets, TicketList)
     #
     # def test_21_render_template_for_ticket(self):
     #
