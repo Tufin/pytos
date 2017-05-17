@@ -123,7 +123,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, requester_id),
                 auth=('username', 'password'),
                 data=None,
-                headers={'Content-Type': 'application/xml'}
+                headers={}
             )
 
     # def test_09_cancel_ticket_without_requester(self):
