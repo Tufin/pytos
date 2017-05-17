@@ -1,17 +1,12 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
 import os
-import time
-import types
 import unittest
 from unittest.mock import patch
-
 import sys
 
-from pytos.securechange.xml_objects.restapi.step.access_request.verifier import AccessRequestVerifierResult
 from pytos.common.definitions import xml_tags
 from pytos.securechange.helpers import Secure_Change_Helper
-from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, User_List, TicketList
-from pytos.common.exceptions import REST_Bad_Request_Error
+from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, TicketList, User_List
 
 
 def fake_request_response(rest_file):
@@ -172,43 +167,22 @@ class TestSecureChangeHelper(unittest.TestCase):
         status = "In Progress&desc=True"
         tickets = self.helper.get_ticket_ids_by_status(status)
         self.assertIsInstance(tickets, TicketList)
-    #
-    # def test_21_render_template_for_ticket(self):
-    #
-    #     ticket = self.helper.get_ticket_by_id(canceled_ticked_id)
-    #     # need to send first arg template type Enum
-    #     template = self.helper.render_template_for_ticket("ACTIVITY_TICKET_CANCEL", ticket)
-    #
-    #     self.assertIsInstance(template, tuple)
-    #
-    # def test_22_get_ticket_link(self):
-    #
-    #     link = self.helper.get_ticket_link(added_ticket_id)
-    #     self.assertTrue("securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}".format(added_ticket_id)
-    #                     in link)
-    #
-    # def test_22_get_ticket_link_task(self):
-    #
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     last_task = ticket.get_last_task()
-    #     link = self.helper.get_ticket_link(added_ticket_id, last_task.id)
-    #     self.assertTrue("securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}&taskid={}".format(
-    #         added_ticket_id, last_task.id) in link)
-    #
-    # def test_24_get_user_by_email(self):
-    #     user_name = 'a'
-    #     email = "test@tufin.com"
-    #
-    #     # assert valid request
-    #     users = self.helper.get_user_by_email(email)
-    #     self.assertIsInstance(users, User_List)
-    #     # get all user name and check if user a in the list
-    #     user_names = [user.name for user in users]
-    #     self.assertTrue(user_name in user_names)
-    #
-    #     # assert invalid request
-    #     users = self.helper.get_user_by_email("NotExistEmail@tufin.com")
-    #     self.assertFalse(users)
+
+    def test_22_get_ticket_link(self):
+        url_path = "securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}".format(self.ticket_id)
+        link = self.helper.get_ticket_link(self.ticket_id)
+        self.assertTrue(url_path in link)
+
+    def test_22_get_ticket_link_task(self):
+        task_id = 123
+        url_path = "securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}&taskid={}"
+        link = self.helper.get_ticket_link(self.ticket_id, task_id)
+        self.assertTrue(url_path.format(self.ticket_id, task_id) in link)
+
+    def test_24_get_user_by_email(self):
+        self.mock_get_uri.return_value.content = fake_request_response("users")
+        users = self.helper.get_user_by_email("user@kuku.com")
+        self.assertIsInstance(users, User_List)
     #
     # def test_25_get_sc_user_by_email(self):
     #     user_name = 'a'
