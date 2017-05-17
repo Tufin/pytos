@@ -163,7 +163,7 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.assertTrue(result)
 
     def test_11_get_user_by_username(self):
-        self.mock_get_uri.return_value.content = fake_request_response("user")
+        self.mock_get_uri.return_value.content = fake_request_response("users")
         user = self.helper.get_user_by_username("user")
         self.assertIsInstance(user, User)
     #

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<users>
+    <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="user">
+        <id>3</id>
+        <type>user</type>
+        <display_name>User Name</display_name>
+        <name>user</name>
+        <origin_type>Local</origin_type>
+        <first_name>User</first_name>
+        <last_name>Name</last_name>
+        <email>user@kuku.com</email>
+        <send_email>true</send_email>
+        <phone>+4915121035012</phone>
+        <roles>
+            <role>
+                <id>3</id>
+                <name>System Administrator</name>
+            </role>
+            <role>
+                <id>4</id>
+                <name>Security Administrator</name>
+            </role>
+            <role>
+                <id>5</id>
+                <name>Requester</name>
+            </role>
+            <role>
+                <id>6</id>
+                <name>Auditor</name>
+            </role>
+            <role>
+                <id>7</id>
+                <name>Business Owner</name>
+            </role>
+        </roles>
+        <member_of>
+            <user xsi:type="group">
+                <id>12</id>
+                <type>group</type>
+                <name>Approver</name>
+                <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/12"/>
+            </user>
+            <user xsi:type="group">
+                <id>13</id>
+                <type>group</type>
+                <name>AFI/CompuCom</name>
+                <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/13"/>
+            </user>
+        </member_of>
+        <authentication_method>Local</authentication_method>
+    </user>
+</users>
