@@ -139,7 +139,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 'PUT',
                 url.format(self.ticket_id, ticket.get_current_step().id, last_task.id),
                 auth=('username', 'password'),
-                data=last_task.to_xml_string(),
+                data=last_task.to_xml_string().decode(),
                 headers={'Content-Type': 'application/xml'}
             )
     #
