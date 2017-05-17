@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ticket>
-    <id>444</id>
-    <subject>New AR</subject>
-    <requester>requester</requester>
+    <id>445</id>
+    <subject>Ticket 445</subject>
+    <requester>tzachi</requester>
     <requester_id>3</requester_id>
     <priority>Normal</priority>
     <status>In Progress</status>
@@ -10,29 +10,29 @@
     <sla_status>NA</sla_status>
     <sla_outcome>NA</sla_outcome>
     <workflow>
-        <id>490</id>
+        <id>491</id>
         <name>Access Request Add Targets</name>
         <uses_topology>true</uses_topology>
     </workflow>
     <steps>
         <step>
-            <id>1949</id>
+            <id>1952</id>
             <name>Open Request</name>
             <redone>false</redone>
             <skipped>false</skipped>
             <tasks>
                 <task>
-                    <id>2016</id>
+                    <id>2019</id>
                     <assignee_id>3</assignee_id>
-                    <assignee>requester</assignee>
+                    <assignee>tzachi</assignee>
                     <status>DONE</status>
                     <fields>
                         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="multi_access_request">
-                            <id>55733</id>
+                            <id>55778</id>
                             <name>Required Access</name>
                             <read_only>false</read_only>
                             <access_request>
-                                <id>55742</id>
+                                <id>55787</id>
                                 <order>AR1</order>
                                 <risk_analysis_result>
                                     <status>not run</status>
@@ -43,7 +43,7 @@
                                 <use_topology>true</use_topology>
                                 <targets>
                                     <target type="Object">
-                                        <id>55741</id>
+                                        <id>55786</id>
                                         <object_name>SRX 100 FireWall</object_name>
                                         <object_type>firewall</object_type>
                                         <object_details>10.100.5.62</object_details>
@@ -58,21 +58,21 @@
                                 <destination_domain>Default</destination_domain>
                                 <sources>
                                     <source type="IP">
-                                        <id>55739</id>
+                                        <id>55784</id>
                                         <ip_address>123.123.123.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </source>
                                 </sources>
                                 <destinations>
                                     <destination type="IP">
-                                        <id>55735</id>
+                                        <id>55780</id>
                                         <ip_address>8.8.8.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </destination>
                                 </destinations>
                                 <services>
                                     <service type="PROTOCOL">
-                                        <id>55737</id>
+                                        <id>55782</id>
                                         <protocol>TCP</protocol>
                                         <port>54</port>
                                     </service>
@@ -82,13 +82,13 @@
                             </access_request>
                         </field>
                         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="text_area">
-                            <id>55743</id>
+                            <id>55788</id>
                             <name>Targets</name>
                             <read_only>false</read_only>
                             <text></text>
                         </field>
                         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="text_area">
-                            <id>55744</id>
+                            <id>55789</id>
                             <name>Targets2</name>
                             <read_only>false</read_only>
                             <text></text>
@@ -98,35 +98,35 @@
             </tasks>
         </step>
         <step>
-            <id>1950</id>
+            <id>1953</id>
             <name>Business Approval</name>
             <redone>false</redone>
             <skipped>false</skipped>
             <tasks>
                 <task>
-                    <id>2017</id>
+                    <id>2020</id>
                     <assignee_id>3</assignee_id>
-                    <assignee>requester</assignee>
+                    <assignee>tzachi</assignee>
                     <status>DONE</status>
                     <fields>
                         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="multi_access_request">
-                            <id>55745</id>
+                            <id>55790</id>
                             <name>Required Access</name>
                             <read_only>false</read_only>
                             <access_request>
-                                <id>55754</id>
+                                <id>55799</id>
                                 <order>AR1</order>
                                 <risk_analysis_result>
                                     <status>no risk</status>
                                 </risk_analysis_result>
                                 <verifier_result>
                                     <status>implemented</status>
-                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/444/steps/1950/tasks/2017/multi_access_request/55754/verifier"/>
+                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/445/steps/1953/tasks/2020/multi_access_request/55799/verifier"/>
                                 </verifier_result>
                                 <use_topology>true</use_topology>
                                 <targets>
                                     <target type="Object">
-                                        <id>55753</id>
+                                        <id>55798</id>
                                         <object_name>SRX 100 FireWall</object_name>
                                         <object_type>firewall</object_type>
                                         <object_details>10.100.5.62</object_details>
@@ -141,21 +141,21 @@
                                 <destination_domain>Default</destination_domain>
                                 <sources>
                                     <source type="IP">
-                                        <id>55751</id>
+                                        <id>55796</id>
                                         <ip_address>123.123.123.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </source>
                                 </sources>
                                 <destinations>
                                     <destination type="IP">
-                                        <id>55747</id>
+                                        <id>55792</id>
                                         <ip_address>8.8.8.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </destination>
                                 </destinations>
                                 <services>
                                     <service type="PROTOCOL">
-                                        <id>55749</id>
+                                        <id>55794</id>
                                         <protocol>TCP</protocol>
                                         <port>54</port>
                                     </service>
@@ -165,7 +165,7 @@
                             </access_request>
                             <designer_result>
                                 <status>designer success</status>
-                                <result xmlns:ns3="access_request_designer" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/444/steps/1950/tasks/2017/multi_access_request/designer"/>
+                                <result xmlns:ns3="access_request_designer" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/445/steps/1953/tasks/2020/multi_access_request/designer"/>
                             </designer_result>
                         </field>
                     </fields>
@@ -173,35 +173,35 @@
             </tasks>
         </step>
         <step>
-            <id>1951</id>
+            <id>1954</id>
             <name>Technical Design</name>
             <redone>false</redone>
             <skipped>false</skipped>
             <tasks>
                 <task>
-                    <id>2018</id>
+                    <id>2021</id>
                     <assignee_id>3</assignee_id>
-                    <assignee>requester</assignee>
+                    <assignee>tzachi</assignee>
                     <status>ASSIGNED</status>
                     <fields>
                         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="multi_access_request">
-                            <id>55755</id>
+                            <id>55800</id>
                             <name>Required Access</name>
                             <read_only>false</read_only>
                             <access_request>
-                                <id>55764</id>
+                                <id>55809</id>
                                 <order>AR1</order>
                                 <risk_analysis_result>
                                     <status>no risk</status>
                                 </risk_analysis_result>
                                 <verifier_result>
                                     <status>implemented</status>
-                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/444/steps/1951/tasks/2018/multi_access_request/55764/verifier"/>
+                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/445/steps/1954/tasks/2021/multi_access_request/55809/verifier"/>
                                 </verifier_result>
                                 <use_topology>true</use_topology>
                                 <targets>
                                     <target type="Object">
-                                        <id>55763</id>
+                                        <id>55808</id>
                                         <object_name>SRX 100 FireWall</object_name>
                                         <object_type>firewall</object_type>
                                         <object_details>10.100.5.62</object_details>
@@ -216,21 +216,21 @@
                                 <destination_domain>Default</destination_domain>
                                 <sources>
                                     <source type="IP">
-                                        <id>55761</id>
+                                        <id>55806</id>
                                         <ip_address>123.123.123.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </source>
                                 </sources>
                                 <destinations>
                                     <destination type="IP">
-                                        <id>55757</id>
+                                        <id>55802</id>
                                         <ip_address>8.8.8.0</ip_address>
                                         <netmask>255.255.255.0</netmask>
                                     </destination>
                                 </destinations>
                                 <services>
                                     <service type="PROTOCOL">
-                                        <id>55759</id>
+                                        <id>55804</id>
                                         <protocol>TCP</protocol>
                                         <port>54</port>
                                     </service>
@@ -239,13 +239,18 @@
                                 <labels/>
                             </access_request>
                         </field>
+                        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="text_field">
+                            <id>55810</id>
+                            <name>text field</name>
+                            <text></text>
+                        </field>
                     </fields>
                 </task>
             </tasks>
         </step>
     </steps>
     <current_step>
-        <id>1951</id>
+        <id>1954</id>
         <name>Technical Design</name>
     </current_step>
     <comments/>

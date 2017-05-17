@@ -24,7 +24,7 @@ def fake_request_response(rest_file):
 
 class TestSecureChangeHelper(unittest.TestCase):
     def setUp(self):
-        self.ticket_id = 444
+        self.ticket_id = 445
         self.user_id = 11
         self.helper = Secure_Change_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
@@ -62,10 +62,10 @@ class TestSecureChangeHelper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
         target_task_id = ticket.get_previous_step()
-        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
             self.helper.redo_step(step_task_obj, target_task_id, 'Redoing step')
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/redo/{}"
-            mock_post_uri.assert_called_with(
+            mock_put_uri.assert_called_with(
                 'PUT',
                 url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, target_task_id),
                 auth=('username', 'password'),
@@ -126,43 +126,22 @@ class TestSecureChangeHelper(unittest.TestCase):
                 headers={}
             )
 
-    # def test_09_cancel_ticket_without_requester(self):
-    #
-    #     #  creating a new ticket from template
-    #     ticket_obj = self.helper.read_ticket_template(test_data_dir  + 'new_ticket.xml')
-    #     user_name = 'a'
-    #     ticket_obj.requester = user_name
-    #     ticket_id = self.helper.post_ticket(ticket_obj)
-    #
-    #     # assert valid request
-    #     self.helper.cancel_ticket(ticket_id)
-    #     ticket = self.helper.get_ticket_by_id(ticket_id)
-    #     self.assertEqual("Ticket Cancelled", ticket.status)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.cancel_ticket(5555)
-    #
-    # def test_10_put_task(self):
-    #
-    #     # Generate the ticket obj
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     # Getting the time value from the last task
-    #     last_task = ticket.get_last_task()
-    #     time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
-    #     time_field.set_field_value("15:15")
-    #
-    #     # assert valid request
-    #     self.helper.put_task(last_task)
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     last_task = ticket.get_last_task()
-    #     time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
-    #     new_time = time_field.get_field_value()
-    #     self.assertEqual("15:15", new_time)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.put_task("wrong value")
+    def test_09_put_task(self):
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        last_task = ticket.get_last_task()
+        text_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TEXT)[0]
+        text_field.text = "new text"
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            self.helper.put_task(last_task)
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, ticket.get_current_step().id, last_task.id),
+                auth=('username', 'password'),
+                data=last_task.to_xml_string(),
+                headers={'Content-Type': 'application/xml'}
+            )
     #
     # def test_11_put_field(self):
     #
