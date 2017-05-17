@@ -6,7 +6,7 @@ import sys
 
 from pytos.common.definitions import xml_tags
 from pytos.securechange.helpers import Secure_Change_Helper
-from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, TicketList, User_List
+from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, TicketList, User_List, Group
 
 
 def fake_request_response(rest_file):
@@ -172,33 +172,12 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("users")
         users = self.helper.get_user_by_email("user@kuku.com")
         self.assertIsInstance(users, User_List)
-    #
-    # def test_25_get_sc_user_by_email(self):
-    #     user_name = 'a'
-    #     email = "test@tufin.com"
-    #
-    #     # assert valid request
-    #     user = self.helper.get_sc_user_by_email(email)
-    #     self.assertIsInstance(user, User)
-    #     self.assertEqual(user_name, user.name)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.get_sc_user_by_email("notrealemail@tufin.com")
-    #
-    # def test_26_get_all_members_of_group(self):
-    #     group_name = "Tufin"
-    #     user_names = ["a", "b", "c"]
-    #
-    #     # assert valid request
-    #     members = self.helper.get_all_members_of_group(group_name)
-    #     members_names = [member.name for member in members]
-    #     for user in user_names:
-    #         self.assertTrue(user in members_names)
-    #
-    #     # assert invalid request
-    #     with self.assertRaises(ValueError):
-    #         self.helper.get_all_members_of_group("a")
+
+    @patch('pytos.securechange.helpers.Secure_Change_Helper.get_user_by_username')
+    def test_14_get_all_members_of_group(self, mock_group_obj):
+        mock_group_obj.return_value = Group.from_xml_string(fake_request_response("users").decode())
+        members = self.helper.get_all_members_of_group('Approver')
+        self.assertEqual(members, ['d'])
     #
     # def test_27_get_all_members_of_group_by_group_id(self):
     #
