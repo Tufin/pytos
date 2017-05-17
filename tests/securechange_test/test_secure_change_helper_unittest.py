@@ -89,10 +89,10 @@ class TestSecureChangeHelper(unittest.TestCase):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
-        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
             self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}"
-            mock_post_uri.assert_called_with(
+            mock_put_uri.assert_called_with(
                 'PUT',
                 url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, self.user_id),
                 auth=('username', 'password'),
@@ -100,26 +100,18 @@ class TestSecureChangeHelper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    # def test_07_change_requester(self):
-    #
-    #     # generate the ticket obj
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #
-    #     # set new Requester as user id 5 named 'c'
-    #     user_id = 5
-    #     user_name = 'c'
-    #     # assert that the original requeter is not the new one
-    #     self.assertNotEqual(ticket.requester_id, user_id)
-    #     comment = "Requester was modified from {} to {}".format(ticket.requester, user_name)
-    #
-    #     # assert valid request
-    #     self.helper.change_requester(added_ticket_id, user_id, comment)
-    #     updated_ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     self.assertEqual(int(updated_ticket.requester_id), user_id)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.change_requester(added_ticket_id, 123, comment)
+    def test_07_change_requester(self):
+        requester_id = 3
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            self.helper.change_requester(self.ticket_id, requester_id, 'Modify requester')
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/change_requester/{}"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, requester_id),
+                auth=('username', 'password'),
+                data='<reassign_task_comment>\n  <comment>Reassign message</comment>\n</reassign_task_comment>',
+                headers={'Content-Type': 'application/xml'}
+            )
     #
     # def test_08_cancel_ticket_with_requester(self):
     #
