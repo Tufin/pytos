@@ -122,7 +122,7 @@ class TestSecureChangeHelper(unittest.TestCase):
                 'PUT',
                 url.format(self.ticket_id, requester_id),
                 auth=('username', 'password'),
-                data='<comment>\n  <comment>Modify requester</comment>\n</comment>',
+                data=None,
                 headers={'Content-Type': 'application/xml'}
             )
 
