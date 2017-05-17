@@ -64,12 +64,6 @@ class Secure_Change_Helper(Secure_API_Helper):
         """
         super().__init__(hostname, login_data, **kwargs)
 
-    @property
-    def application_url(self):
-        if self._application_url is None:
-            self._application_url = self._get_application_url()
-        return self._application_url
-
     @staticmethod
     def read_ticket_info():
         """This function reads a SecureChange ticket_info from STDIN and returns a Ticket_Info object
@@ -656,25 +650,6 @@ class Secure_Change_Helper(Secure_API_Helper):
             message = "Could not redo step, error was '{}'.".format(update_error)
             logger.error(message)
             raise IOError(message)
-
-    def get_ticket_link(self, ticket_id, task_id=None):
-        """Return a HTTP link to specified SecureChange ticket ID (and task, optionally)
-
-        :param ticket_id: The ticket ID to link to.
-        :type ticket_id: int
-        :param task_id: (Optional) The task ID to link to.
-        :type task_id: int
-        :return: The link to the specified ticket and task.
-        :rtype: str
-        """
-        base_link = self.application_url
-        if task_id:
-            ticket_link = base_link + "/pages/myRequest/myRequestsMain.seam?ticketId={}&taskid={}".format(ticket_id,
-                                                                                                          task_id)
-        else:
-            ticket_link = base_link + "/pages/myRequest/myRequestsMain.seam?ticketId={}".format(ticket_id)
-
-        return ticket_link
 
     def get_verifier_results(self, ticket_id, step_id, task_id, request_id):
         """Get verifier results for an access request field.

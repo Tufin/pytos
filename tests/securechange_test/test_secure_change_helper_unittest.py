@@ -168,18 +168,7 @@ class TestSecureChangeHelper(unittest.TestCase):
         tickets = self.helper.get_ticket_ids_by_status(status)
         self.assertIsInstance(tickets, TicketList)
 
-    def test_22_get_ticket_link(self):
-        url_path = "securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}".format(self.ticket_id)
-        link = self.helper.get_ticket_link(self.ticket_id)
-        self.assertTrue(url_path in link)
-
-    def test_22_get_ticket_link_task(self):
-        task_id = 123
-        url_path = "securechangeworkflow/pages/myRequest/myRequestsMain.seam?ticketId={}&taskid={}"
-        link = self.helper.get_ticket_link(self.ticket_id, task_id)
-        self.assertTrue(url_path.format(self.ticket_id, task_id) in link)
-
-    def test_24_get_user_by_email(self):
+    def test_13_get_user_by_email(self):
         self.mock_get_uri.return_value.content = fake_request_response("users")
         users = self.helper.get_user_by_email("user@kuku.com")
         self.assertIsInstance(users, User_List)
