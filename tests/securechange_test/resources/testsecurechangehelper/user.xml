@@ -2,7 +2,7 @@
 <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="user">
     <id>11</id>
     <type>user</type>
-    <display_name>user</display_name>
+    <display_name>User Name</display_name>
     <name>user</name>
     <origin_type>Local</origin_type>
     <first_name>User</first_name>
