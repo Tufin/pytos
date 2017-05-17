@@ -112,27 +112,20 @@ class TestSecureChangeHelper(unittest.TestCase):
                 data='<comment>\n  <comment>Modify requester</comment>\n</comment>',
                 headers={'Content-Type': 'application/xml'}
             )
-    #
-    # def test_08_cancel_ticket_with_requester(self):
-    #
-    #     global canceled_ticked_id
-    #     #  creating a new ticket from template
-    #     ticket_obj = self.helper.read_ticket_template(test_data_dir  + 'new_ticket.xml')
-    #     user_name = 'a'
-    #     user_id = 3
-    #     ticket_obj.requester = user_name
-    #     ticket_id = self.helper.post_ticket(ticket_obj)
-    #
-    #     # assert valid request
-    #     self.helper.cancel_ticket(ticket_id, user_id)
-    #     ticket = self.helper.get_ticket_by_id(ticket_id)
-    #     self.assertEqual("Ticket Cancelled", ticket.status)
-    #     canceled_ticked_id = ticket_id
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.cancel_ticket(55555, user_id)
-    #
+
+    def test_08_cancel_ticket_with_requester(self):
+        requester_id = 3
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            self.helper.cancel_ticket(self.ticket_id, requester_id)
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/cancel?requester_id={}"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, requester_id),
+                auth=('username', 'password'),
+                data='<comment>\n  <comment>Modify requester</comment>\n</comment>',
+                headers={'Content-Type': 'application/xml'}
+            )
+
     # def test_09_cancel_ticket_without_requester(self):
     #
     #     #  creating a new ticket from template
