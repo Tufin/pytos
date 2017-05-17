@@ -133,7 +133,7 @@ class TestSecureChangeHelper(unittest.TestCase):
         text_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TEXT)[0]
         text_field.text = "new text"
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.put_task(last_task)
+            result = self.helper.put_task(last_task)
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -142,41 +142,30 @@ class TestSecureChangeHelper(unittest.TestCase):
                 data=last_task.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
+        self.assertTrue(result)
 
-    # def test_11_put_field(self):
-    #
-    #     # Generate the ticket obj
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     # Getting the time value from the last task
-    #     last_task = ticket.get_last_task()
-    #     time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
-    #     time_field.set_field_value("20:20")
-    #
-    #     # assert valid request
-    #     result = self.helper.put_field(time_field)
-    #     ticket = self.helper.get_ticket_by_id(added_ticket_id)
-    #     last_task = ticket.get_last_task()
-    #     time_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TIME)[0]
-    #     new_time = time_field.get_field_value()
-    #     self.assertTrue(result)
-    #     self.assertEqual("20:20", new_time)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.put_field("wrong value")
-    #
-    # def test_14_get_user_by_username(self):
-    #
-    #     user_name = "a"
-    #     # assert valid request
-    #     user = self.helper.get_user_by_username(user_name)
-    #     self.assertIsInstance(user, User)
-    #     self.assertEqual("a", user.name)
-    #     self.assertEqual(int(user.id), 3)
-    #
-    #     # assert invalid requests
-    #     with self.assertRaises(ValueError):
-    #         self.helper.get_user_by_username("Alfred")
+    def test_10_put_field(self):
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        last_task = ticket.get_last_task()
+        text_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TEXT)[0]
+        text_field.text = "new text"
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            result = self.helper.put_field(text_field)
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/fields/{}"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, ticket.get_current_step().id, last_task.id, text_field.id),
+                auth=('username', 'password'),
+                data=text_field.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertTrue(result)
+
+    def test_11_get_user_by_username(self):
+        self.mock_get_uri.return_value.content = fake_request_response("user")
+        user = self.helper.get_user_by_username("user")
+        self.assertIsInstance(user, User)
     #
     # def test_17_get_ticket_ids_by_workflow_name(self):
     #     # assert valid request
