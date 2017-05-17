@@ -508,4 +508,4 @@
         <comments/>
     </ticket>
     <next href="https://localhost/securechangeworkflow/api/securechange/tickets?status=In+Progress&amp;count=100&amp;start=100&amp;desc=true"/>
-</tickets><?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+</tickets>
