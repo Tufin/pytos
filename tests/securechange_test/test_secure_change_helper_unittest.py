@@ -178,21 +178,12 @@ class TestSecureChangeHelper(unittest.TestCase):
         mock_group_obj.return_value = Group.from_xml_string(fake_request_response("users").decode())
         members = self.helper.get_all_members_of_group('Approver')
         self.assertEqual(members, ['d'])
-    #
-    # def test_27_get_all_members_of_group_by_group_id(self):
-    #
-    #     group_id = 6
-    #     user_names = ["a", "b", "c"]
-    #
-    #     # assert valid request
-    #     members = self.helper.get_all_members_of_group_by_group_id(group_id)
-    #     members_names = [member.name for member in members]
-    #     for user in user_names:
-    #         self.assertTrue(user in members_names)
-    #
-    #     # assert invalid request
-    #     with self.assertRaises(ValueError):
-    #         self.helper.get_all_members_of_group_by_group_id(3)
+
+    @patch('pytos.securechange.helpers.Secure_Change_Helper.get_sc_user_by_id')
+    def test_15_get_all_members_of_group_by_group_id(self, mock_group_obj):
+        mock_group_obj.return_value = Group.from_xml_string(fake_request_response("group").decode())
+        members = self.helper.get_all_members_of_group_by_group_id(13)
+        self.assertEqual(members, [])
     #
     # def test_29_get_verifier_results(self):
     #
@@ -204,12 +195,12 @@ class TestSecureChangeHelper(unittest.TestCase):
     #     last_step = ticket.get_last_step()
     #     ar_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
     #     # create a list of access request id's for calling the get_verifier_results API
-    #     ar_ids = [ar.id for ar in ar_field.access_requests]
+    #      the first 2 access request that we know they have verifier results
+    #         if ar_iar_ids = [ar.id for ar in ar_field.access_requests]
     #
     #     # assert the values of each result - These are valid requests
     #     for verifier, ar_id in zip(ar_field.get_all_verifier_results(), ar_ids):
-    #         # assert the first 2 access request that we know they have verifier results
-    #         if ar_ids.index(ar_id) in [0, 1]:
+    #         # assertds.index(ar_id) in [0, 1]:
     #             verifier_result = self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
     #             self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
     #             if ar_ids.index(ar_id) == 0:
