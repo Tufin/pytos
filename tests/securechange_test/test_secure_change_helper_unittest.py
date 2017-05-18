@@ -177,7 +177,8 @@ class TestSecureChangeHelper(unittest.TestCase):
     def test_14_get_all_members_of_group(self, mock_group_obj):
         mock_group_obj.return_value = User_List.from_xml_string(fake_request_response("groups").decode())[0]
         members = self.helper.get_all_members_of_group('Approver')
-        self.assertEqual(members, ['d'])
+        members_names = {member.name for member in members}
+        self.assertTrue(members_names.issuperset({'user', 'username'}))
 
     @patch('pytos.securechange.helpers.Secure_Change_Helper.get_sc_user_by_id')
     def test_15_get_all_members_of_group_by_group_id(self, mock_group_obj):
