@@ -70,7 +70,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
         app = self.helper.get_app_by_name(self.app_name)
         assert isinstance(app, Application)
 
-    def test_02_failed_get_app_by_id(self):
+    def test_03_failed_get_app_by_id(self):
         self.mock_uri.return_value.status_code = 404
         self.mock_uri.return_value.content = fake_request_response("no_found_error")
         with self.assertRaises(ValueError):
