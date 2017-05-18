@@ -9,10 +9,6 @@ from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Hos
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List
 from pytos.securechange.xml_objects.rest import Group
 
-sys.path.append("ps-dev/tests/bin/eval_tools")
-from eval_tools.eval_tools import EvalDict
-
-
 VALID_TEST_APP_NAME = "TEST_APP_123_321"
 VALID_TEST_APP_NAME_AFTER_UPDATE = VALID_TEST_APP_NAME + '_after_update'
 VALID_TEST_NETWORK_OBJECT_NAME = "network_object1"
