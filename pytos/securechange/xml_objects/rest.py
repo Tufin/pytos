@@ -1797,6 +1797,8 @@ class Group(XML_Object_Base):
         :type xml_node: xml.etree.Element
         """
         import xml.etree.ElementTree
+        print("tzachi")
+        print()
         print(xml.etree.ElementTree.tostring(xml_node))
         user_id = get_xml_int_value(xml_node, Elements.ID)
         user_name = get_xml_text_value(xml_node, Elements.NAME)
