@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<users>
+    <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="group">
+        <id>12</id>
+        <type>group</type>
+        <name>Approver</name>
+        <description>Testing group assignment</description>
+        <origin_type>Local</origin_type>
+        <roles>
+            <role>
+                <id>3</id>
+                <name>System Administrator</name>
+            </role>
+            <role>
+                <id>4</id>
+                <name>Security Administrator</name>
+            </role>
+            <role>
+                <id>5</id>
+                <name>Requester</name>
+            </role>
+            <role>
+                <id>6</id>
+                <name>Auditor</name>
+            </role>
+            <role>
+                <id>7</id>
+                <name>Business Owner</name>
+            </role>
+        </roles>
+        <groupPermissions>
+            <groupPermission>
+                <name>View requests submitted by group members</name>
+                <value>false</value>
+            </groupPermission>
+            <groupPermission>
+                <name>View tasks assigned to the group</name>
+                <value>false</value>
+            </groupPermission>
+        </groupPermissions>
+        <members>
+            <user xsi:type="user">
+                <id>11</id>
+                <type>user</type>
+                <name>adam</name>
+                <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/11"/>
+            </user>
+            <user xsi:type="user">
+                <id>3</id>
+                <type>user</type>
+                <name>tzachi</name>
+                <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/3"/>
+            </user>
+        </members>
+    </user>
+</users>

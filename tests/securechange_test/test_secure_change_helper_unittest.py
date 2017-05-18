@@ -175,7 +175,7 @@ class TestSecureChangeHelper(unittest.TestCase):
 
     @patch('pytos.securechange.helpers.Secure_Change_Helper.get_user_by_username')
     def test_14_get_all_members_of_group(self, mock_group_obj):
-        mock_group_obj.return_value = Group.from_xml_string(fake_request_response("users").decode())
+        mock_group_obj.return_value = Group.from_xml_string(fake_request_response("groups").decode())
         members = self.helper.get_all_members_of_group('Approver')
         self.assertEqual(members, ['d'])
 

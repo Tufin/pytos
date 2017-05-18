@@ -40,8 +40,14 @@
         <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="user">
             <id>3</id>
             <type>user</type>
-            <name>tzachi</name>
+            <name>user</name>
             <link href="https://localhost/securechangeworkflow/api/securechange/users/3"/>
+        </user>
+        <user xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="user">
+            <id>4</id>
+            <type>user</type>
+            <name>username</name>
+            <link href="https://localhost/securechangeworkflow/api/securechange/users/4"/>
         </user>
     </members>
 </group>
