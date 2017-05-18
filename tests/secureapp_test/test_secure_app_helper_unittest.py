@@ -50,13 +50,14 @@ class Test_Secure_App_Helper(unittest.TestCase):
         valid_app = Application(None, VALID_TEST_APP_NAME, "This is the comment for the test app",
                                 "false", app_owner, None, None, None, None, None, None)
         app_list = Applications_List([])
+        app_list.append(valid_app)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             app_id = self.helper.post_apps(valid_app)
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/',
                 auth=('username', 'password'),
-                data=app_list.append(valid_app).to_xml_string().encode(),
+                data=app_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertEqual(app_id, 1)
