@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from pytos.secureapp.helpers import Secure_App_Helper
 from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
-    Detailed_Application_Connection, User, User_List, Single_Service, Services_List
+    Detailed_Application_Connection, User, User_List, Single_Service, Services_List, Applications_List
 from pytos.securechange.xml_objects.rest import Group
 
 VALID_TEST_APP_NAME = "TEST_APP_123_321"
@@ -49,13 +49,14 @@ class Test_Secure_App_Helper(unittest.TestCase):
         app_owner = Application_Owner(None, self.user, self.user, None)
         valid_app = Application(None, VALID_TEST_APP_NAME, "This is the comment for the test app",
                                 "false", app_owner, None, None, None, None, None, None)
+        app_list = Applications_List([])
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             app_id = self.helper.post_apps(valid_app)
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/',
                 auth=('username', 'password'),
-                data=valid_app.to_xml_string().encode(),
+                data=app_list.append(valid_app.to_xml_string().encode()),
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertEqual(app_id, 1)
