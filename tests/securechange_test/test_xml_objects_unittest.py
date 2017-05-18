@@ -16,7 +16,7 @@ def fake_request_response(rest_file):
 
 class Test_Secure_Change_XML(unittest.TestCase):
     def test_01_ticket_info(self):
-        ticket_info = Ticket_Info(fake_request_response("ticket_info"))
+        ticket_info = Ticket_Info(fake_request_response("ticket_info").decode())
         self.assertIsInstance(ticket_info, Ticket_Info)
 
 
