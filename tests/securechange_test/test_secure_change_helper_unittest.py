@@ -6,7 +6,8 @@ import sys
 
 from pytos.common.definitions import xml_tags
 from pytos.securechange.helpers import Secure_Change_Helper
-from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, TicketList, User_List, Group
+from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, User, TicketList, User_List, Group, \
+    AccessRequestVerifierResult
 
 
 def fake_request_response(rest_file):
@@ -187,7 +188,7 @@ class TestSecureChangeHelper(unittest.TestCase):
         members_names = {member.name for member in members}
         self.assertTrue(members_names.issuperset({'user', 'username'}))
 
-    def test_16_get_verifier_results(self):
+    def test_16_get_verifier_status(self):
         step_id = 1953
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
@@ -195,6 +196,15 @@ class TestSecureChangeHelper(unittest.TestCase):
         multi_ar_field = step_task_obj.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
         self.assertEqual('implemented', multi_ar_field.access_requests[0].verifier_result.status)
 
+    def test_17_get_verifier_results(self):
+        step_id = 1953
+        ar_id = 55799
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        step_task_obj = ticket.get_step_by_id(step_id).get_last_task()
+        self.mock_get_uri.return_value.content = fake_request_response("verifier_results")
+        verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+        self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
 
         # for verifier, ar_id in zip(multi_ar_field.get_all_verifier_results(), ar_ids):
         #     # assertds.index(ar_id) in [0, 1]:
