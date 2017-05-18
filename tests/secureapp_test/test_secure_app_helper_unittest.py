@@ -46,6 +46,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
         self.patcher.stop()
 
     def test_01_create_app(self):
+        self.mock_uri.return_value.headers = {'location': '1'}
+        self.mock_uri.return_value.status_code = 201
         app_owner = Application_Owner(None, self.user, self.user, None)
         valid_app = Application(None, VALID_TEST_APP_NAME, "This is the comment for the test app",
                                 "false", app_owner, None, None, None, None, None, None)
