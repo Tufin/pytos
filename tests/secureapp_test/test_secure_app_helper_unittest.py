@@ -56,7 +56,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/',
                 auth=('username', 'password'),
-                data=(app_list.append(valid_app)).to_xml_string().encode(),
+                data=app_list.append(valid_app).to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertEqual(app_id, 1)
