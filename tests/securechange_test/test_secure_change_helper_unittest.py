@@ -215,35 +215,6 @@ class TestSecureChangeHelper(unittest.TestCase):
             )
         self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
 
-        # for verifier, ar_id in zip(multi_ar_field.get_all_verifier_results(), ar_ids):
-        #     # assertds.index(ar_id) in [0, 1]:
-        #         verifier_result = self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
-        #         self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
-        #         if ar_ids.index(ar_id) == 0:
-        #             # assert that the first AR is not implemented as excpected
-        #             self.assertTrue(verifier.is_not_implemented())
-        #         else:
-        #             # assert that the first AR is implemented as excpected
-        #             self.assertTrue(verifier.is_implemented())
-        #     # assert that the third AR is not available as excpected
-        #     elif ar_ids.index(ar_id) == 2:
-        #         try:
-        #             self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
-        #         except ValueError as value_error:
-        #             self.assertIsInstance(value_error, ValueError)
-        #             self.assertTrue(verifier.is_not_available())
-    #
-    # def test_31_get_ticket_ids_with_expiration_date(self):
-    #
-    #     ticket_found = False
-    #     tickets = self.helper.get_ticket_ids_with_expiration_date()
-    #     for ticket in tickets:
-    #         if access_request_ticket_id == ticket:
-    #             ticket_found = True
-    #
-    #     self.assertIsInstance(tickets, types.GeneratorType)
-    #     self.assertTrue(ticket_found)
-
 
 if __name__ == '__main__':
     unittest.main()

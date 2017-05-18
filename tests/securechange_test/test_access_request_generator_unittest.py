@@ -1,16 +1,9 @@
 #!/opt/tufin/securitysuite/ps/python/bin/python3.4
-
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-
-from pytos.common.logging.logger import setup_loggers
-from pytos.common.functions.config import Secure_Config_Parser
 from pytos.securechange.helpers import Access_Request_Generator
 
-conf = Secure_Config_Parser()
-
-LOGGER = setup_loggers(conf.dict("log_levels"), log_dir_path="/var/log/ps/tests")
 
 # Csv files definitions.
 valid_csv_file_1 = b'''
@@ -120,8 +113,6 @@ class Test_Access_Request_Generator(unittest.TestCase):
     #-----------------------------------------------#
 
     def test_from_csv_file_FOR_valid_file_1(self):
-        LOGGER.debug("Hello. My name is Inigo Montoya. You killed my father. Prepare to die.")
-
         # Creating temporary csv file
         csv_file_wrapper = tempfile.NamedTemporaryFile()
         csv_file_wrapper.file.write(valid_csv_file_1)
@@ -268,31 +259,24 @@ class Test_Access_Request_Generator(unittest.TestCase):
                                     'services': [{'type': 'ICMP'}],
                                     'action': 'remove',
                                     'comment': 'Bake me a cake.'}
-        LOGGER.critical(request.create_multi_access_requests()[0].to_xml_string())
 
     def test_from_list_of_tuples_FOR_invalid_rule_tuples_1(self):
-        LOGGER.debug("Testing for invalid rule tuples 1")
         request = Access_Request_Generator.from_list_of_tuples(invalid_rule_tuples_1)
 
     def test_from_list_of_tuples_FOR_invalid_rule_tuples_2(self):
-        LOGGER.debug("Testing for invalid rule tuples 2")
         request = Access_Request_Generator.from_list_of_tuples(invalid_rule_tuples_2)
 
     def test_from_list_of_tuples_FOR_invalid_rule_tuples_3(self):
-        LOGGER.debug("Testing for invalid rule tuples 3")
         request = Access_Request_Generator.from_list_of_tuples(invalid_rule_tuples_3)
 
     def test_from_list_of_tuples_FOR_invalid_rule_tuples_4(self):
-        LOGGER.debug("Testing for invalid rule tuples 4")
         try:
             request = Access_Request_Generator.from_list_of_tuples(invalid_rule_tuples_4)
         except ValueError as service_error:
-            assert isinstance(service_error, ValueError)
+            self.assertIsInstance(service_error, ValueError)
 
     def test_from_list_of_tuples_FOR_invalid_rule_tuples_5(self):
-        LOGGER.debug("Testing for invalid rule tuples 5")
         request = Access_Request_Generator.from_list_of_tuples(invalid_rule_tuples_5)
-
 
     #-----------------------------------------------#
     # Tests of "create_multi_access_requests" method#
@@ -302,8 +286,6 @@ class Test_Access_Request_Generator(unittest.TestCase):
         access_requests = self.access_requests()
         # access request no.1
         trees = [ET.fromstring(rule.to_xml_string()) for rule in access_requests]
-        for tree in trees:
-            LOGGER.debug('\n' + ET.tostring(tree).decode('ascii'))
         for rule_num, rule in enumerate(trees):
             # Asserting request number/name.
             assert rule.find('order').text == 'AR{}'.format(rule_num + 1)

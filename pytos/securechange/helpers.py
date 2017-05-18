@@ -558,9 +558,6 @@ class Secure_Change_Helper(Secure_API_Helper):
         xml_node = ET.fromstring(response_string)
         return TicketList.from_xml_node(xml_node)
 
-    def get_ticket_ids_with_expiration_date(self, expiration_limits=None):
-        return (ticket_id for ticket_id in self.get_ticket_ids_with_expiration_date_as_list(expiration_limits))
-
     def reassign_task(self, task_obj, user_id, reassign_message):
         """Reassign Ticket Task to other user by his ID
 
