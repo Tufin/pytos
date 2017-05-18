@@ -203,7 +203,16 @@ class TestSecureChangeHelper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_step_by_id(step_id).get_last_task()
         self.mock_get_uri.return_value.content = fake_request_response("verifier_results")
-        verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_uri:
+            verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+            url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/multi_access_request/{}/verifier"
+            mock_uri.assert_called_with(
+                'PUT',
+                url.format(self.ticket_id, step_id, step_task_obj.id, ar_id),
+                auth=('username', 'password'),
+                data='<reassign_task_comment>\n  <comment>Reassign message</comment>\n</reassign_task_comment>',
+                headers={'Content-Type': 'application/xml'}
+            )
         self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
 
         # for verifier, ar_id in zip(multi_ar_field.get_all_verifier_results(), ar_ids):
