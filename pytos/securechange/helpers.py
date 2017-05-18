@@ -438,8 +438,6 @@ class Secure_Change_Helper(Secure_API_Helper):
             users_xml_string = self.get_uri(
                 "/securechangeworkflow/api/securechange/users/?user_name={}{}".format(username, exact_match_param),
                 expected_status_codes=200).response.content
-            print()
-            print(users_xml_string)
             found_users = User_List.from_xml_string(users_xml_string)
         except REST_Bad_Request_Error as error:
             message = "Could not find user '{}'. Error '{}'.".format(username, error)
