@@ -207,11 +207,11 @@ class TestSecureChangeHelper(unittest.TestCase):
             verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/multi_access_request/{}/verifier"
             mock_uri.assert_called_with(
-                'PUT',
+                'GET',
                 url.format(self.ticket_id, step_id, step_task_obj.id, ar_id),
                 auth=('username', 'password'),
-                data='<reassign_task_comment>\n  <comment>Reassign message</comment>\n</reassign_task_comment>',
-                headers={'Content-Type': 'application/xml'}
+                headers={},
+                params=None
             )
         self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
 
