@@ -186,38 +186,33 @@ class TestSecureChangeHelper(unittest.TestCase):
         members = self.helper.get_all_members_of_group_by_group_id(13)
         members_names = {member.name for member in members}
         self.assertTrue(members_names.issuperset({'user', 'username'}))
-    #
-    # def test_29_get_verifier_results(self):
-    #
-    #     # global variable
-    #     ticket_id = access_request_ticket_id
-    #
-    #     ticket = self.helper.get_ticket_by_id(ticket_id)
-    #     last_task = ticket.get_last_task()
-    #     last_step = ticket.get_last_step()
-    #     ar_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
-    #     # create a list of access request id's for calling the get_verifier_results API
-    #      the first 2 access request that we know they have verifier results
-    #         if ar_iar_ids = [ar.id for ar in ar_field.access_requests]
-    #
-    #     # assert the values of each result - These are valid requests
-    #     for verifier, ar_id in zip(ar_field.get_all_verifier_results(), ar_ids):
-    #         # assertds.index(ar_id) in [0, 1]:
-    #             verifier_result = self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
-    #             self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
-    #             if ar_ids.index(ar_id) == 0:
-    #                 # assert that the first AR is not implemented as excpected
-    #                 self.assertTrue(verifier.is_not_implemented())
-    #             else:
-    #                 # assert that the first AR is implemented as excpected
-    #                 self.assertTrue(verifier.is_implemented())
-    #         # assert that the third AR is not available as excpected
-    #         elif ar_ids.index(ar_id) == 2:
-    #             try:
-    #                 self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
-    #             except ValueError as value_error:
-    #                 self.assertIsInstance(value_error, ValueError)
-    #                 self.assertTrue(verifier.is_not_available())
+
+    def test_16_get_verifier_results(self):
+        step_id = 1953
+        self.mock_get_uri.return_value.content = fake_request_response("ticket")
+        ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        step_task_obj = ticket.get_step_by_id(step_id).get_last_task()
+        multi_ar_field = step_task_obj.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_MULTI_ACCESS_REQUEST)[0]
+        self.assertEqual('implemented', multi_ar_field.access_requests[0].verifier_result.status)
+
+
+        # for verifier, ar_id in zip(multi_ar_field.get_all_verifier_results(), ar_ids):
+        #     # assertds.index(ar_id) in [0, 1]:
+        #         verifier_result = self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
+        #         self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
+        #         if ar_ids.index(ar_id) == 0:
+        #             # assert that the first AR is not implemented as excpected
+        #             self.assertTrue(verifier.is_not_implemented())
+        #         else:
+        #             # assert that the first AR is implemented as excpected
+        #             self.assertTrue(verifier.is_implemented())
+        #     # assert that the third AR is not available as excpected
+        #     elif ar_ids.index(ar_id) == 2:
+        #         try:
+        #             self.helper.get_verifier_results(ticket_id, last_step.id, last_task.id, ar_id)
+        #         except ValueError as value_error:
+        #             self.assertIsInstance(value_error, ValueError)
+        #             self.assertTrue(verifier.is_not_available())
     #
     # def test_31_get_ticket_ids_with_expiration_date(self):
     #

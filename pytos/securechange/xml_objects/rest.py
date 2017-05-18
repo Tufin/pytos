@@ -1796,10 +1796,6 @@ class Group(XML_Object_Base):
         :param xml_node: The XML node from which all necessary parameters will be parsed.
         :type xml_node: xml.etree.Element
         """
-        # import xml.etree.ElementTree
-        # print("tzachi")
-        # print()
-        # print(xml.etree.ElementTree.tostring(xml_node))
         user_id = get_xml_int_value(xml_node, Elements.ID)
         user_name = get_xml_text_value(xml_node, Elements.NAME)
         user_email = get_xml_text_value(xml_node, Elements.EMAIL)

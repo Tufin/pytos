@@ -121,7 +121,7 @@
                                 </risk_analysis_result>
                                 <verifier_result>
                                     <status>implemented</status>
-                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/445/steps/1953/tasks/2020/multi_access_request/55799/verifier"/>
+                                    <result xmlns:ns3="access_request_verifier" xsi:type="ns3:result_link" href="https://localhost/securechangeworkflow/api/securechange/tickets/445/steps/1953/tasks/2020/multi_access_request/55799/verifier"/>
                                 </verifier_result>
                                 <use_topology>true</use_topology>
                                 <targets>
