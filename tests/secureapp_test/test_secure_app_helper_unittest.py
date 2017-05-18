@@ -37,10 +37,11 @@ class Customer(object):
 class Test_Secure_App_Helper(unittest.TestCase):
     def setUp(self):
         self.user = 'user'
+        self.app_name = "test"
         self.helper = Secure_App_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_uri = self.patcher.start()
-        self.mock_uri.return_value.status_code = 201
+        self.mock_uri.return_value.status_code = 200
 
     def tearDown(self):
         self.patcher.stop()
@@ -64,16 +65,16 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
         self.assertEqual(app_id, 1)
 
-    # def test_02_get_app(self):
-    #     helper = Secure_App_Helper.from_secure_config_parser(conf)
-    #     first_app = self.helper.get_app_by_name(VALID_TEST_APP_NAME)
-    #     assert isinstance(first_app, Application)
-    #     second_app = self.helper.get_app_by_id(first_app.id)
-    #     assert first_app.to_xml_string() == second_app.to_xml_string()
-    #     try:
-    #         app = self.helper.get_app_by_name("APP_DOES_NOT_EXIST")
-    #     except ValueError as app_exception:
-    #         assert isinstance(app_exception, ValueError)
+    def test_02_get_app(self):
+        self.mock_uri.return_value.content = fake_request_response("applications")
+        app = self.helper.get_app_by_name(self.app_name)
+        assert isinstance(app, Application)
+
+    def test_02_failed_get_app_by_id(self):
+        self.mock_uri.return_value.status_code = 404
+        self.mock_uri.return_value.content = fake_request_response("no_found_error")
+        with self.assertRaises(ValueError):
+            self.helper.get_app_by_id(1)
     #
     # def test_03_update_app(self):
     #     users_dict = {user.name: user.id for user in self.helper.get_sc_users_list() if

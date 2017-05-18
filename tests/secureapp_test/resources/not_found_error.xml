@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<result>
+    <code>NOT_FOUND_ERROR</code>
+    <message>There is no application with the specified ID 14.</message>
+</result>

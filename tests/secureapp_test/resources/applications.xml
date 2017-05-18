@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<applications>
+    <application>
+        <id>15</id>
+        <name>test</name>
+        <comment></comment>
+        <decommissioned>false</decommissioned>
+        <owner>
+            <id>3</id>
+            <display_name>Tzachi Gratziani</display_name>
+            <name>tzachi</name>
+            <link href="https://localhost/securechangeworkflow/api/securechange/users/3"/>
+        </owner>
+        <editors/>
+        <viewers/>
+        <created>2017-04-05T11:31:18.372+03:00</created>
+        <modified>2017-05-14T15:58:32.115+03:00</modified>
+        <open_tickets/>
+        <customer>
+            <id>1</id>
+            <display_name>Default</display_name>
+            <name>Default</name>
+            <link href="https://localhost/securechangeworkflow/api/secureapp/customers/1"/>
+        </customer>
+        <status>NOT_APPLICABLE</status>
+        <vendors/>
+        <connections>
+            <connection>
+                <id>31</id>
+                <display_name>Connection 1</display_name>
+                <name>Connection 1</name>
+                <link href="https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/31"/>
+            </connection>
+            <connection>
+                <id>32</id>
+                <display_name>Connection 2</display_name>
+                <name>Connection 2</name>
+                <link href="https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/32"/>
+            </connection>
+        </connections>
+        <connection_to_application_packs/>
+    </application>
+</applications>
