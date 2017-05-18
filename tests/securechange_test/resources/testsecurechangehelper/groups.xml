@@ -42,13 +42,13 @@
             <user xsi:type="user">
                 <id>11</id>
                 <type>user</type>
-                <name>adam</name>
+                <name>test</name>
                 <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/11"/>
             </user>
             <user xsi:type="user">
                 <id>3</id>
                 <type>user</type>
-                <name>tzachi</name>
+                <name>user</name>
                 <link href="https://192.168.204.161/securechangeworkflow/api/securechange/users/3"/>
             </user>
         </members>
