@@ -72,7 +72,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
 
     def test_03_failed_get_app_by_id(self):
         self.mock_uri.return_value.status_code = 404
-        self.mock_uri.return_value.content = fake_request_response("no_found_error")
+        self.mock_uri.return_value.content = fake_request_response("not_found_error")
         with self.assertRaises(ValueError):
             self.helper.get_app_by_id(1)
     #
