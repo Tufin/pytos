@@ -2,7 +2,7 @@
 import os
 import unittest
 import sys
-
+import xml.etree.ElementTree as ET
 from pytos.securechange.xml_objects.securechange_api import Ticket_Info
 
 
@@ -16,8 +16,10 @@ def fake_request_response(rest_file):
 
 class Test_Secure_Change_XML(unittest.TestCase):
     def test_01_ticket_info(self):
-        ticket_info = Ticket_Info(fake_request_response("ticket_info").decode())
+        ticket_info_xml_node = ET.fromstring(fake_request_response("ticket_info").decode())
+        ticket_info = Ticket_Info(ticket_info_xml_node)
         self.assertIsInstance(ticket_info, Ticket_Info)
+        self.assertEqual(ticket_info.id, 1)
 
 
 if __name__ == '__main__':
