@@ -7,7 +7,7 @@ from unittest.mock import patch
 from pytos.secureapp.helpers import Secure_App_Helper
 from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List, Applications_List
-from pytos.securechange.xml_objects.rest import Group
+from pytos.securechange.xml_objects.rest import Group, Service
 
 VALID_TEST_APP_NAME = "TEST_APP_123_321"
 VALID_TEST_APP_NAME_AFTER_UPDATE = VALID_TEST_APP_NAME + '_after_update'
@@ -117,8 +117,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
 
     def test_06_get_service_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("services")
-        services = self.helper.get_service_by_name('AH')
-        assert isinstance(services, Services_List)
+        service = self.helper.get_service_by_name('AH')
+        assert isinstance(service, Service)
 
     def test_07_update_services(self):
         self.mock_uri.return_value.content = fake_request_response("services")
