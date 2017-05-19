@@ -97,7 +97,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    def test_05_create_service(self):  # display_name and is_global are being ignored.
+    def test_05_create_service(self):
         self.mock_uri.return_value.headers = {'location': '1'}
         self.mock_uri.return_value.status_code = 201
         service = Single_Service("service1", "true", None, VALID_TEST_SERVICE_NAME, "tcp_service", 6, 1025,
@@ -114,32 +114,36 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertEqual(service_id, 1)
-    #
-    # def test_05_update_services(self):
-    #     service = self.helper.get_service_by_name(VALID_TEST_SERVICE_NAME)
-    #     service.name = VALID_TEST_SERVICE_NAME_AFTER_UPDATE
-    #     service.display_name = VALID_TEST_SERVICE_NAME_AFTER_UPDATE
-    #     service.comment = 'After update'
-    #     service.global_ = 'true'
-    #     service.max = 1026
-    #     service.min = 1024
-    #     service.negate = None
-    #     service.protocol = 6
-    #     self.helper.update_services(service)
-    #     updated_service = self.helper.get_service_by_name(service.name)
-    #
-    #
-    #
-    #     updated_service_eval_dict = EvalDict({'id': service.id, 'name': service.name, 'type': service.type,
-    #                                           'display_name': service.display_name, 'is_global()': service.is_global(),
-    #                                           'protocol': service.protocol, 'min': service.min, 'max': service.max,
-    #                                           'negate': service.negate, 'uid': service.uid, 'comment': service.comment,
-    #                                           'application_id': service.application_id,
-    #                                           'get_attribs()["xmlns:xsi"]': "http://www.w3.org/2001/XMLSchema-instance",
-    #                                           'get_attribs()["xsi:type"]': "singleServiceDTO"})
-    #     updated_service_eval_dict.eval_object_attribs(updated_service)
-    #     LOGGER.debug(updated_service_eval_dict.get_report())
-    #     updated_service_eval_dict.raise_excs_and_fails()
+
+    def test_06_get_service_by_name(self):
+        self.mock_uri.return_value.content = fake_request_response("services")
+        services = self.helper.get_service_by_name('AH')
+        assert isinstance(services, Services_List)
+
+    def test_07_update_services(self):
+        self.mock_uri.return_value.content = fake_request_response("services")
+        service = self.helper.get_service_by_name('AH')
+        service.name = VALID_TEST_SERVICE_NAME_AFTER_UPDATE
+        service.display_name = VALID_TEST_SERVICE_NAME_AFTER_UPDATE
+        service.comment = 'After update'
+        service.global_ = 'true'
+        service.max = 1026
+        service.min = 1024
+        service.negate = None
+        service.protocol = 6
+        services_list = Services_List([])
+        services_list.append(service)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            self.helper.update_services(service)
+            url = "https://localhost/securechangeworkflow/api/secureapp/repository/services/"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url,
+                auth=('username', 'password'),
+                data=services_list.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+
     #
     # def test_06_get_service_list(self):
     #     services_list = self.helper.get_all_services()
