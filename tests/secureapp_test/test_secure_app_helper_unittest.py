@@ -19,7 +19,6 @@ VALID_TEST_SERVICE_NAME = "service1"
 VALID_TEST_SERVICE_NAME_AFTER_UPDATE = VALID_TEST_SERVICE_NAME + '_after_update'
 VALID_TEST_CONNECTION_NAME = "Connection 1"
 VALID_TEST_CONNECTION_NAME_AFTER_UPDATE = VALID_TEST_CONNECTION_NAME + '_after_update'
-VALID_TEST_USER_NAME = "adam_123"
 
 
 def fake_request_response(rest_file):
@@ -269,26 +268,27 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertTrue(result)
-    #
-    # def test_14_create_user(self):
-    #     try:
-    #         self.helper.delete_user_by_name(VALID_TEST_USER_NAME)
-    #     except:
-    #         pass
-    #     user = User("Adam Delman", None, None, VALID_TEST_USER_NAME, "local",
-    #                                                  "1.2.3.4")
-    #     user_id = self.helper.create_users(user)
-    #     assert user_id > 0
-    #
+
+    def test_17_create_user(self):
+        user = User("Test User", None, None, 'username', "local", "1.2.3.4")
+        users_list = User_List([])
+        users_list.append(users_list)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            self.mock_uri.return_value.headers = {'location': '1'}
+            self.mock_uri.return_value.status_code = 201
+            user_id = self.helper.create_users(user)
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections',
+                auth=('username', 'password'),
+                data=users_list.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertEqual(user_id, 1)
+
+    # def test_18_get_user(self):
     #     created_user = self.helper.get_user_by_id(user_id)
-    #
-    #     # because of a bug in the API the display_name is the same as the name
-    #     user_eval_dict = EvalDict({'id': user_id, 'display_name': user.name, 'name': user.name,
-    #                                'type': 'user', 'ip': '1.2.3.4',
-    #                                'get_attribs()["xmlns:xsi"]': user.get_attribs()["xmlns:xsi"]})
-    #     user_eval_dict.eval_object_attribs(created_user)
-    #     LOGGER.debug(user_eval_dict.get_report())
-    #     user_eval_dict.raise_excs_and_fails()
+
     #
     # def test_15_get_user_list(self):
     #     users_list = self.helper.get_user_list()
