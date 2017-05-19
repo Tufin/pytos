@@ -193,7 +193,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
         self.assertTrue(result)
 
     @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
-    def test_11_create_connection(self):
+    def test_11_create_connection(self, mock_app_obj):
+        mock_app_obj.return_value = Applications_List.from_xml_string(fake_request_response("applications").decode())[0]
         self.mock_uri.return_value.content = fake_request_response("network_objects")
         network_object = self.helper.get_network_object_by_id_for_app_id(286, self.app_id)
         self.mock_uri.return_value.content = fake_request_response("services")
