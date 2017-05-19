@@ -8,7 +8,7 @@ from pytos.secureapp.helpers import Secure_App_Helper
 from pytos.secureapp.xml_objects.base_types import Network_Object
 from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List, Applications_List, \
-    Network_Objects_List
+    Network_Objects_List, Connection_List
 from pytos.securechange.xml_objects.rest import Group, Service
 
 VALID_TEST_APP_NAME = "TEST_APP_123_321"
@@ -152,9 +152,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
         self.mock_uri.return_value.headers = {'location': '1'}
         self.mock_uri.return_value.status_code = 201
         mock_app_obj.return_value = Applications_List.from_xml_string(fake_request_response("applications").decode())[0]
-        network_object = Host_Network_Object("network_object1", "false", None,
-                                             VALID_TEST_NETWORK_OBJECT_NAME, "host",
-                                             "5.4.3.2")
+        network_object = Host_Network_Object("network_object1", "false", None, VALID_TEST_NETWORK_OBJECT_NAME,
+                                             "host", "5.4.3.2")
         network_objects_list = Network_Objects_List([])
         network_objects_list.append(network_object)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
@@ -192,37 +191,34 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertTrue(result)
-    #
-    # def test_09_create_connection(self):
-    #     app_id = self.helper.get_app_by_name(VALID_TEST_APP_NAME_AFTER_UPDATE).id
-    #     network_object = self.helper.get_network_object_by_name_for_app_id(VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE,
-    #                                                                   app_id)
-    #     service = self.helper.get_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
-    #     connection = Detailed_Application_Connection(None, VALID_TEST_CONNECTION_NAME,
-    #                                                                                   None,
-    #                                                                                   [network_object], [service],
-    #                                                                                   [network_object], "COMMENT", None,
-    #                                                                                   None)
-    #     connection_id = self.helper.create_connections_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE, connection)
-    #     assert connection_id > 0
-    #
+
+    @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
+    def test_11_create_connection(self):
+        self.mock_uri.return_value.content = fake_request_response("network_objects")
+        network_object = self.helper.get_network_object_by_id_for_app_id(286, self.app_id)
+        self.mock_uri.return_value.content = fake_request_response("services")
+        service = self.helper.get_service_by_name('AH')
+        connection = Detailed_Application_Connection(None, VALID_TEST_CONNECTION_NAME, None, [network_object],
+                                                     [service], [network_object], "COMMENT", None, None)
+        connection_list = Connection_List([])
+        connection_list.append(connection)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            self.mock_uri.return_value.headers = {'location': '1'}
+            self.mock_uri.return_value.status_code = 201
+            connection_id = self.helper.create_connections_for_app_name(self.app_name, connection)
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections',
+                auth=('username', 'password'),
+                data=connection_list.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertEqual(connection_id, 1)
+
+    # def test_12_get_connection(self):
     #     created_connection = self.helper.get_connection_by_name_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
-    #                                                                     VALID_TEST_CONNECTION_NAME)
-    #
-    #     # Assert values within newly created connection.
-    #     connection_eval_dict = EvalDict({'id': connection_id, 'name': connection.name, '#external': connection.external,
-    #                                      'services[0]': {'id': connection.services[0].id,
-    #                                                      'name': connection.services[0].name,
-    #                                                      'display_name': connection.services[0].display_name,
-    #                                                      'link': {
-    #                                                      'get_attribs()["href"]': "https://{}/securechangeworkflow/api/secureapp/repository/services/{}".format(
-    #                                                          self.helper.hostname,service.id),
-    #                                                      'get_attribs()["xmlns:xsi"]': "http://www.w3.org/2001/XMLSchema-instance"}},
-    #                                      'status': 'NOT_COMPLETE'})
-    #     connection_eval_dict.eval_object_attribs(created_connection)
-    #     LOGGER.debug(connection_eval_dict.get_report())
-    #     connection_eval_dict.raise_excs_and_fails()
-    #
+    #                                                                          VALID_TEST_CONNECTION_NAME)
+
     # def test_10_update_connection_for_app_id(self):
     #     connection = self.helper.get_connection_by_name_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
     #                                                             VALID_TEST_CONNECTION_NAME)
