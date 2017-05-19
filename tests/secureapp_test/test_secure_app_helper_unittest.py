@@ -146,7 +146,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
 
     @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
-    def test_07_create_network_object(self, mock_app_obj):
+    def test_08_create_network_object(self, mock_app_obj):
         self.mock_uri.return_value.headers = {'location': '1'}
         self.mock_uri.return_value.status_code = 201
         mock_app_obj.return_value = Applications_List.from_xml_string(fake_request_response("applications").decode())[0]
@@ -160,7 +160,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                                                                          network_object)
             mock_post_uri.assert_called_with(
                 'POST',
-                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects',
                 auth=('username', 'password'),
                 data=network_objects_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
