@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<network_objects>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hostNetworkObjectDTO">
+        <id>286</id>
+        <name>server A</name>
+        <display_name>server A</display_name>
+        <global>false</global>
+        <comment></comment>
+        <application_id>15</application_id>
+        <type>host</type>
+        <ip>1.1.1.1</ip>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hostNetworkObjectDTO">
+        <id>287</id>
+        <name>server B</name>
+        <display_name>server B</display_name>
+        <global>false</global>
+        <comment></comment>
+        <application_id>15</application_id>
+        <type>host</type>
+        <ip>2.2.2.2</ip>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="basicNetworkObjectDTO">
+        <id>1</id>
+        <name>ANY</name>
+        <display_name>ANY</display_name>
+        <global>true</global>
+        <comment>ANY</comment>
+        <type>basic</type>
+    </network_object>
+    <network_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="internetNetworkObjectDTO">
+        <id>57</id>
+        <name>Internet</name>
+        <display_name>Internet</display_name>
+        <global>true</global>
+        <comment>Internet</comment>
+        <type>internet</type>
+    </network_object>
+</network_objects>

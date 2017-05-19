@@ -5,6 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from pytos.secureapp.helpers import Secure_App_Helper
+from pytos.secureapp.xml_objects.base_types import Network_Object
 from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List, Applications_List, \
     Network_Objects_List
@@ -39,6 +40,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
     def setUp(self):
         self.user = 'user'
         self.app_name = "test"
+        self.app_id = 15
         self.helper = Secure_App_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
         self.mock_uri = self.patcher.start()
@@ -166,32 +168,27 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertEqual(net_obj_id, 1)
-    #
-    # def test_08_update_network_object(self):
-    #     app_id = self.helper.get_app_by_name(VALID_TEST_APP_NAME_AFTER_UPDATE).id
-    #     network_object = self.helper.get_network_object_by_name_for_app_id(VALID_TEST_NETWORK_OBJECT_NAME, app_id)
-    #     network_object.name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
-    #     network_object.display_name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
-    #     self.helper.update_network_objects_for_app_id(app_id, network_object)  # the args are opposite to the other funcs
-    #     updated_network = self.helper.get_network_object_by_id_for_app_id(network_object.id, app_id)
-    #
-    #     network_eval_dict = EvalDict({'id': network_object.id, 'name': network_object.name, 'type': network_object.type,
-    #                                   'display_name': network_object.display_name,
-    #                                   'is_global()': network_object.is_global(),
-    #                                   'get_attribs()["xmlns:xsi"]': "http://www.w3.org/2001/XMLSchema-instance",
-    #                                   'get_attribs()["xsi:type"]': "hostNetworkObjectDTO"})
-    #     network_eval_dict.eval_object_attribs(updated_network)
-    #     LOGGER.debug(network_eval_dict.get_report())
-    #     network_eval_dict.raise_excs_and_fails()
-    #
-    # # endregion
-    #
-    #
-    # # --------------------------------------------- #
-    # # Tests of Detailed_Application_Connection      #
-    # # --------------------------------------------- #
-    #
-    # # region Tests of connection
+
+    def test_09_get_network_object_by_id_for_app_id(self):
+        self.mock_uri.return_value.content = fake_request_response("network_objects")
+        network_object = self.helper.get_network_object_by_id_for_app_id(286, self.app_id)
+        self.assertIsInstance(network_object, Network_Object)
+
+    def test_10_update_network_object(self):
+        self.mock_uri.return_value.content = fake_request_response("network_objects")
+        network_object = self.helper.get_network_object_by_id_for_app_id(286, self.app_id)
+        network_object.name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
+        network_object.display_name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            result = self.helper.update_network_objects_for_app_id(self.app_id, network_object)
+            url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url,
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertTrue(result)
     #
     # def test_09_create_connection(self):
     #     app_id = self.helper.get_app_by_name(VALID_TEST_APP_NAME_AFTER_UPDATE).id
