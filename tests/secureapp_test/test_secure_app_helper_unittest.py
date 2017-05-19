@@ -257,27 +257,18 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
         self.assertTrue(result)
 
-    def test_13_delete_app_by_id(self):
+    def test_16_delete_app_by_id(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
         app = self.helper.get_app_by_name(self.app_name)
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             result = self.helper.delete_app_by_id(app.id)
             mock_delete_uri.assert_called_with(
                 'DELETE',
-                'https://localhost/securechangeworkflow/api/secureapp/applications/{}'.format(app.id),
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/{}'.format(app.id),
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertTrue(result)
-    #
-    # # endregion
-    #
-    #
-    # # --------------------------------------------- #
-    # # Tests of User                                 #
-    # # --------------------------------------------- #
-    #
-    # # region Tests of user
     #
     # def test_14_create_user(self):
     #     try:
