@@ -236,7 +236,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    def test_11_delete_connection_by_id_for_app_id(self):
+    def test_14_delete_connection_by_id_for_app_id(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             self.helper.delete_connection_by_id_for_app_id(app_id=self.app_id, connection_id=31)
             mock_delete_uri.assert_called_with(
@@ -246,7 +246,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    def test_12_delete_service_by_name(self):
+    def test_15_delete_service_by_name(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             result = self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
             mock_delete_uri.assert_called_with(
@@ -256,10 +256,19 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertTrue(result)
-    #
-    # def test_13_delete_app(self):
-    #     status = self.helper.delete_app_by_name(VALID_TEST_APP_NAME_AFTER_UPDATE)
-    #     assert status
+
+    def test_13_delete_app_by_id(self):
+        self.mock_uri.return_value.content = fake_request_response("applications")
+        app = self.helper.get_app_by_name(self.app_name)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            result = self.helper.delete_app_by_id(app.id)
+            mock_delete_uri.assert_called_with(
+                'DELETE',
+                'https://localhost/securechangeworkflow/api/secureapp/applications/{}'.format(app.id),
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertTrue(result)
     #
     # # endregion
     #
