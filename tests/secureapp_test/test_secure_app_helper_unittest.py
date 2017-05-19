@@ -65,7 +65,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
         self.assertEqual(app_id, 1)
 
-    def test_02_get_app(self):
+    def test_02_get_app_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
         app = self.helper.get_app_by_name(self.app_name)
         assert isinstance(app, Application)
@@ -75,45 +75,29 @@ class Test_Secure_App_Helper(unittest.TestCase):
         self.mock_uri.return_value.content = fake_request_response("not_found_error")
         with self.assertRaises(ValueError):
             self.helper.get_app_by_id(1)
-    #
-    # def test_03_update_app(self):
-    #     users_dict = {user.name: user.id for user in self.helper.get_sc_users_list() if
-    #           user.get_attribs().get('{http://www.w3.org/2001/XMLSchema-instance}type') == "user"}
-    #
-    #     user_to_test = [user.name for user in self.helper.get_sc_users_list()
-    #                     if user.name != 'Any User' and not isinstance(user, Group) and len(user.roles) in [5, 6]][0]
-    #     app_owner = Application_Owner(None, user_to_test, user_to_test, None)
-    #     valid_app = Application(None, VALID_TEST_APP_NAME,
-    #                                                              "This is the comment for the test app",
-    #                                                "false", app_owner, None, None, None, None, None, None)
-    #     app_id = self.helper.get_app_by_name(VALID_TEST_APP_NAME).id
-    #     updated_app = valid_app
-    #     try:
-    #         customers = self.helper.get_customers()
-    #     except:
-    #         customers = [Customer(99, 'test_customer')]
-    #     updated_app.id = app_id
-    #     updated_app.name = VALID_TEST_APP_NAME_AFTER_UPDATE
-    #     updated_app.comment = 'Test app after update.'
-    #     updated_app.decommissioned = 'false'
-    #     updated_app.customer = customers[0]
-    #     self.helper.update_app(updated_app)
-    #     result_app = self.helper.get_app_by_id(app_id)
-    #
-    #     # Assert values within updated application.
-    #     owner_link = 'https://{}/securechangeworkflow/api/securechange/users/{}'.format(self.helper.hostname,users_dict[updated_app.owner.name])
-    #     updated_app_eval_dict = EvalDict(
-    #         {'id': updated_app.id, 'name': updated_app.name, 'comment': updated_app.comment,
-    #          'decommissioned': updated_app.decommissioned,
-    #          'owner': {'id': users_dict[updated_app.owner.name], 'name': updated_app.owner.name,
-    #                    'link': {'get_attribs()["href"]': owner_link,
-    #                             'get_attribs()["xmlns:xsi"]': 'http://www.w3.org/2001/XMLSchema-instance'}},
-    #          'customer': {'id': updated_app.customer.id, 'name': updated_app.customer.name},
-    #          'status': 'NOT_APPLICABLE', '!modified': None})
-    #     result_app.customer = customers[0]
-    #     updated_app_eval_dict.eval_object_attribs(result_app)
-    #     LOGGER.debug(updated_app_eval_dict.get_report())
-    #     updated_app_eval_dict.raise_excs_and_fails()
+
+    def test_04_update_app(self):
+        self.mock_uri.return_value.content = fake_request_response("applications")
+        app = self.helper.get_app_by_name(self.app_name)
+        customers = [Customer(99, 'test_customer')]
+        app.id = 2
+        app.name = VALID_TEST_APP_NAME_AFTER_UPDATE
+        app.comment = 'Test app after update.'
+        app.decommissioned = 'false'
+        app.customer = customers[0]
+        app_list = Applications_List([])
+        app_list.append(app)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
+            self.helper.update_app(app)
+            url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/"
+            mock_put_uri.assert_called_with(
+                'PUT',
+                url,
+                auth=('username', 'password'),
+                data=app_list.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+
     #
     # # endregion
     #
