@@ -118,7 +118,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
     def test_06_get_service_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("services")
         service = self.helper.get_service_by_name('AH')
-        assert isinstance(service, Service)
+        assert isinstance(service, Single_Service)
 
     def test_07_update_services(self):
         self.mock_uri.return_value.content = fake_request_response("services")
