@@ -79,12 +79,11 @@ class Test_Secure_App_Helper(unittest.TestCase):
     def test_04_update_app(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
         app = self.helper.get_app_by_name(self.app_name)
-        customers = [Customer(99, 'test_customer')]
         app.id = 2
         app.name = VALID_TEST_APP_NAME_AFTER_UPDATE
         app.comment = 'Test app after update.'
         app.decommissioned = 'false'
-        app.customer = customers[0]
+        app.customer = Customer(99, 'test_customer')
         app_list = Applications_List([])
         app_list.append(app)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
@@ -98,48 +97,23 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 headers={'Content-Type': 'application/xml'}
             )
 
-    #
-    # # endregion
-    #
-    #
-    # # --------------------------------------------- #
-    # # Tests of Single_service                       #
-    # # --------------------------------------------- #
-    #
-    # # region Tests of service
-    #
-    # def test_04_create_service(self):  # display_name and is_global are being ignored.
-    #     # service = secureapp.XML_Objects.REST.Single_Service("Service Number One", "false", None,
-    #     service = Single_Service("service1", "true", None,
-    #                                                               VALID_TEST_SERVICE_NAME, "tcp_service", 6, 1025,
-    #                                                               1025, None, None, "Comment for Service Number One",
-    #                                                               timeout=1)
-    #     try:
-    #         self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME)
-    #     except:
-    #         pass
-    #     try:
-    #         self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
-    #     except:
-    #         pass
-    #
-    #     service_id = self.helper.post_services(service)
-    #     assert service_id > 0
-    #
-    #     created_service = self.helper.get_service_by_name(VALID_TEST_SERVICE_NAME)
-    #
-    #     # Asserting values within newly created service.
-    #     service_eval_dict = EvalDict({'id': service_id, 'name': service.name, 'type': service.type,
-    #                                   'display_name': service.display_name, 'is_global()': service.is_global(),
-    #                                   'protocol': service.protocol, 'min': service.min, 'max': service.max,
-    #                                   'negate': service.negate, 'uid': service.uid, 'comment': service.comment,
-    #                                   'application_id': service.application_id,
-    #                                   'get_attribs()["xmlns:xsi"]': "http://www.w3.org/2001/XMLSchema-instance",
-    #                                   'get_attribs()["xsi:type"]': "singleServiceDTO"})
-    #
-    #     service_eval_dict.eval_object_attribs(created_service)
-    #     LOGGER.debug(service_eval_dict.get_report())
-    #     service_eval_dict.raise_excs_and_fails()
+    def test_05_create_service(self):  # display_name and is_global are being ignored.
+        self.mock_uri.return_value.headers = {'location': '1'}
+        self.mock_uri.return_value.status_code = 201
+        service = Single_Service("service1", "true", None, VALID_TEST_SERVICE_NAME, "tcp_service", 6, 1025,
+                                 1025, None, None, "Comment for Service Number One", timeout=1)
+        services_list = Services_List([])
+        services_list.append(service)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
+            service_id = self.helper.post_services(service)
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/services/',
+                auth=('username', 'password'),
+                data=services_list.to_xml_string().encode(),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertEqual(service_id, 1)
     #
     # def test_05_update_services(self):
     #     service = self.helper.get_service_by_name(VALID_TEST_SERVICE_NAME)
