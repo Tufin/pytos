@@ -179,6 +179,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
         network_object = self.helper.get_network_object_by_id_for_app_id(286, self.app_id)
         network_object.name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
         network_object.display_name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
+        network_objects_list = Network_Objects_List([])
+        network_objects_list.append(network_object)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
             result = self.helper.update_network_objects_for_app_id(self.app_id, network_object)
             url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects"
@@ -186,6 +188,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'PUT',
                 url,
                 auth=('username', 'password'),
+                data=network_objects_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
         self.assertTrue(result)
