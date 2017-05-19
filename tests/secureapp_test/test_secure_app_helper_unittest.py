@@ -9,7 +9,6 @@ from pytos.secureapp.xml_objects.base_types import Network_Object
 from pytos.secureapp.xml_objects.rest import Application_Owner, Application, Host_Network_Object, \
     Detailed_Application_Connection, User, User_List, Single_Service, Services_List, Applications_List, \
     Network_Objects_List, Connection_List
-from pytos.securechange.xml_objects.rest import Group, Service
 
 VALID_TEST_APP_NAME = "TEST_APP_123_321"
 VALID_TEST_APP_NAME_AFTER_UPDATE = VALID_TEST_APP_NAME + '_after_update'
