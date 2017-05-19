@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connections>
+    <connection>
+        <id>31</id>
+        <name>Connection 1</name>
+        <comment>comment</comment>
+        <open_tickets/>
+        <external>false</external>
+        <status>USER_IN_SOURCE</status>
+        <sources>
+            <source>
+                <id>55</id>
+                <display_name>test</display_name>
+                <name>test</name>
+                <type>user</type>
+                <link href="https://localhost/securechangeworkflow/api/secureapp/repository/users/55"/>
+            </source>
+        </sources>
+        <services>
+            <service>
+                <id>5</id>
+                <display_name>BGP</display_name>
+                <name>BGP</name>
+                <link href="https://localhost/securechangeworkflow/api/secureapp/repository/services/5"/>
+            </service>
+        </services>
+        <destinations>
+            <destination>
+                <id>286</id>
+                <display_name>server A</display_name>
+                <name>server A</name>
+                <type>host</type>
+                <link href="https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects/286"/>
+            </destination>
+        </destinations>
+    </connection>
+    <connection>
+        <id>32</id>
+        <name>Connection 2</name>
+        <comment></comment>
+        <open_tickets/>
+        <external>false</external>
+        <status>NOT_COMPLETE</status>
+    </connection>
+</connections>

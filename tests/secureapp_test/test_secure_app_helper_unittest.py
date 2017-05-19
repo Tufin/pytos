@@ -216,9 +216,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
         self.assertEqual(connection_id, 1)
 
-    # def test_12_get_connection(self):
-    #     created_connection = self.helper.get_connection_by_name_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
-    #                                                                          VALID_TEST_CONNECTION_NAME)
+    def test_12_get_connection_by_name_for_app_id(self):
+        self.mock_uri.return_value.content = fake_request_response("connections")
+        connection = self.helper.get_connection_by_name_for_app_id(self.app_id, VALID_TEST_CONNECTION_NAME)
+        self.assertIsInstance(connection, Detailed_Application_Connection)
 
     # def test_10_update_connection_for_app_id(self):
     #     connection = self.helper.get_connection_by_name_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
