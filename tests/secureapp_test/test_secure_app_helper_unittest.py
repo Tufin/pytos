@@ -272,7 +272,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
     def test_17_create_user(self):
         user = User("Test User", None, None, 'username', "local", "1.2.3.4")
         users_list = User_List([])
-        users_list.append(users_list)
+        users_list.append(user)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
             self.mock_uri.return_value.headers = {'location': '1'}
             self.mock_uri.return_value.status_code = 201
