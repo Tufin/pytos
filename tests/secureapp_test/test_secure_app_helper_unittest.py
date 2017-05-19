@@ -235,12 +235,16 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 data=connection.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
-    #
-    # # region Deletion tests
-    #
-    # def test_11_delete_connection_by_id_for_app_id(self):
-    #     self.helper.delete_connection_by_id_for_app_id(app_name=VALID_TEST_APP_NAME_AFTER_UPDATE,
-    #                                               connection_name=VALID_TEST_CONNECTION_NAME_AFTER_UPDATE)
+
+    def test_11_delete_connection_by_id_for_app_id(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            self.helper.delete_connection_by_id_for_app_id(app_id=self.app_id, connection_id=31)
+            mock_delete_uri.assert_called_with(
+                'DELETE',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/31',
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
     #
     # def test_12_delete_service_by_name(self):
     #     self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
