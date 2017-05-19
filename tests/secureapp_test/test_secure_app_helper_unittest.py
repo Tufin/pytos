@@ -279,7 +279,7 @@ class Test_Secure_App_Helper(unittest.TestCase):
             user_id = self.helper.create_users(user)
             mock_post_uri.assert_called_with(
                 'POST',
-                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/users/',
                 auth=('username', 'password'),
                 data=users_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
