@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<users>
+    <user>
+        <id>55</id>
+        <name>test</name>
+        <display_name>test</display_name>
+        <global>true</global>
+        <type>user</type>
+        <ip>10.0.0.1</ip>
+    </user>
+</users>

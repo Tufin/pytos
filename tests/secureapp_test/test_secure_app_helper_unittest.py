@@ -286,20 +286,21 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
         self.assertEqual(user_id, 1)
 
-    # def test_18_get_user(self):
-    #     created_user = self.helper.get_user_by_id(user_id)
+    def test_18_get_user_list(self):
+        self.mock_uri.return_value.content = fake_request_response("users")
+        users_list = self.helper.get_user_list()
+        self.assertIsInstance(users_list, User_List)
 
-    #
-    # def test_15_get_user_list(self):
-    #     users_list = self.helper.get_user_list()
-    #     assert isinstance(users_list, User_List)
-    #     assert len(users_list) > 0
-    #
-    # def test_16_delete_user(self):
-    #     status = self.helper.delete_user_by_name(VALID_TEST_USER_NAME)
-    #     assert status
-    #
-    #     # endregion
+    def test_19_delete_user_by_id(self):
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            result = self.helper.delete_user_by_id(55)
+            mock_delete_uri.assert_called_with(
+                'DELETE',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/users/55',
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
+        self.assertTrue(result)
 
 
 if __name__ == '__main__':
