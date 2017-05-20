@@ -1,7 +1,7 @@
 pytos - The Tufin Orchestration Suite SDK for Python
 ====================================================
 
-|Build Status| |Docs| |Version| |Gitter|
+|[![Build Status](https://travis-ci.org/tgratzi/pytos.svg?branch=master)](https://travis-ci.org/tgratzi/pytos)|
 
 The pytos is the formal Python Software Development Kit (SDK) for Tufin Orchestration Suite (TOS).
 Python developers can use this package to write a scripts that able to connect, retrieve and update information
