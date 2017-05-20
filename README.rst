@@ -26,11 +26,10 @@ Running Tests
 ~~~~~~~~~~~~~
 The package can be tested in all supported Python versions using ``tox``. The tested Python version
 must be installed and including ``tox``.
-``nosetests`` command directly:
 
 	$ tox -e py34
 
-You can also run individual tests with your default Python version:
+You can also run individual tests with your default Python version by running ``nosetests`` command directly::
 
 	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
 
