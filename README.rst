@@ -1,11 +1,14 @@
 pytos - The Tufin Orchestration Suite SDK for Python
 ====================================================
 
-|Build Status|
+|Build Status| |Version|
 
 .. |Build Status| image:: https://travis-ci.org/tgratzi/pytos.svg?branch=master
 	:target: https://travis-ci.org/tgratzi/pytos|
 	:alt: Build Status
+.. |Version| image:: http://img.shields.io/pypi/v/pytos.svg?style=flat
+	:target: https://pypi.python.org/pypi/pytos/
+	:alt: Version
 
 The pytos is the formal Python Software Development Kit (SDK) for Tufin Orchestration Suite (TOS).
 Python developers can use this package to write a scripts that able to connect, retrieve and update information
@@ -18,6 +21,21 @@ Installation
 First install the package by running the following command
 ::
 	# pip install pytos
+
+Running Tests
+~~~~~~~~~~~~~
+The package can be tested in all supported Python versions using ``tox``.
+Note that this requires that you have all supported versions of Python installed, otherwise you must pass ``-e`` or run the
+``nosetests`` command directly:
+
+.. code-block:: sh
+	$ tox
+	$ tox -e py26,py33
+
+You can also run individual tests with your default Python version:
+
+.. code-block:: sh
+	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
 
 SecureTrack
 ***********
