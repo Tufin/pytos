@@ -24,17 +24,15 @@ First install the package by running the following command
 
 Running Tests
 ~~~~~~~~~~~~~
-The package can be tested in all supported Python versions using ``tox``.
-Note that this requires that you have all supported versions of Python installed, otherwise you must pass ``-e`` or run the
+The package can be tested in all supported Python versions using ``tox``. The tested Python version
+must be installed and including ``tox``.
 ``nosetests`` command directly:
 
-.. code-block:: sh
 	$ tox
 	$ tox -e py26,py33
 
 You can also run individual tests with your default Python version:
 
-.. code-block:: sh
 	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
 
 SecureTrack
