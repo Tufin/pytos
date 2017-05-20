@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.5.0 (ssh://root@192.168.204.161:22/usr/local/python3.4_dev/bin/python3.5)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.4.2 (ssh://root@192.168.204.161:22/usr/local/python3.4.2_dev/bin/python3.4)" project-jdk-type="Python SDK" />
 </project>

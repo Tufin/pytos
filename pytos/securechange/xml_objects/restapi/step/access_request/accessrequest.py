@@ -19,7 +19,9 @@ from pytos.securechange.xml_objects.restapi.step.access_request.verifier import 
 from pytos.securechange.xml_objects.restapi.step.access_request.risk import *
 
 logger = logging.getLogger(XML_LOGGER_NAME)
-RISK_ANALYSIS_HTML_PATH = os.path.join(*Path(os.path.abspath(__file__)).parts[:-5], 'templates/risk_analysis_template.html')
+dir_path = list(Path(os.path.abspath(__file__)).parts[:-5])
+dir_path.append('templates/risk_analysis_template.html')
+RISK_ANALYSIS_HTML_PATH = os.path.join(*tuple(dir_path))
 
 
 class Label(Flat_XML_Object_Base):
