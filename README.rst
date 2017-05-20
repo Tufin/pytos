@@ -1,6 +1,8 @@
 pytos - The Tufin Orchestration Suite SDK for Python
 ====================================================
 
+|Build Status| |Docs| |Version| |Gitter|
+
 The pytos is the formal Python Software Development Kit (SDK) for Tufin Orchestration Suite (TOS).
 Python developers can use this package to write a scripts that able to connect, retrieve and update information
 in the TOS system. This SDK is an open source Python library to allow easy access to the native RESTful APIs provided
