@@ -28,8 +28,7 @@ The package can be tested in all supported Python versions using ``tox``. The te
 must be installed and including ``tox``.
 ``nosetests`` command directly:
 
-	$ tox
-	$ tox -e py26,py33
+	$ tox -e py34
 
 You can also run individual tests with your default Python version:
 
