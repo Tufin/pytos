@@ -22,20 +22,20 @@ Install the package by running the following command:
 	# pip install pytos
 
 
-Connecting to the Services:
-***************************
+Connecting to the Services
+**************************
 
-Connect to SecureTrack with valid username and password:
+Connect to SecureTrack with a valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Track_Helper
 	st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 
-Connect to SecureChange with valid username and password:
+Connect to SecureChange with a valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
-Connect to SecureApp with valid username and password:
+Connect to SecureApp with a valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
