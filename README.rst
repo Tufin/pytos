@@ -24,7 +24,7 @@ Common Use Cases
 * Get routing tables and interfaces from routers and firewalls
 * Manage security zones
 * Submit and manage access requests to update firewall policies
-* Manage business application connectivity
+* Manage application connectivity
 
 
 Installation
