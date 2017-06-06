@@ -106,5 +106,5 @@ Getting Help
 ************
 Please use the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__ to find information and ask questions.
 
-Please use `GitHub issues <https://github.com/pytos/pytos/issues/>`__ for tracking bugs and feature requests.
+Please use `GitHub issues <https://github.com/Tufin/pytos/issues>`__ for tracking bugs and feature requests.
 
