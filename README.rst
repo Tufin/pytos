@@ -16,6 +16,17 @@ Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for 
 Pytos is implemented as a wrapper around `TOS REST APIs <https://github.com/Tufin/GettingStarted>`__.
 
 
+Common Use Cases
+****************
+* Get security rules or ACLs from firewalls
+* Get network objects and services from firewalls
+* Get security groups from cloud platforms
+* Get routing tables and interfaces from routers and firewalls
+* Manage security zones
+* Submit and manage access requests to update firewall policies
+* Manage business application connectivity
+
+
 Installation
 ************
 
