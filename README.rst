@@ -1,4 +1,4 @@
-pytos - The Tufin Orchestration Suite SDK for Python
+Pytos - The Tufin Orchestration Suite SDK for Python
 ====================================================
 
 |Build Status| |Version|
@@ -12,6 +12,8 @@ pytos - The Tufin Orchestration Suite SDK for Python
 
 
 Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for Python, which allows Python developers to write software that makes use of the services provided by SecureTrack, SecureChange and SecureApp.
+
+Pytos is implemented as a wrapper around `TOS REST APIs <https://github.com/Tufin/GettingStarted>`__.
 
 
 Installation
@@ -90,7 +92,7 @@ In your code call the following methods
 	logger.info("Hello world")
 
 Running Tests
-~~~~~~~~~~~~~
+*************
 The package can be tested in all supported Python versions using ``tox``. The tested Python version
 must be installed including ``tox``:
 
