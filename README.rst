@@ -3,8 +3,8 @@ pytos - The Tufin Orchestration Suite SDK for Python
 
 |Build Status| |Version|
 
-.. |Build Status| image:: https://travis-ci.org/tgratzi/pytos.svg?branch=master
-	:target: https://travis-ci.org/Tufin/pytos|
+.. |Build Status| image:: https://travis-ci.org/Tufin/pytos.svg?branch=master
+	:target: https://travis-ci.org/Tufin/pytos
 	:alt: Build Status
 .. |Version| image:: http://img.shields.io/pypi/v/pytos.svg?style=flat
 	:target: https://pypi.python.org/pypi/pytos/
