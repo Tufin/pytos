@@ -10,49 +10,32 @@ pytos - The Tufin Orchestration Suite SDK for Python
 	:target: https://pypi.python.org/pypi/pytos/
 	:alt: Version
 
-The pytos is the formal Python Software Development Kit (SDK) for Tufin Orchestration Suite (TOS).
-Python developers can use this package to write a scripts that able to connect, retrieve and update information
-in the TOS system. This SDK is an open source Python library to allow easy access to the native RESTful APIs provided
-by Tufin.
+
+Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for Python, which allows Python developers to write software that makes use of the services provided by SecureTrack, SecureChange and SecureApp.
+
 
 Installation
 ************
 
-First install the package by running the following command
+Install the package by running the following command:
 ::
 	# pip install pytos
 
-Running Tests
-~~~~~~~~~~~~~
-The package can be tested in all supported Python versions using ``tox``. The tested Python version
-must be installed and including ``tox``:
 
-	$ tox -e py34
+Connecting to the Services:
+***************************
 
-You can also run individual tests with your default Python version by running ``nosetests`` command directly:
-
-	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
-
-SecureTrack
-***********
-
-Connecting to SecureTrack with valid username and password
+Connect to SecureTrack with valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Track_Helper
 	st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 
-SecureChange
-************
-
-Connecting to SecureChange with valid username and password
+Connect to SecureChange with valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
-SecureApp
-*********
-
-Connecting to SecureApp with valid username and password
+Connect to SecureApp with valid username and password:
 ::
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
@@ -106,11 +89,20 @@ In your code call the following methods
 	setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
 	logger.info("Hello world")
 
+Running Tests
+~~~~~~~~~~~~~
+The package can be tested in all supported Python versions using ``tox``. The tested Python version
+must be installed including ``tox``:
+
+	$ tox -e py34
+
+You can also run individual tests with your default Python version by running ``nosetests`` command directly:
+
+	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
+	
 Getting Help
 ************
+Please use the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__ to find information and ask questions.
 
-For tracking bugs and new features please use GitHub issues. Please also use these community resources for getting
-help:
+Please use `GitHub issues <https://github.com/pytos/pytos/issues/>`__ for tracking bugs and feature requests.
 
-* Join the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__
-* If it turns out that you may have found a bug, please `open an issue <https://github.com/pytos/pytos/issues/new>`__
