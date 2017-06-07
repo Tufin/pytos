@@ -25,7 +25,6 @@ Install the package by running the following command:
 
 ```
 $ pip install pytos
-
 ```
 
 ## Connecting to the Services
@@ -38,12 +37,14 @@ st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureChange with a valid username and password:
+
 ```
 from pytos.securechange.Helpers import Secure_Change_Helper
 sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureApp with a valid username and password:
+
 ```
 from pytos.secureapp.Helpers import Secure_App_Helper
 sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
@@ -82,6 +83,7 @@ third_party = WARNING
 ```
 
 In your code call the following methods:
+
 ```
 import logging
 from pytos.common.logging.Defines import COMMON_LOGGER_NAME
@@ -96,14 +98,15 @@ logger.info("Hello world")
 
 ## Running Tests
 
-The package can be tested in all supported Python versions using ``tox``. The tested Python version
-must be installed including ``tox``:
+The package can be tested in all supported Python versions using `tox`. The tested Python version
+must be installed including `tox`:
 
 ```
 $ tox -e py34
 ```
 
-You can also run individual tests with your default Python version by running ``nosetests`` command directly:
+You can also run individual tests with your default Python version by running `nosetests` command directly:
+
 ```
 $ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
 ```
@@ -111,7 +114,9 @@ $ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestG
 ## Getting Help
 
 Please join the [Tufin Developer Community] to find information and ask questions.
+
 Please use [GitHub Issues] for tracking bugs and feature requests.
+
 
 [GitHub Issues]: https://github.com/Tufin/pytos/issues
 [Tufin Developer Community]: https://plus.google.com/communities/112366353546062524001
