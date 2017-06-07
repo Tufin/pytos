@@ -8,7 +8,7 @@
 
 Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for Python, which allows Python developers to write software that makes use of the services provided by SecureTrack, SecureChange and SecureApp.
 
-Pytos is implemented as a wrapper around the [TOS REST APIs](https://github.com/Tufin/GettingStarted>)
+Pytos is implemented as a wrapper around the [TOS REST APIs].
 
 
 ## Common Use Cases
@@ -113,9 +113,11 @@ $ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestG
 
 ## Getting Help
 
-Please join the [Tufin Developer Community](https://plus.google.com/communities/112366353546062524001) to find information and ask questions.
+Please join the [Tufin Developer Community] to find information and ask questions.
+Please use [GitHub Issues] for tracking bugs and feature requests.
 
-Please use [GitHub issues](https://github.com/Tufin/pytos/issues) for tracking bugs and feature requests.
-
+[GitHub Issues]: https://github.com/Tufin/pytos/issues
+[Tufin Developer Community]: https://plus.google.com/communities/112366353546062524001
+[TOS REST APIs]: https://github.com/Tufin/GettingStarted
 [Build Status]: https://travis-ci.org/Tufin/pytos
 [Build Status Widget]: https://travis-ci.org/Tufin/pytos.svg?branch=master
