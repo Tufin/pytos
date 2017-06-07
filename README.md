@@ -1,13 +1,6 @@
 # Pytos
 
-|Build Status| |Version|
-
-.. |Build Status| image:: https://travis-ci.org/Tufin/pytos.svg?branch=master
-	:target: https://travis-ci.org/Tufin/pytos
-	:alt: Build Status
-.. |Version| image:: http://img.shields.io/pypi/v/pytos.svg?style=flat
-	:target: https://pypi.python.org/pypi/pytos/
-	:alt: Version
+[![Build Status Widget]][Build Status]
 
 <img src="https://github.com/Tufin/pytos/raw/master/logo/logo.png" width="100">
 
@@ -121,3 +114,5 @@ Please use the `Tufin Developer Community <https://plus.google.com/communities/1
 
 Please use `GitHub issues <https://github.com/Tufin/pytos/issues>`__ for tracking bugs and feature requests.
 
+[Build Status]: https://travis-ci.org/Tufin/pytos
+[Build Status Widget]: https://travis-ci.org/Tufin/pytos.svg?branch=master
