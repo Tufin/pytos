@@ -25,29 +25,31 @@ Pytos is implemented as a wrapper around the [TOS REST APIs](https://github.com/
 ## Installation
 
 Install the package by running the following command:
-::
-	# pip install pytos
 
+```
+$ pip install pytos
+
+```
 
 ## Connecting to the Services
 
 Connect to SecureTrack with a valid username and password:
 
 ```
-$ from pytos.securechange.Helpers import Secure_Track_Helper
-$ st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import Secure_Track_Helper
+st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureChange with a valid username and password:
 ```
-$ from pytos.securechange.Helpers import Secure_Change_Helper
-$ sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import Secure_Change_Helper
+sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureApp with a valid username and password:
 ```
-$ from pytos.securechange.Helpers import Secure_Change_Helper
-$ sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import Secure_Change_Helper
+sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 ```
 
 ## How to use pytos logger
@@ -67,32 +69,32 @@ DEBUG      | All levels
 Create an ini like configuration file with the following sections:
 
 ```
-$ [common]
-$ log_file_path = /var/log/pytos/
+[common]
+log_file_path = /var/log/pytos/
 
-$ [log_levels]
-$ common = WARNING
-$ helpers = WARNING
-$ reports = WARNING
-$ requests = WARNING
-$ mail = WARNING
-$ sql = WARNING
-$ xml = WARNING
-$ web = WARNING
-$ third_party = WARNING
+[log_levels]
+common = WARNING
+helpers = WARNING
+reports = WARNING
+requests = WARNING
+mail = WARNING
+sql = WARNING
+xml = WARNING
+web = WARNING
+third_party = WARNING
 ```
 
 In your code call the following methods:
 ```
-$ import logging
-$ from pytos.common.logging.Defines import COMMON_LOGGER_NAME
-$ pytos.common.logging.Logger import setup_loggers
-$ from pytos.common.functions.Config import Secure_Config_Parser
+import logging
+from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+pytos.common.logging.Logger import setup_loggers
+from pytos.common.functions.Config import Secure_Config_Parser
 
-$ conf = Secure_Config_Parser(config_file_path="/ini/like/configuration/path/pytos.conf")
-$ logger = logging.getLogger(COMMON_LOGGER_NAME)
-$ setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
-$ logger.info("Hello world")
+conf = Secure_Config_Parser(config_file_path="/ini/like/configuration/path/pytos.conf")
+logger = logging.getLogger(COMMON_LOGGER_NAME)
+setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
+logger.info("Hello world")
 ```
 
 ## Running Tests
