@@ -33,20 +33,20 @@ $ pip install pytos
 Connect to SecureTrack with a valid username and password:
 
 ```
-from pytos.securetrack.Helpers import SecureTrackHelper
-st_helper = SecureTrackHelper("127.0.0.1", ("username", "password"))
+from pytos.securetrack.Helpers import Secure_Track_Helper
+st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureChange with a valid username and password:
 ```
-from pytos.securechange.Helpers import SecureChangeHelper
-sc_helper = SecureChangeHelper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import Secure_Change_Helper
+sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureApp with a valid username and password:
 ```
-from pytos.securechange.Helpers import SecureAppHelper
-sa_helper = SecureAppHelper("127.0.0.1", ("username", "password"))
+from pytos.secureapp.Helpers import Secure_App_Helper
+sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 ```
 
 ## How to use pytos logger
