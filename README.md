@@ -6,10 +6,7 @@
 
 ----
 
-Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for Python, which allows Python developers to write software that makes use of the services provided by SecureTrack, SecureChange and SecureApp.
-
-Pytos is implemented as a wrapper around the [TOS REST APIs].
-
+Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for Python, which allows Python developers to make use of the services provided by SecureTrack, SecureChange and SecureApp.
 
 ## Common Use Cases
 * Get security rules or ACLs from firewalls
@@ -36,20 +33,20 @@ $ pip install pytos
 Connect to SecureTrack with a valid username and password:
 
 ```
-from pytos.securechange.Helpers import Secure_Track_Helper
-st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
+from pytos.securetrack.Helpers import SecureTrackHelper
+st_helper = SecureTrackHelper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureChange with a valid username and password:
 ```
-from pytos.securechange.Helpers import Secure_Change_Helper
-sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import SecureChangeHelper
+sc_helper = SecureChangeHelper("127.0.0.1", ("username", "password"))
 ```
 
 Connect to SecureApp with a valid username and password:
 ```
-from pytos.securechange.Helpers import Secure_Change_Helper
-sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
+from pytos.securechange.Helpers import SecureAppHelper
+sa_helper = SecureAppHelper("127.0.0.1", ("username", "password"))
 ```
 
 ## How to use pytos logger
