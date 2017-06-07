@@ -11,8 +11,7 @@ Pytos is the Tufin Orchestration Suite (TOS) Software Development Kit (SDK) for 
 Pytos is implemented as a wrapper around `TOS REST APIs <https://github.com/Tufin/GettingStarted>`__.
 
 
-Common Use Cases
-****************
+## Common Use Cases
 * Get security rules or ACLs from firewalls
 * Get network objects and services from firewalls
 * Get security groups from cloud platforms
@@ -22,16 +21,14 @@ Common Use Cases
 * Manage application connectivity
 
 
-Installation
-************
+## Installation
 
 Install the package by running the following command:
 ::
 	# pip install pytos
 
 
-Connecting to the Services
-**************************
+## Connecting to the Services
 
 Connect to SecureTrack with a valid username and password:
 ::
@@ -48,8 +45,7 @@ Connect to SecureApp with a valid username and password:
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 
-How to use pytos logger
-***********************
+## How to use pytos logger
 
 To use the pytos logging mechanism perform the following steps:
 
@@ -97,8 +93,8 @@ In your code call the following methods
 	setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
 	logger.info("Hello world")
 
-Running Tests
-*************
+## Running Tests
+
 The package can be tested in all supported Python versions using ``tox``. The tested Python version
 must be installed including ``tox``:
 
@@ -108,8 +104,8 @@ You can also run individual tests with your default Python version by running ``
 
 	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
 	
-Getting Help
-************
+## Getting Help
+
 Please use the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__ to find information and ask questions.
 
 Please use `GitHub issues <https://github.com/Tufin/pytos/issues>`__ for tracking bugs and feature requests.
