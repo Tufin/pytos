@@ -45,9 +45,5 @@ setup(
         'netifaces==0.10.5',
         'dnspython3==1.15.0',
         'Mako',
-        # 'cryptography',
-        # 'pycrypto',
-        # 'pbkdf2',
-        # 'pyasn1'
     ]
 )
