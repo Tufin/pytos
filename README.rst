@@ -62,7 +62,7 @@ SecureApp
 
 Connect to SecureApp with valid username and password:
 ::
-	from pytos.securechange.Helpers import Secure_Change_Helper
+	from pytos.securechange.Helpers import Secure_App_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 
 How to use pytos logger
