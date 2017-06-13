@@ -117,7 +117,7 @@ In your code call the following methods
 Getting Help
 ************
 
-For tracking bugs and new features please use GitHub issues. Please also use these community resources for getting
+For tracking bugs and new feature requests please use GitHub issues. Please also use these community resources for getting
 help:
 
 * Join the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__
