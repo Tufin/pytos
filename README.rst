@@ -26,7 +26,7 @@ Common Use Cases
 Installation
 ************
 
-Install the package by running the following command:::
+Install the package by running the following command::
 
 	# pip install pytos
 
@@ -44,7 +44,7 @@ You can also run individual tests with your default Python version by running ``
 SecureTrack
 ***********
 
-Connect to SecureTrack with valid username and password:::
+Connect to SecureTrack with valid username and password::
 
 	from pytos.securechange.Helpers import Secure_Track_Helper
 	st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
@@ -52,7 +52,7 @@ Connect to SecureTrack with valid username and password:::
 SecureChange
 ************
 
-Connect to SecureChange with valid username and password:::
+Connect to SecureChange with valid username and password::
 
 	from pytos.securechange.Helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
@@ -60,7 +60,7 @@ Connect to SecureChange with valid username and password:::
 SecureApp
 *********
 
-Connect to SecureApp with valid username and password:::
+Connect to SecureApp with valid username and password::
 
 	from pytos.securechange.Helpers import Secure_App_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
@@ -86,7 +86,7 @@ The following table defines the log levels and messages, in decreasing order of 
 | DEBUG               | All levels.                                  |
 +---------------------+----------------------------------------------+
 
-Create an ini like configuration file with the following sections:::
+Create an ini like configuration file with the following sections::
 
 	[common]
 	log_file_path = /var/log/pytos/
