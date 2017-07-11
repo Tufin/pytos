@@ -46,7 +46,7 @@ SecureTrack
 
 Connect to SecureTrack with valid username and password::
 
-	from pytos.securetrack.Helpers import Secure_Track_Helper
+	from pytos.securetrack.helpers import Secure_Track_Helper
 	st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
 
 SecureChange
@@ -54,7 +54,7 @@ SecureChange
 
 Connect to SecureChange with valid username and password::
 
-	from pytos.securechange.Helpers import Secure_Change_Helper
+	from pytos.securechange.helpers import Secure_Change_Helper
 	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
 
 SecureApp
@@ -62,7 +62,7 @@ SecureApp
 
 Connect to SecureApp with valid username and password::
 
-	from pytos.secureapp.Helpers import Secure_App_Helper
+	from pytos.secureapp.helpers import Secure_App_Helper
 	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
 
 How to use pytos logger
@@ -122,4 +122,3 @@ help:
 
 * Join the `Tufin Developer Community <https://plus.google.com/communities/112366353546062524001>`__
 * If you think you found a bug, please `submit an issue <https://github.com/Tufin/pytos/issues>`__
-
