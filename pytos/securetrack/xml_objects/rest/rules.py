@@ -226,7 +226,7 @@ class Rule(XML_Object_Base, Comparable):
     def __init__(self, num_id, uid, cp_uid, order, binding, action, comment, dst_networks, dst_networks_negated,
                  dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                  src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
-                 application, vpn):
+                 application, vpn, rule_text):
         self.id = num_id
         self.uid = uid
         self.cp_uid = cp_uid
@@ -253,6 +253,7 @@ class Rule(XML_Object_Base, Comparable):
         self._network_id_to_object = {}
         self.application = application
         self.vpn = vpn
+        self.rule_text = rule_text
         super().__init__(xml_tags.Elements.RULE)
 
     def _key(self):
@@ -310,6 +311,7 @@ class Rule(XML_Object_Base, Comparable):
         implicit = get_xml_text_value(xml_node, xml_tags.Elements.IMPLICIT)
         application_node = get_xml_node(xml_node, xml_tags.Elements.APPLICATION, True)
         vpn = create_tagless_xml_objects_list(xml_node, xml_tags.Elements.VPN, RuleVPNOption)
+        rule_text = get_xml_text_value(xml_node, xml_tags.Elements.RULE_TEXT)
         if application_node:
             application = Application.from_xml_node(application_node)
         else:
@@ -318,7 +320,7 @@ class Rule(XML_Object_Base, Comparable):
         return cls(num_id, uid, cp_uid, order, binding, action, comment, dst_networks, dst_networks_negated,
                    dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                    src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
-                   application, vpn)
+                   application, vpn, rule_text)
 
     def __str__(self):
         src_negated, dst_negated, srv_negated = "", "", ""
