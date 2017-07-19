@@ -226,7 +226,7 @@ class Rule(XML_Object_Base, Comparable):
     def __init__(self, num_id, uid, cp_uid, order, binding, action, comment, dst_networks, dst_networks_negated,
                  dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                  src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
-                 application, vpn, rule_text):
+                 application, vpn, rule_text=None):
         self.id = num_id
         self.uid = uid
         self.cp_uid = cp_uid
