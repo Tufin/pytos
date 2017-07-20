@@ -499,6 +499,7 @@ class Elements:
     RULE_PROPERTY = "rule_property"
     RULE_PROPERTIES_VIOLATIONS = "rule_properties_violations"
     RULE_PROPERTY_VIOLATION = "rule_property_violation"
+    RULE_TEXT = "textual_rep"
     SECURE_APP_APPLICATION = "secure_app_application"
     SCORE = "score"
     SCHEDULING = "scheduling"
