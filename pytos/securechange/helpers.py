@@ -1059,7 +1059,10 @@ class Access_Request_Generator:
             if target_type == Access_Request_Generator.IPV4_ADDRESS_WITH_MASK:
                 address, netmask = self._split_ipv4_ip_and_netmask(raw_target)
             elif target_type == Access_Request_Generator.IPV6_ADDRESS_WITH_MASK:
-                address, netmask = self._split_ipv4_ip_and_netmask(raw_target)
+                #address, netmask = self._split_ipv4_ip_and_netmask(raw_target)
+                # SecureChange 17.1 expects cidr in address an no netmask for ipv6 networks
+                address = raw_target
+                netmask = None
             elif target_type == Access_Request_Generator.IPV4_ADDRESS:
                 address, netmask = raw_target, "255.255.255.255"
             elif target_type in [Access_Request_Generator.IPV4_ADDRESS_RANGE,
