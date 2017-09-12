@@ -167,6 +167,7 @@ class Elements:
     CHANGE_AUTHORIZATION_BINDINGS = "change_authorization_bindings"
     CHANGE_ID = "change_id"
     CHANGE_IMPLEMENTATION_STATUS = "change_implementation_status"
+    CIDR = "cidr"
     CLASS_NAME = "class_name"
     CLEANUP = "cleanup"
     CLEANUPS = "cleanups"

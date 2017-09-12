@@ -796,8 +796,19 @@ class Access_Request_Generator:
             ar_target = target_types_dict[target["type"]](target_tag, None, None, target["address"], None)
         elif target["type"] in [Access_Request_Generator.IPV4_ADDRESS, Access_Request_Generator.IPV4_ADDRESS_WITH_MASK,
                                 Access_Request_Generator.IPV6_ADDRESS, Access_Request_Generator.IPV6_ADDRESS_WITH_MASK]:
-            ar_target = target_types_dict[target["type"]](target_tag, None, target["address"], target.get("netmask"),
-                                                          None)
+
+            netmask = target.get("netmask")
+            cidr = target.get("cidr")
+
+            if netmask:
+                ar_target = target_types_dict[target["type"]](target_tag, None, target["address"], netmask,
+                                                              None)
+            elif cidr:
+                ar_target = target_types_dict[target["type"]](target_tag, None, target["address"], None,
+                                                              None, cidr)
+            else:
+                raise ValueError("Target {} must have netmask or cidr".format(target))
+
         elif target["type"] in [Access_Request_Generator.IPV4_ADDRESS_RANGE,
                                 Access_Request_Generator.IPV6_ADDRESS_RANGE]:
             range_first_ip = target["address"].split("-")[0]
@@ -905,8 +916,10 @@ class Access_Request_Generator:
         :rtype: str
         """
         logger.debug("Normalizing network mask: '%s'", network_mask)
-        if len(network_mask) <= 2:
-            network_mask = calculate_quad_dotted_netmask(int(network_mask))
+        if len(network_mask) <= 3:
+            network_mask_int = int(network_mask)
+            if network_mask_int <= 32:
+                network_mask = calculate_quad_dotted_netmask(network_mask_int)
         return network_mask
 
     def _detect_service_type(self, service_string):
@@ -983,21 +996,8 @@ class Access_Request_Generator:
         :return: IP address, network mask
         """
         logger.debug("Splitting netmask for IPv4 string %s", network_object_string)
-        ip_address = network_object_string.split("/")[0]
-        network_mask = Access_Request_Generator.normalize_ipv4_network_mask(network_object_string.split("/")[1])
-        return ip_address, network_mask
-
-    @staticmethod
-    def _split_ipv6_ip_and_netmask(network_object_string):
-        """Separate the IP and netmask from the network object string.
-
-        :param network_object_string: The network object string to be processed.
-        :type network_object_string: str
-        :return: IP address, network mask
-        """
-        logger.debug("Splitting netmask for IPv6 string %s", network_object_string)
-        ip_address = network_object_string.split("/")[0]
-        network_mask = network_object_string.split("/")[1]
+        ip_address, network_mask = network_object_string.split("/")
+        network_mask = Access_Request_Generator.normalize_ipv4_network_mask(network_mask)
         return ip_address, network_mask
 
     @staticmethod
@@ -1059,12 +1059,13 @@ class Access_Request_Generator:
             if target_type == Access_Request_Generator.IPV4_ADDRESS_WITH_MASK:
                 address, netmask = self._split_ipv4_ip_and_netmask(raw_target)
             elif target_type == Access_Request_Generator.IPV6_ADDRESS_WITH_MASK:
-                address, netmask = self._split_ipv4_ip_and_netmask(raw_target)
+                address, netmask = raw_target.split("/")
             elif target_type == Access_Request_Generator.IPV4_ADDRESS:
                 address, netmask = raw_target, "255.255.255.255"
+            elif target_type == Access_Request_Generator.IPV6_ADDRESS:
+                address, netmask = raw_target, "128"
             elif target_type in [Access_Request_Generator.IPV4_ADDRESS_RANGE,
-                                 Access_Request_Generator.IPV6_ADDRESS_RANGE, Access_Request_Generator.DNS,
-                                 Access_Request_Generator.IPV6_ADDRESS]:
+                                 Access_Request_Generator.IPV6_ADDRESS_RANGE, Access_Request_Generator.DNS]:
                 address, netmask = raw_target, None
             elif target_type in [Access_Request_Generator.ANY, Access_Request_Generator.INTERNET]:
                 address, netmask = None, None
@@ -1072,7 +1073,11 @@ class Access_Request_Generator:
                 address, netmask = raw_target.split("/")
             else:
                 raise ValueError("Unknown target type '{}'".format(target_type))
-            targets.append({"address": address, "netmask": netmask, "type": target_type})
+
+            if netmask and len(netmask) <= 3:  # this may be used for both IPV4 and IPV6
+                targets.append({"address": address, "cidr": netmask, "type": target_type})
+            else:
+                targets.append({"address": address, "netmask": netmask, "type": target_type})
         return targets
 
     def _prepare_services(self, raw_services):

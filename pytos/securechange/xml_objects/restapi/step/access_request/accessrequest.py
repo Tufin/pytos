@@ -186,7 +186,7 @@ class IP_Range_Access_Request_Target(Network_Target):
 
 
 class IP_Access_Request_Target(Network_Target):
-    def __init__(self, xml_tag, target_id, address, netmask, region):
+    def __init__(self, xml_tag, target_id, address, netmask, region, cidr=None):
         self.ip_address = address
         self.region = region
         # BUG: The netmask attribute is not always set since when creating an IPv6 target using the REST API
@@ -194,6 +194,9 @@ class IP_Access_Request_Target(Network_Target):
 
         if netmask:
             self.netmask = netmask
+        elif cidr:
+            self.cidr = cidr
+
         super().__init__(xml_tag, target_id, TYPE_IP, region)
 
     @classmethod
@@ -205,21 +208,26 @@ class IP_Access_Request_Target(Network_Target):
         """
         target_id = get_xml_int_value(xml_node, Elements.ID)
         region = get_xml_text_value(xml_node, Elements.REGION)
-        target_mask = get_xml_text_value(xml_node, Elements.NETMASK)
         target_address = get_xml_text_value(xml_node, Elements.IP_ADDRESS)
-        return cls(xml_node.tag, target_id, target_address, target_mask, region)
+        target_mask = get_xml_text_value(xml_node, Elements.NETMASK)
+        target_cidr = get_xml_text_value(xml_node, Elements.CIDR)
+        return cls(xml_node.tag, target_id, target_address, target_mask, region, target_cidr)
 
     def to_pretty_str(self):
-        try:
+        if hasattr(self, 'netmask'):
             return "\n\t\tIP Address: {}\n\t\tSubnet Mask: {}".format(self.ip_address, self.netmask)
-        except AttributeError:
-            return "\n\t\tIP Address: {}\n\t\tSubnet Mask: 255.255.255.255".format(self.ip_address)
+        elif hasattr(self, 'cidr'):
+            return "\n\t\tIP Address: {}\n\t\tCIDR: {}".format(self.ip_address, self.cidr)
+        else:
+            return "\n\t\tIP Address: {}".format(self.ip_address)
 
     def __str__(self):
-        try:
+        if hasattr(self, 'netmask'):
             return "{}/{}".format(self.ip_address, self.netmask)
-        except AttributeError:
-            return "{}/32".format(self.ip_address)
+        elif hasattr(self, 'cidr'):
+            return "{}/{}".format(self.ip_address, self.cidr)
+        else:
+            return "{}".format(self.ip_address)
 
     def as_netaddr_obj(self):
         """This returns a netaddr object representing the Network_Target"""
