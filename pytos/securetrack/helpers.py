@@ -10,7 +10,7 @@ import multiprocessing.pool
 from requests import RequestException
 
 from pytos.common.helpers import Secure_API_Helper
-from pytos.common.definitions.xml_tags import Elements
+from pytos.common.definitions.xml_tags import Elements, SeverityLevels
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error, \
     REST_Request_URI_Too_Long, REST_Client_Error, ItemAlreadyExists, REST_Internal_Server_Error, REST_HTTP_Exception
 from pytos.common.functions import config
@@ -1849,7 +1849,7 @@ class Secure_Track_Helper(Secure_API_Helper):
         if thread_count is None:
             thread_count = multiprocessing.cpu_count()
         process_pool = multiprocessing.pool.ThreadPool(processes=thread_count)
-        severity_levels_list = tuple(level.value for level in Elements.SeverityLevels)
+        severity_levels_list = tuple(level.value for level in SeverityLevels)
         devices_list = self.get_devices_list()
 
         if cp_types_to_exclude:
