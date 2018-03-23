@@ -1610,13 +1610,14 @@ class Secure_Track_Helper(Secure_API_Helper):
             response_string = self.get_uri(
                     "/securetrack/api/devices/{}/network_objects/{}".format(device_id, network_object_id),
                     expected_status_codes=200).response.content
-            network_object = Network_Objects_List.from_xml_string(response_string)[0]
+            network_object = [network_object for network_object in Network_Objects_List.from_xml_string(response_string)
+                              if network_object.id == network_object_id][0]
         except RequestException:
-            message = "Failed to get the list of rules for device ID {}.".format(device_id)
+            message = "Failed to get network objects for device ID {}.".format(device_id)
             logger.critical(message)
             raise IOError(message)
         except (REST_Not_Found_Error, IndexError):
-            message = "Device with ID {} does not exist.".format(device_id)
+            message = "Object with ID {} does not exist on Device with ID {}.".format(network_object_id, device_id)
             logger.critical(message)
             raise ValueError(message)
         if network_object.device_id is None:
