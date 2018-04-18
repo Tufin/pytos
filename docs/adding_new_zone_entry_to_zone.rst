@@ -12,7 +12,6 @@ The following example shows how to add new entry to an existing zone in SecureTr
 
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
 
-
 	def add_zone_entry(zone_name, ip_address, netmask, comment):
 		st_helper = Secure_Track_Helper('127.0.0.1', ("username", "username"))
 		zone_obj = st_helper.get_zone_by_name(zone_name, case_sensitive=True)
