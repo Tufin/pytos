@@ -1,7 +1,8 @@
 
 import enum
 
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
+from pytos.securechange.xml_objects.restapi.step.step import SlimRule
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
@@ -183,7 +184,7 @@ class DesignerBindingSuggestion(XML_Object_Base):
 class DesignerInstruction(XML_Object_Base):
 
     def __init__(self, id, implements_access_requests, status, instruction, instruction_type, modified_object_name,
-                 device_added_network_object):
+                 device_added_network_object, rule_placement, change_action, rule, rule_order):
         self.id = id
         self.implements_access_requests = implements_access_requests
         self.status = status
@@ -191,6 +192,10 @@ class DesignerInstruction(XML_Object_Base):
         self.instruction_type = instruction_type
         self.modified_object_name = modified_object_name
         self.device_added_network_object = device_added_network_object
+        self.rule_placement = rule_placement
+        self.change_action = change_action
+        self.rule = rule
+        self.rule_order = rule_order
         super().__init__(Elements.INSTRUCTION)
 
     def is_fully_implemented(self):
@@ -213,8 +218,16 @@ class DesignerInstruction(XML_Object_Base):
         modified_object_name = get_xml_text_value(xml_node, Elements.MODULES_AND_POLICY)
         #TODO: Need to implementthe device add network object
         device_added_network_object = None
+        rule_placement = get_xml_text_value(xml_node, Elements.RULE_PLACMENT)
+        change_action = get_xml_text_value(xml_node, Elements.CHANGE_ACTION)
+        rule_node = get_xml_node(xml_node, Elements.RULE, optional=True)
+        if rule_node:
+            rule = SlimRule.from_xml_node(rule_node)
+        else:
+            rule = None
+        rule_order = get_xml_text_value(xml_node, Elements.RULE_ORDER)
         return cls(id, implements_access_requests, status, instruction, instruction_type, modified_object_name,
-                   device_added_network_object)
+                   device_added_network_object, rule_placement, change_action, rule, rule_order)
 
 
 class ImplementsAccessRequest(XML_Object_Base):

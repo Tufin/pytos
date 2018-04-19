@@ -5,14 +5,14 @@ from datetime import datetime
 from pytos.common.base_types import XML_Object_Base, XML_List, Comparable
 from pytos.common.definitions import xml_tags
 from pytos.common.functions import str_to_bool, XML_LOGGER_NAME
-from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value
+from pytos.common.functions.xml import get_xml_text_value, get_xml_int_value, get_xml_node
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
 
 class Device(XML_Object_Base, Comparable):
     def __init__(self, model, vendor, domain_id, domain_name, num_id, name, offline, topology=None, ip=None,
-                 virtual_type=None):
+                 virtual_type=None, is_virtual=None):
         self.model = model
         self.vendor = vendor
         self.domain_name = domain_name
@@ -26,6 +26,7 @@ class Device(XML_Object_Base, Comparable):
         self._config = None
         self._children = []
         self._parent = None
+        self._is_virtual = is_virtual
         super().__init__(xml_tags.Elements.DEVICE)
 
     def _key(self):
@@ -51,9 +52,13 @@ class Device(XML_Object_Base, Comparable):
 
     @classmethod
     def from_db_device(cls, db_device, domain_name):
+        is_virtual = False
+        if db_device.is_virtual_context or db_device.virtual_type == "virtual_context":
+            is_virtual = True
         return cls(db_device.cp_type, db_device.management_type, db_device.customer_id, domain_name,
                    db_device.management_id, db_device.management_name, db_device.is_offline,
-                   topology=db_device.has_topology, virtual_type=db_device.virtual_type)
+                   topology=db_device.has_topology, virtual_type=db_device.virtual_type,
+                   is_virtual=is_virtual)
 
     def set_config(self, config):
         """
@@ -196,6 +201,19 @@ class Device_Revisions_List(XML_List):
             raise ValueError(message)
 
 
+class Module_And_Policy(XML_Object_Base):
+    def __init__(self, module, policy):
+        self.module = module
+        self.policy = policy
+        super().__init__(xml_tags.Elements.MODULE_AND_POLICY)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        module = get_xml_text_value(xml_node, xml_tags.Elements.MODULE)
+        policy = get_xml_text_value(xml_node, xml_tags.Elements.POLICY)
+        return cls(module, policy)
+
+
 class Device_Revision(XML_Object_Base):
     AUTHORIZED_STATUSES = ("AUTOMATICALLY_AUTHORIZED", "MANUALLY_AUTHORIZED")
     UNAUTHORIZED_STATUSES = ("AUTOMATICALLY_UNAUTHORIZED", "MANUALLY_UNAUTHORIZED")
@@ -233,7 +251,13 @@ class Device_Revision(XML_Object_Base):
         revision_date = get_xml_text_value(xml_node, xml_tags.Elements.DATE)
         gui_client = get_xml_text_value(xml_node, xml_tags.Elements.GUICLIENT)
         num_id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
-        modules_and_policy = get_xml_text_value(xml_node, xml_tags.Elements.MODULES_AND_POLICY)
+        modules_and_policy_node = get_xml_node(xml_node, xml_tags.Elements.MODULES_AND_POLICY, optional=True)
+        if modules_and_policy_node:
+            modules_and_policy = []
+            for node in modules_and_policy_node.iterfind('module_and_policy'):
+                modules_and_policy.append(Module_And_Policy.from_xml_node(node))
+        else:
+            modules_and_policy = None
         policy_package = get_xml_text_value(xml_node, xml_tags.Elements.POLICYPACKAGE)
         revision_id = get_xml_int_value(xml_node, xml_tags.Elements.REVISIONID)
         revision_time = get_xml_text_value(xml_node, xml_tags.Elements.TIME)

@@ -189,9 +189,9 @@ class IP_Access_Request_Target(Network_Target):
     def __init__(self, xml_tag, target_id, address, netmask, region, cidr=None):
         self.ip_address = address
         self.region = region
+
         # BUG: The netmask attribute is not always set since when creating an IPv6 target using the REST API
         # the netmask element must not exist (Can't even be empty)
-
         if netmask:
             self.netmask = netmask
         elif cidr:
@@ -234,12 +234,28 @@ class IP_Access_Request_Target(Network_Target):
         return netaddr.IPNetwork(self.__str__())
 
 
+class IpAddress(XML_Object_Base):
+    def __init__(self, ip_address):
+        self.ip_address = ip_address
+        super().__init__(Elements.IP_ADDRESS)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        return cls(xml_node.text)
+
+    def __str__(self):
+        return self.ip_address
+
+
 class DNS_Access_Request_Target(Network_Target):
-    def __init__(self, xml_tag, target_id, address, host_name, region):
+    def __init__(self, xml_tag, target_id, address, host_name, region, dns_ip_addresses=None):
         # TODO: resolve dns if no ip address and only hostname
         self.region = region
         self.host_name = host_name
-        self.ip_address = address
+        if address:
+            self.ip_address = address
+        if dns_ip_addresses:
+            self.dns_ip_addresses = dns_ip_addresses
         super().__init__(xml_tag, target_id, TYPE_DNS, region)
 
     @classmethod
@@ -253,25 +269,39 @@ class DNS_Access_Request_Target(Network_Target):
         region = get_xml_text_value(xml_node, Elements.REGION)
         target_hostname = get_xml_text_value(xml_node, Elements.HOST_NAME)
         target_address = get_xml_text_value(xml_node, Elements.IP_ADDRESS)
-        return cls(xml_node.tag, target_id, target_address, target_hostname, region)
+        dns_ip_addresses = XML_List.from_xml_node_by_tags(xml_node, Elements.DNS_IP_ADDRESSES, Elements.IP_ADDRESS,
+                                                          IpAddress, optional=True)
+        return cls(xml_node.tag, target_id, target_address, target_hostname, region, dns_ip_addresses)
 
     def to_pretty_str(self):
         target_string = ""
-        if self.ip_address:
+        if hasattr(self, 'ip_address') and self.ip_address:
             target_string += "\n\t\tIP Address: {}".format(self.ip_address)
+        elif hasattr(self, 'dns_ip_addresses'):
+            target_string += "\n\t\tIP Addresses: {}".format(', '.join(ip.ip_address for ip in self.dns_ip_addresses))
         if self.host_name:
             target_string += "\n\t\tHostname: {}".format(self.host_name)
         return target_string
 
     def __str__(self):
-        return "{}/{}".format(self.host_name, self.ip_address)
+        if hasattr(self, 'ip_address') and self.ip_address:
+            return "{}/{}".format(self.host_name, self.ip_address)
+        elif hasattr(self, 'dns_ip_addresses'):
+            return "{}/{}".format(self.host_name, ', '.join(ip.ip_address for ip in self.dns_ip_addresses))
 
     def as_netaddr_obj(self):
         """This returns a netaddr object representing the Network_Target"""
-        if not self.ip_address and self.host_name:
-            return netaddr.IPNetwork(socket.gethostbyname(self.host_name))
+        if hasattr(self, 'ip_address'):
+            if not self.ip_address and self.host_name:
+                return netaddr.IPNetwork(socket.gethostbyname(self.host_name))
+            else:
+                return netaddr.IPNetwork(self.ip_address)
         else:
-            return netaddr.IPNetwork(self.ip_address)
+            logger.info('Object {} has multiple DNS IP addresses, using the first one for conversion to netaddr obj'.format(self))
+            if self.host_name:
+                return netaddr.IPNetwork(socket.gethostbyname(self.host_name))
+            else:
+                return netaddr.IPNetwork(self.dns_ip_addresses.ip_address)
 
 
 class Any_Access_Request_Target(Access_Request_Target):
@@ -350,6 +380,40 @@ class Object_Access_Request_Target(Access_Request_Target):
         management_id = get_xml_int_value(xml_node, Elements.MANAGEMENT_ID)
         return cls(xml_node.tag, target_id, object_name, object_type, object_details, management_name, management_id,
                    object_UID, region)
+
+
+class LDAP_Entity_Access_Request_Target(Access_Request_Target):
+    def __init__(self, xml_tag, target_id, ldap_id, ldap_dn, ldap_name, region):
+        self.ldap_entity_id = ldap_id
+        self.ldap_entity_dn = ldap_dn
+        self.ldap_entity_name = ldap_name
+        super().__init__(xml_tag, target_id, TYPE_LDAP_ENTITY, region)
+
+    def __str__(self):
+        return "{}/{}".format(self.ldap_entity_name, self.ldap_entity_dn)
+
+    def to_pretty_str(self):
+        object_string = ""
+        if self.ldap_entity_name:
+            object_string += "\n\t\tLDAP Entity Name: {}".format(self.ldap_entity_name)
+        if self.ldap_entity_dn:
+            object_string += "\n\t\tLDAP Entity DN: {}".format(self.ldap_entity_dn)
+        return object_string
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+        target_id = get_xml_int_value(xml_node, Elements.ID)
+        region = get_xml_text_value(xml_node, Elements.REGION)
+        ldap_id = get_xml_text_value(xml_node, Elements.LDAP_ENTITY_ID)
+        ldap_dn = get_xml_text_value(xml_node, Elements.LDAP_ENTITY_DN)
+        ldap_name = get_xml_text_value(xml_node, Elements.LDAP_ENTITY_NAME)
+
+        return cls(xml_node.tag, target_id, ldap_id, ldap_dn, ldap_name, region)
 
 
 class Internet_Access_Request_Target(Access_Request_Target):
@@ -550,7 +614,8 @@ class Access_Request(XML_Object_Base):
 
         target_type_to_class_dict = {TYPE_RANGE: IP_Range_Access_Request_Target, TYPE_IP: IP_Access_Request_Target,
                                      TYPE_DNS: DNS_Access_Request_Target, TYPE_OBJECT: Object_Access_Request_Target,
-                                     TYPE_ANY: Any_Access_Request_Target, TYPE_INTERNET: Internet_Access_Request_Target}
+                                     TYPE_ANY: Any_Access_Request_Target, TYPE_INTERNET: Internet_Access_Request_Target,
+                                     TYPE_LDAP_ENTITY: LDAP_Entity_Access_Request_Target}
 
         service_type_class_dict = {SERVICE_OBJECT_TYPE_PREDEFINED: Predefined_Service_Target,
                                    SERVICE_OBJECT_TYPE_PROTOCOL: Protocol_Service_Target,
@@ -765,9 +830,12 @@ class Step_Field_Multi_Access_Request(Step_Multi_Field_Base):
             return None
         designer_result_url = self.designer_result.get_result_url()
         url_parse = requests.utils.urlparse(designer_result_url)
+        url_path = url_parse.path
+        if "multi_access_request" not in url_path:  # fix bug in SC API
+            url_path = "{}multi_access_request/designer".format(url_parse.path.split("fields")[0])
         try:
             url_helper = Secure_API_Helper(url_parse.netloc, (username, password))
-            response_string = url_helper.get_uri(url_parse.path, expected_status_codes=200).response.content
+            response_string = url_helper.get_uri(url_path, expected_status_codes=200).response.content
         except (REST_Service_Unavailable_Error, requests.RequestException) as e:
             message = "Failed to GET designer results"
             logger.error(message)

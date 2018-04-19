@@ -5,11 +5,11 @@ import datetime
 import logging
 import os
 import re
+import requests
 import sys
 import time
 import traceback
 import xml.etree.ElementTree as ET
-import requests
 
 from pytos.common.definitions import xml_tags
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error, REST_Unauthorized_Error
@@ -114,9 +114,23 @@ class Secure_Change_Helper(Secure_API_Helper):
 
         :param ticket_id: The numeric ID of the ticket that will be returned.
         :type ticket_id: int
+        :param retry_until_assigned: Whether or not to retry getting the ticket until it is assigned.
+                                     NOTES: 1. this doesn't work if a task's status is PENDING. In this case use the predicate
+                                     parameter. 2. If the ticket is still unassigned after the provided number of retries
+                                     the ticket will be returned.
+        :type retry_until_assigned: bool
+        :param sleep_time: Time in seconds to sleep between retries
+        :type sleep_time: int|float
+        :param retry_count: Number of retries
+        :type retry_count: int
+        :param predicate: A function that accepts a single argument (ticket object) and returns True or False based on
+                          custom internal logic. If the function still returns False after the provided number of
+                          retries for retry_count then ValueError is raised.
+        :type predicate: function
         :return: The ticket whose ID matches the specified ticket_id.
         :rtype: Ticket
-        :raise ValueError: If a ticket with the specified ID was not found.
+        :raise ValueError: If a ticket with the specified ID was not found or if provided predicate function still
+                           returns False after the provided number of retries for retry_count.
         :raise IOError: If there was a communication error.
         """
 
@@ -127,7 +141,7 @@ class Secure_Change_Helper(Secure_API_Helper):
             try:
                 response_string = self.get_uri("/securechangeworkflow/api/securechange/tickets/{}".format(ticket_id),
                                                expected_status_codes=200).response.content
-            except REST_Not_Found_Error:
+            except (REST_Not_Found_Error, REST_Bad_Request_Error):
                 message = "Ticket with ID {} does not exist.".format(ticket_id)
                 logger.error(message)
                 raise ValueError(message)
@@ -156,11 +170,23 @@ class Secure_Change_Helper(Secure_API_Helper):
                     else:
                         return ticket
         elif predicate is not None:
+            retries = 0
             ticket = _get_ticket()
-            while not predicate(ticket):
+            # the below line may be annotated due to a pycharm bug
+            condition = predicate(ticket)
+            while retries < retry_count:
+                if condition:
+                    return ticket
+                retries += 1
+                time.sleep(sleep_time)
                 ticket = _get_ticket()
-            else:
-                return ticket
+                # the below line may be annotated due to a pycharm bug
+                condition = predicate(ticket)
+            else:  # condition not met and retries exceeded retry_count
+                msg = "Error getting ticket {}: predicate function is still False after {} retries".format(ticket_id,
+                                                                                                           retry_count)
+                logger.error(msg)
+                raise ValueError(msg)
         else:
             return _get_ticket()
 
@@ -282,6 +308,7 @@ class Secure_Change_Helper(Secure_API_Helper):
         """
         if not isinstance(task, Step_Task):
             raise ValueError("task_obj must be a SecureChange ticket task.")
+
         logger.info("Updating task ID '%s' in SecureChange.", task.id)
         task_xml = task.to_xml_string().encode()
         logger.debug("Task data: '%s'", task_xml)
@@ -289,9 +316,9 @@ class Secure_Change_Helper(Secure_API_Helper):
         step_id = task.get_parent_node().id
         try:
             self.put_uri(
-                    "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}".format(ticket_id, step_id,
-                                                                                                 task.id), task_xml,
-                    expected_status_codes=200)
+                "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}".format(ticket_id, step_id,
+                                                                                             task.id), task_xml,
+                expected_status_codes=200)
         except REST_Bad_Request_Error as update_error:
             message = "Could not update task, error was '{}'.".format(update_error)
             logger.error(message)
@@ -324,11 +351,11 @@ class Secure_Change_Helper(Secure_API_Helper):
         task_id = field.get_parent_node().id
         try:
             self.put_uri(
-                    "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/fields/{}".format(ticket_id,
-                                                                                                           step_id,
-                                                                                                           task_id,
-                                                                                                           field.id),
-                    field_xml, expected_status_codes=200)
+                "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/fields/{}".format(ticket_id,
+                                                                                                       step_id,
+                                                                                                       task_id,
+                                                                                                       field.id),
+                field_xml, expected_status_codes=200)
         except REST_Bad_Request_Error as update_error:
             message = "Could not update field, error was '{}'.".format(update_error)
             logger.error(message)
@@ -478,8 +505,6 @@ class Secure_Change_Helper(Secure_API_Helper):
         members = []
         logger.debug("Retrieving all members of the group '{}'".format(group_name))
         group = self.get_user_by_username(group_name, exact_match=True)
-        print(group)
-        print(vars(group))
         if not isinstance(group, Group):
             raise ValueError("User '{}' is not of type Group".format(group_name))
         for member in group.members:
@@ -565,11 +590,11 @@ class Secure_Change_Helper(Secure_API_Helper):
         reassign_message = Reassign_Comment(reassign_message)
         try:
             self.put_uri(
-                    "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}".format(ticket_id,
-                                                                                                             step_id,
-                                                                                                             task_obj.id,
-                                                                                                             user_id),
-                    reassign_message.to_xml_string(), expected_status_codes=200)
+                "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}".format(ticket_id,
+                                                                                                         step_id,
+                                                                                                         task_obj.id,
+                                                                                                         user_id),
+                reassign_message.to_xml_string(), expected_status_codes=200)
         except REST_Bad_Request_Error as update_error:
             message = "Could not re-assign task, error was '{}'.".format(update_error)
             logger.error(message)
@@ -596,7 +621,7 @@ class Secure_Change_Helper(Secure_API_Helper):
         :type reassign_message: str
         """
         try:
-            user = self.get_sc_user(username)
+            user = self.get_user_by_username(username)
             user_id = user.id
         except ValueError as error:
             message = "Couldn't re-assign task, as user was not found. Error: {}".format(error)
@@ -876,7 +901,7 @@ class Access_Request_Generator:
                 elif service["type"] == Access_Request_Generator.ICMP:
                     service = Predefined_Service_Target(None, xml_tags.TYPE_OTHER, 1, "icmp-proto")
                 elif service["type"] == Access_Request_Generator.PREDEFINED:
-                    logger.warn("Unknown predefined type '%s', skipping.", service)
+                    logger.warning("Unknown predefined type '%s', skipping.", service)
                     continue
                 services.append(service)
             access_request = Access_Request(order, targets, None, copy.deepcopy(sources), copy.deepcopy(destinations),
@@ -1073,8 +1098,7 @@ class Access_Request_Generator:
                 address, netmask = raw_target.split("/")
             else:
                 raise ValueError("Unknown target type '{}'".format(target_type))
-
-            if netmask and len(netmask) <= 3:  # this may be used for both IPV4 and IPV6
+            if netmask and len(netmask) <= 3:  # this is be used for both IPV4 and IPV6
                 targets.append({"address": address, "cidr": netmask, "type": target_type})
             else:
                 targets.append({"address": address, "netmask": netmask, "type": target_type})
@@ -1109,7 +1133,7 @@ class Step_Task_Field_Copier:
     """
 
     def __init__(self, sc_helper, source_task, destination_task, ignore_missing_fields=False,
-                 skip_fields_with_value=False, ignore_errors=False):
+                 skip_fields_with_value=False, ignore_errors=False, field_names_to_copy=None):
         """
         :param sc_helper: The Secure_Change_Helper that is connected to the destination SC system.
         :type sc_helper: Secure_Change_Helper
@@ -1118,25 +1142,29 @@ class Step_Task_Field_Copier:
         :param destination_task: The task to which the fields will be copied.
         :type destination_task: Step_Task
         :param ignore_missing_fields: If set to True, fields that exist in the source task but not in
-        the destination task will be ignored.
-        Otherwise, a ValueError exception will be thrown.
+            the destination task will be ignored. Otherwise, a ValueError exception will be thrown.
         :type ignore_missing_fields: bool
         :param skip_fields_with_value: If set to True, fields in the destination task that already have a value will
-        be skipped.
+            be skipped.
         :type skip_fields_with_value: bool
+        :param field_names_to_copy: If provided, only these fields will copied
+        :type field_names_to_copy: iterable
         """
         self.sc_helper = sc_helper
-        self.source_task = source_task
+        self.source_task_fields = source_task.fields[:]
         self.destination_task = destination_task
         self.ignore_missing_fields = ignore_missing_fields
         self.skip_fields_with_value = skip_fields_with_value
         self.ignore_errors = ignore_errors
+        self.field_names_to_copy = field_names_to_copy or []
 
     def copy_fields(self, submit_fields=True):
         handled_destination_fields = []
         destination_fields = []
-        while self.source_task.fields:
-            source_field = self.source_task.fields.pop()
+        while self.source_task_fields:
+            source_field = self.source_task_fields.pop()
+            if self.field_names_to_copy and source_field.name not in self.field_names_to_copy:
+                continue
             destination_field = None
             candidate_fields = self.destination_task.get_field_list_by_name_and_type(source_field.name,
                                                                                      source_field.get_field_type())
@@ -1158,7 +1186,7 @@ class Step_Task_Field_Copier:
                     logger.info("Skipping missing field with name '%s'.", source_field.name)
                 else:
                     message = "Could not find field with name '{}' and type '{}' in destination task.".format(
-                            source_field.name, type(source_field))
+                        source_field.name, type(source_field))
                     logger.critical(message)
                     raise ValueError(message)
         if submit_fields:
@@ -1250,19 +1278,25 @@ class Secure_Change_API_Handler:
         """
         self._register_items("indexes", index, func, args, kwargs)
 
-    def register_action(self, action, func, *args, **kwargs):
+    def register_action(self, actions, func, *args, **kwargs):
         """
-        :param action: The trigger action that the function will be triggered for.
-        :type  action: str
+        :param actions: The trigger action that the function will be triggered for.
+        :type  actions: str|list[str]|tuple[str]
         :param func: The function that will be called.
         :type func: types.FunctionType|types.BuiltinFunctionType|types.MethodType|
         types.BuiltinMethodType|types.UnboundMethodType
         :param args: The arguments for the function that will be called.
         :param kwargs: The keyword arguments for the function that will be called.
         """
-        if action not in Secure_Change_API_Handler.TRIGGER_ACTIONS:
-            raise ValueError("Unknown trigger action '{}'.".format(action))
-        self._register_items("actions", action, func, args, kwargs)
+
+        if not isinstance(actions, (list, tuple)):
+            actions = [actions]
+
+        for action in actions:
+            if action not in Secure_Change_API_Handler.TRIGGER_ACTIONS:
+                        raise ValueError("Unknown trigger action '{}'.".format(action))
+
+        self._register_items("actions", actions, func, args, kwargs)
 
     def register_previous_step(self, stage_name, func, *args, **kwargs):
         """
@@ -1288,20 +1322,41 @@ class Secure_Change_API_Handler:
         """
         self._register_items("completion_steps", step_name, func, args, kwargs)
 
-    def run(self):
+    def run(self, *, use_lower_case_step_names=False):
+        """
+        :param bool use_lower_case_step_names: If True, will use the lowercase form of step names to check if a function
+            should be called when using register_step/register_previous_step/register_completion_step.
+            This is useful if reading step names from conf file by using conf.dict which lowercases all the section's keys.
+            For this to function properly, the lowercase form of step name should be passed to
+            register_step/register_previous_step/register_completion_step even if the actual name of the step in the
+            workflow is not exclusively lowercase.
+        """
+
         logger.info("Running for ticket with ID '%s'.", self.ticket.id)
         try:
             stage_name = self.ticket_info.current_stage_name
         except (AttributeError, KeyError):
             pass
         else:
-            self._run_stage(stage_name)
+            if use_lower_case_step_names:
+                try:
+                    self._run_stage(stage_name.lower())
+                except AttributeError:
+                    pass
+            else:
+                self._run_stage(stage_name)
         try:
             completion_step_name = self.ticket_info.completion_step_name
         except AttributeError:
             pass
         else:
-            self._run_completion_steps(completion_step_name)
+            if use_lower_case_step_names:
+                try:
+                    self._run_completion_steps(completion_step_name.lower())
+                except AttributeError:
+                    pass
+            else:
+                self._run_completion_steps(completion_step_name)
         try:
             current_step = self.ticket.get_current_step()
         except KeyError:
@@ -1310,7 +1365,13 @@ class Secure_Change_API_Handler:
         else:
             self._run_status()
             self._run_action()
-            self._run_step(current_step.name)
+            if use_lower_case_step_names:
+                try:
+                    self._run_step(current_step.name.lower())
+                except AttributeError:
+                    pass
+            else:
+                self._run_step(current_step.name)
             self._run_index(self.ticket.step_index(current_step))
 
     @staticmethod

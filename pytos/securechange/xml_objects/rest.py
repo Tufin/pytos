@@ -1,17 +1,17 @@
-
 import datetime
-import enum
-import fcntl
-import os
 import time
+import enum
 from collections import OrderedDict
-import logging
 
+# For backward compatibility import FileLock
+from pytos.securechange.xml_objects.restapi.step.rule_decommission.rule_decommission import Step_Field_Rule_Decommission
+from pytos.securechange.xml_objects.restapi.step.server_decommission.server_decommission import Step_Field_Server_Decommission
+from pytos.common.functions.utils import FileLock
 from pytos.secureapp.xml_objects.base_types import Base_Link_Target, URL_Link
 from pytos.securechange import definitions
-from pytos.securechange.xml_objects.base_types import Step_Field_Base, Step_Multi_Field_Base, Target_Base
+from pytos.securechange.xml_objects.base_types import Step_Field_Base
 from pytos.securechange.xml_objects.restapi.step.access_request.accessrequest import *
-from pytos.common.base_types import XML_List, XML_Object_Base, Flat_XML_Object_Base
+from pytos.common.base_types import XML_List, XML_Object_Base, Flat_XML_Object_Base, Comparable
 from pytos.common.logging.definitions import XML_LOGGER_NAME
 from pytos.common.functions import str_to_bool, get_xml_node, get_xml_text_value, get_xml_int_value
 from pytos.common.functions import convert_timedelta_to_seconds
@@ -19,6 +19,9 @@ from pytos.common.definitions.xml_tags import TYPE_ANY, TYPE_ATTRIB, TYPE_DNS, T
     TYPE_HOST, SERVICE_OBJECT_TYPE_PREDEFINED, SERVICE_OBJECT_TYPE_PROTOCOL, Elements, Attributes
 
 logger = logging.getLogger(XML_LOGGER_NAME)
+
+# For backward compatibility use FileLock as Ticket_Lock too
+Ticket_Lock = FileLock
 
 
 class TicketList(XML_List):
@@ -188,6 +191,24 @@ class Ticket(XML_Object_Base):
         """
         return self.get_step_by_index(-2)
 
+    def get_first_step(self):
+        """
+        Return the first ticket step.
+        :return: The first ticket step.
+        :rtype: Secure_Change.XML_Objects.REST.Ticket_Step
+
+        """
+        return self.get_step_by_index(0)
+
+    def get_first_task(self):
+        """
+        Return the first ticket task.
+        :return: The first ticket task.
+        :rtype: Secure_Change.XML_Objects.REST.Step_Task
+
+        """
+        return self.get_first_step().get_last_task()
+
     def get_step_by_id(self, step_id):
         """
         Get the ticket step whose ID matches the specified ID.
@@ -235,6 +256,22 @@ class Ticket(XML_Object_Base):
         if not last_step:
             raise ValueError("No step is found that was last worked on for ticket {}".format(self.id))
         return last_step
+
+    def get_rejected_step(self):
+        logger.info("Getting rejected step")
+        if self.status != self.REJECTED_STATUS:
+            return None
+        for step in self.steps:
+            for task in step.tasks:
+                try:
+                    approve_reject_field = task.get_field_list_by_type(Attributes.FIELD_TYPE_APPROVE_REJECT)[0]
+                except IndexError:
+                    continue
+                if approve_reject_field.approved and not str_to_bool(approve_reject_field.approved):
+                    return step
+
+        logger.debug("No step was found that was rejected for ticket {}".format(self.id))
+        return None
 
     def get_last_worked_on_step_id(self):
         """
@@ -459,59 +496,7 @@ class Ticket_Step(XML_Object_Base):
         return str_to_bool(self.skipped)
 
 
-class FileLock:
-    TICKET_FILE_LOCK_PATH = "/tmp/"
-
-    def __init__(self, ticket_id, blocking=False):
-        self.ticket_id = str(ticket_id)
-        self.locked = False
-        self.lock = None
-        self.lock_file = None
-        self.blocking = blocking
-        self.file_path = FileLock.TICKET_FILE_LOCK_PATH + self.ticket_id + ".lock"
-        self._get_lock_file_handle()
-
-    def __enter__(self):
-        self.acquire()
-
-    # noinspection PyUnusedLocal
-    def __exit__(self, _type, value, traceback):
-        self.release()
-
-    def _get_lock_file_handle(self):
-        self.lock_file = open(self.file_path, "w")
-
-    def acquire(self, blocking=None):
-        # Give an opportunity to set blocking with the class for context use
-        if blocking is None:
-            blocking = self.blocking
-
-        if blocking:
-            lock_mode = fcntl.LOCK_EX
-        else:
-            lock_mode = fcntl.LOCK_EX | fcntl.LOCK_NB
-        if self.lock_file.closed:
-            self._get_lock_file_handle()
-        if not self.locked:
-            try:
-                self.lock = fcntl.flock(self.lock_file, lock_mode)
-                self.locked = True
-            except IOError:
-                raise IOError("Ticket with ID '{}' is already locked.".format(self.ticket_id))
-        else:
-            raise IOError("Ticket with ID '{}' is already locked.".format(self.ticket_id))
-
-    def release(self):
-        if self.locked:
-            try:
-                self.lock_file.close()
-                os.remove(self.file_path)
-                self.locked = False
-            except OSError:
-                pass
-
-#To keep backward compatibility with previous projects:
-Ticket_Lock = FileLock
+# To keep backward compatibility with previous projects
 
 class Step_Field_Checkbox(Step_Field_Base):
     FIELD_CONTENT_ATTRIBUTES = "value"
@@ -639,7 +624,6 @@ class Step_Field_Multi_Text(Step_Multi_Field_Base):
         elif not isinstance(values, Text_Field):
             values = Text_Field(None, values)
         super().set_field_value(values)
-
 
 
 class Step_Field_Multi_Text_Area(Step_Multi_Field_Base):
@@ -978,6 +962,12 @@ class Step_Field_Multi_Group_Change(Step_Multi_Field_Base):
             group_change = Group_Change_Node.from_xml_node(group_change_node)
             group_changes.append(group_change)
         return cls(num_id, name, implementation_status, group_changes, read_only)
+
+    def to_pretty_str(self):
+        output = "Group Change field '{}'\n:".format(self.name)
+        for group_change in self.group_changes:
+            output += "\n{}\n".format(group_change.to_pretty_str())
+        return output
 
 
 class Group_Change_Node(XML_Object_Base):
@@ -1391,7 +1381,11 @@ class Step_Task(XML_Object_Base):
                                     Attributes.FIELD_TYPE_MULTIPLE_SELECTION: Step_Field_Multiple_Selection,
                                     Attributes.FIELD_TYPE_TEXT: Step_Field_Text,
                                     Attributes.FIELD_TYPE_TEXT_AREA: Step_Field_Text_Area,
-                                    Attributes.FIELD_TYPE_TIME: Step_Field_Time, }
+                                    Attributes.FIELD_TYPE_TIME: Step_Field_Time,
+                                    Attributes.FIELD_TYPE_RULE_DECOMMISSION: Step_Field_Rule_Decommission,
+                                    Attributes.FIELD_TYPE_MULTI_SERVER_DECOMMISSION_REQUEST:
+                                        Step_Field_Server_Decommission
+                                    }
         fields = XML_List.from_xml_node_by_type_dict(xml_node, Elements.FIELDS, Elements.FIELD,
                                                      field_type_to_class_dict)
         return cls(num_id, assignee, status, fields, task_name, assignee_id)
@@ -1537,6 +1531,9 @@ class Step_Task(XML_Object_Base):
             return True
         else:
             return False
+
+    def is_done(self):
+        return self.status == "DONE"
 
     def remove_all_fields(self):
         """
@@ -1803,7 +1800,7 @@ class Group(XML_Object_Base):
         if members_node:
             members = Members.from_xml_node(members_node)
         else:
-            members = None
+            members = []
 
         return cls(user_id, user_name, user_email, out_of_office_from, out_of_office_until, send_email, notes, ldapDn,
                    group_permission, members, user_type)
@@ -1951,7 +1948,12 @@ class Ticket_History_Activities(XML_List):
         step_states = OrderedDict()
         for history_item in self._list_data:
             step_name = history_item.step_name
-            step_state = definitions.Ticket_Activity.find_matching_state(history_item.description)
+            try:
+                step_state = definitions.Ticket_Activity.find_matching_state(history_item.description)
+            except ValueError:
+                logger.debug("Step: {}, state: '{}'  was not found - ignoring it".format(step_name,
+                                                                                         history_item.description))
+                continue
             step_states[step_name] = step_state
         return step_states
 
@@ -2063,3 +2065,47 @@ class IpAddress(XML_Object_Base):
 
     def __str__(self):
         return self.ip_address
+
+
+class ExcludedDevice(Flat_XML_Object_Base, Comparable):
+    def __init__(self, device_id):
+        self.id = device_id
+        super().__init__(xml_tag=Elements.ID, content=device_id)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        return cls(xml_node.text)
+
+    def __str__(self):
+        return str(self.id)
+
+    def __repr__(self):
+        return str(self)
+
+    def _key(self):
+        return self.id,
+
+
+class ExcludedDevicesList(XML_List):
+    def __init__(self, devices):
+        """
+
+        :param devices:
+        :type devices: list[int|ExcludedDevice]
+        """
+        self.excluded_devices = []
+        for device in devices:
+            if isinstance(device, int):
+                self.excluded_devices.append(ExcludedDevice(device))
+            elif isinstance(device, ExcludedDevice):
+                self.excluded_devices.append(device)
+            else:
+                raise TypeError("Elements of 'devices' must be of type int or ExcludedDevice")
+        super().__init__(Elements.DEVICE_IDS, self.excluded_devices)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        device_ids = []
+        for device_node in xml_node.iter(tag=Elements.ID):
+            device_ids.append(ExcludedDevice.from_xml_node(device_node))
+        return cls(device_ids)

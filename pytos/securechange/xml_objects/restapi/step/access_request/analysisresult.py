@@ -1,5 +1,5 @@
 
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
 
 
 class Analysis_Result(XML_Object_Base):

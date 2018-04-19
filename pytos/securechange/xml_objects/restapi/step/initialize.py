@@ -1,4 +1,3 @@
-
 import logging
 import textwrap
 import netaddr
@@ -16,8 +15,7 @@ from pytos.common.helpers import Secure_API_Helper
 from pytos.common.exceptions import REST_Service_Unavailable_Error
 from pytos.common.definitions.xml_tags import TYPE_ANY, TYPE_ATTRIB, TYPE_DNS, TYPE_IP, TYPE_OBJECT, TYPE_NETWORK, \
     TYPE_HOST, TYPE_RANGE, SERVICE_OBJECT_TYPE_PREDEFINED, SERVICE_OBJECT_TYPE_PROTOCOL, \
-    SERVICE_OBJECT_TYPE_APPLICATION_IDENTITY, TYPE_INTERNET
+    SERVICE_OBJECT_TYPE_APPLICATION_IDENTITY, TYPE_INTERNET, TYPE_LDAP_ENTITY
 
-from pytos.securechange.xml_objects.restapi.step.access_request.analysisresult import Analysis_Result
-from pytos.securechange.xml_objects.base_types import Target_Base, Access_Request_Target, Step_Multi_Field_Base
-from pytos.securechange.xml_objects.restapi.step.access_request.risk import Risk_Analysis_Result
+from pytos.securechange.xml_objects.base_types import Target_Base, Access_Request_Target, Step_Multi_Field_Base, \
+    Step_Field_Base
