@@ -503,10 +503,10 @@ class TestNetworkObjects(unittest.TestCase):
     def test_04_get_network_object_by_device_and_object_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            network_object = self.helper.get_network_object_by_device_and_object_id(158, 3418214)
+            network_object = self.helper.get_network_object_by_device_and_object_id(158, 3433950)
             mock_get_uri.assert_called_with(
                 'GET',
-                'https://localhost/securetrack/api/devices/158/network_objects/3418214',
+                'https://localhost/securetrack/api/devices/158/network_objects/3433950',
                 auth=('username', 'password'),
                 headers={},
                 params=None
