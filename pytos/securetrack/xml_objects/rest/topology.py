@@ -124,7 +124,6 @@ class Interface(XML_Object_Base):
         subnet = get_xml_text_value(xml_node, Elements.SUBNET)
         incoming_vrf = get_xml_text_value(xml_node, Elements.INCOMINGVRF)
         vpn_connection = get_xml_text_value(xml_node, Elements.VPNCONNECTION)
-
         return cls(name, ip, subnet, incoming_vrf, vpn_connection)
 
 
@@ -146,7 +145,7 @@ class Rule(XML_Object_Base):
 
     @classmethod
     def from_xml_node(cls, xml_node):
-        rule_id = get_xml_int_value(xml_node, Elements.RULEIDENTIFIER)
+        rule_id = get_xml_text_value(xml_node, Elements.RULEIDENTIFIER)
         action = get_xml_text_value(xml_node, Elements.ACTION)
         sources = get_xml_text_value(xml_node, Elements.SOURCES)
         destinations = get_xml_text_value(xml_node, Elements.DESTINATIONS)

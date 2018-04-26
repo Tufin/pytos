@@ -1118,6 +1118,11 @@ class Secure_Track_Helper(Secure_API_Helper):
             csv_buffer = io.StringIO()
             csv_writer = csv.writer(csv_buffer)
             existing_zones = [zone.name for zone in self.get_zones()]
+
+            logger.debug("")
+            logger.debug(existing_zones)
+            logger.debug("")
+
             valid_access_types = ("restricted", "blocked", "ignored")
             valid_severity_types = ("low", "medium", "high", "critical")
             csv_writer.writerow(("from zone", "to zone", "severity", "access type", "allowed services"))
@@ -1357,6 +1362,9 @@ class Secure_Track_Helper(Secure_API_Helper):
         url = "/securetrack/api/zones?context={}".format(domain_id)
         try:
             response_string = self.get_uri(url, expected_status_codes=200).response.content
+            logger.debug("")
+            logger.debug(response_string)
+            logger.debug("")
         except RequestException:
             message = "Failed to get the list of zones."
             logger.critical(message)
@@ -2329,26 +2337,15 @@ class Secure_Track_Helper(Secure_API_Helper):
             param_builder = URLParamBuilderDict(url_params)
             url_params = param_builder.build(prepend_question_mark=False)
 
+        src = ",".join(sources) if sources else '0.0.0.0'
+        dst = ",".join(destinations) if destinations else '0.0.0.0'
+        srv = ",".join(services) if services else 'ANY'
         try:
-            if sources:
-                src = ",".join(sources)
-            else:
-                src = '0.0.0.0'
-            if destinations:
-                dst = ",".join(destinations)
-            else:
-                dst = '0.0.0.0'
-            if services:
-                srv = ",".join(services)
-            else:
-                srv = 'ANY'
             uri = "/securetrack/api/topology/path?src={}&dst={}&service={}{}".format(src, dst, srv, url_params)
             path_cal_results = self.get_uri(uri, expected_status_codes=200).response.content
             return PathCalculationResults.from_xml_string(path_cal_results)
-
         except RequestException as error:
-            message = "Failed to securetrack configuration. Error: {}".format(error)
-            logger.critical(message)
+            message = "Failed to get SecureTrack topology path. Error: {}".format(error)
             raise IOError(message)
 
     def get_nat_rules_by_device_id(self, device_id, input_interface="Any", **kwargs):

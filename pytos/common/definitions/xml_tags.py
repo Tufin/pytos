@@ -115,6 +115,13 @@ class Attributes:
 
 
 class Elements:
+    CREATE_DATE = "createDate"
+    ID = "id"
+    TICKET_INFO = "ticket_info"
+    UPDATE_DATE = "updateDate"
+    CURRENT_STAGE = "current_stage"
+    OPEN_REQUEST_STAGE = "open_request_stage"
+    COMPLETION_DATA = "completion_data"
     ACCEPTINGRULESDTO = "acceptingRulesDTO"
     ACCESS_REQUEST = "access_request"
     ACCESS_REQUESTS = "access_requests"

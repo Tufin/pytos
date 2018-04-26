@@ -210,6 +210,10 @@ class REST_Request(object):
         @raise requests.HTTPError: If the specified status code was not found in the self.response member object.
         """
         status_code_ok = True
+        logger.debug("")
+        logger.debug(self.expected_status_codes)
+        logger.debug(self.response.status_code)
+        logger.debug("")
         if not self.expected_status_codes:
             return True
         try:
@@ -391,7 +395,8 @@ class POST_Request(REST_Request):
             multi_part_form = requests_toolbelt.MultipartEncoder(fields=multi_part_form_params)
             self.headers["Content-Type"] = multi_part_form.content_type
             self.body = multi_part_form.to_string()
-            self.headers["Content-Size"] = len(multi_part_form)
+            multi_part_form_length = str(multi_part_form.len) if hasattr(multi_part_form, 'len') else len(multi_part_form)
+            self.headers["Content-Size"] = multi_part_form_length
             self.headers["Accept"] = "*/*"
         else:
             if params is not None:
@@ -407,7 +412,6 @@ class POST_Request(REST_Request):
         logger.info("Sending POST request to '%s'", self.url)
         request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers,
                                        files=files)
-
         if self.session:
             self.request = self.session.prepare_request(request_obj)
         else:

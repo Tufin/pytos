@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ticket>
+    <id>445</id>
+    <subject>Server Decomm Ticket</subject>
+    <requester>tzachi</requester>
+    <requester_id>3</requester_id>
+    <priority>Normal</priority>
+    <status>In Progress</status>
+    <domain_name></domain_name>
+    <sla_status>NA</sla_status>
+    <sla_outcome>NA</sla_outcome>
+    <workflow>
+        <id>582</id>
+        <name>Server Decomm</name>
+        <uses_topology>false</uses_topology>
+    </workflow>
+    <steps>
+        <step>
+            <id>2498</id>
+            <name>Submit</name>
+            <redone>false</redone>
+            <skipped>false</skipped>
+            <tasks>
+                <task>
+                    <id>2568</id>
+                    <assignee_id>3</assignee_id>
+                    <assignee>tzachi</assignee>
+                    <status>DONE</status>
+                    <fields>
+                        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="multi_server_decommission_request">
+                            <id>66638</id>
+                            <name>Server Decomm</name>
+                            <read_only>false</read_only>
+                            <server_decommission_request>
+                                <id>66643</id>
+                                <order>DR1</order>
+                                <domain>Default</domain>
+                                <servers>
+                                    <server type="IP">
+                                        <id>66640</id>
+                                        <ip_address>1.1.1.1</ip_address>
+                                        <netmask>255.255.255.255</netmask>
+                                        <cidr>32</cidr>
+                                    </server>
+                                </servers>
+                                <targets>
+                                    <target type="ANY">
+                                        <id>66642</id>
+                                    </target>
+                                </targets>
+                                <comment></comment>
+                                <impact_analysis_result>
+                                    <status>not run</status>
+                                </impact_analysis_result>
+                                <verifier_result>
+                                    <status>not run</status>
+                                </verifier_result>
+                                <designer_result>
+                                    <status>not run</status>
+                                </designer_result>
+                            </server_decommission_request>
+                        </field>
+                    </fields>
+                </task>
+            </tasks>
+        </step>
+        <step>
+            <id>2499</id>
+            <name>Implement</name>
+            <redone>false</redone>
+            <skipped>false</skipped>
+            <tasks>
+                <task>
+                    <id>2569</id>
+                    <assignee_id>3</assignee_id>
+                    <assignee>tzachi</assignee>
+                    <status>ASSIGNED</status>
+                    <fields>
+                        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="multi_server_decommission_request">
+                            <id>66644</id>
+                            <name>Server Decomm</name>
+                            <read_only>false</read_only>
+                            <server_decommission_request>
+                                <id>66649</id>
+                                <order>DR1</order>
+                                <domain>Default</domain>
+                                <servers>
+                                    <server type="IP">
+                                        <id>66646</id>
+                                        <ip_address>1.1.1.1</ip_address>
+                                        <netmask>255.255.255.255</netmask>
+                                        <cidr>32</cidr>
+                                    </server>
+                                </servers>
+                                <targets>
+                                    <target type="ANY">
+                                        <id>66648</id>
+                                    </target>
+                                </targets>
+                                <comment></comment>
+                                <impact_analysis_result>
+                                    <status>not run</status>
+                                </impact_analysis_result>
+                                <verifier_result>
+                                    <status>not implemented</status>
+                                    <result xsi:type="result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/557/steps/2499/tasks/2569/multi_server_decommission_request/66649/verifier"/>
+                                </verifier_result>
+                                <designer_result>
+                                    <status>designer cannot compute</status>
+                                    <result xmlns:ns3="designer_link" xsi:type="ns3:result_link" href="https://192.168.204.161/securechangeworkflow/api/securechange/tickets/557/steps/2499/tasks/2569/fields/66649/designer"/>
+                                </designer_result>
+                            </server_decommission_request>
+                        </field>
+                    </fields>
+                </task>
+            </tasks>
+        </step>
+    </steps>
+    <current_step>
+        <id>2499</id>
+        <name>Implement</name>
+    </current_step>
+    <comments/>
+</ticket>

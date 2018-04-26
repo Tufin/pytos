@@ -682,7 +682,8 @@ class Secure_Change_Helper(Secure_API_Helper):
             message = "Failed to find verifier for ticket id '{}'".format(ticket_id)
             logger.error(message)
             raise ValueError(message)
-        except requests.RequestException:
+        except requests.RequestException as e:
+            logger.error("testing {}".format(e))
             message = "Failed to GET verifier results for ticket ID '{}'.".format(ticket_id)
             logger.error(message)
             raise IOError(message)
