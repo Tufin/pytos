@@ -1,5 +1,5 @@
-
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
+from pytos.securechange.xml_objects.restapi.step.step import AbsNetwork, AbsService, Binding
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
@@ -167,7 +167,7 @@ class VerifierTarget(XML_Object_Base):
         :type xml_node: xml.etree.Element
         """
         management_name = get_xml_text_value(xml_node, Elements.MANAGEMENT_NAME)
-        managementId = get_xml_int_value(xml_node, Elements.MANAGEMENTID)
+        management_id = get_xml_int_value(xml_node, Elements.MANAGEMENT_ID)
         device_type = get_xml_text_value(xml_node, Elements.DEVICE_TYPE)
         revision_number = get_xml_int_value(xml_node, Elements.REVISION_NUMBER)
         administrator = get_xml_text_value(xml_node, Elements.ADMINISTRATOR)
@@ -178,7 +178,7 @@ class VerifierTarget(XML_Object_Base):
         verification_status = get_xml_text_value(xml_node, Elements.VERIFICATION_STATUS)
         verifier_bindings = XML_List.from_xml_node_by_tags(xml_node, Elements.VERIFIER_BINDINGS,
                                                            Elements.VERIFIER_BINDING, VerifierBinding)
-        return cls(management_name, managementId, device_type, revision_number, administrator,
+        return cls(management_name, management_id, device_type, revision_number, administrator,
                    date, time, vendor, verification_status, verifier_bindings, verifier_warning)
 
 
@@ -218,10 +218,10 @@ class SlimRuleObject(XML_Object_Base):
 
     def __init__(self, xml_node, target_type_tag):
         self.rule_number = get_xml_text_value(xml_node, Elements.RULENUMBER)
-        self.dst_networks = SlimRuleObject.get_obj(VerifierNetwork, xml_node, Elements.DESTNETWORKS)
-        self.src_networks = SlimRuleObject.get_obj(VerifierNetwork, xml_node, Elements.SOURCENETWORKS)
-        self.src_service = SlimRuleObject.get_obj(VerifierService, xml_node, Elements.SOURCESERVICES)
-        self.dst_service = SlimRuleObject.get_obj(VerifierService, xml_node, Elements.DESTINATIONSERVICES)
+        self.dst_networks = SlimRuleObject.get_obj(AbsNetwork, xml_node, Elements.DESTNETWORKS)
+        self.src_networks = SlimRuleObject.get_obj(AbsNetwork, xml_node, Elements.SOURCENETWORKS)
+        self.src_service = SlimRuleObject.get_obj(AbsService, xml_node, Elements.SOURCESERVICES)
+        self.dst_service = SlimRuleObject.get_obj(AbsService, xml_node, Elements.DESTINATIONSERVICES)
         self.action = get_xml_text_value(xml_node, Elements.ACTION)
         self.comment = get_xml_text_value(xml_node, Elements.COMMENT)
         self.name = get_xml_text_value(xml_node, Elements.NAME)
@@ -260,253 +260,3 @@ class ViolatingRule(SlimRuleObject):
     def from_xml_node(cls, xml_node):
         return cls(xml_node)
 
-
-class VerifierNetwork(XML_Object_Base, metaclass=SubclassWithIdentifierRegistry):
-    """Base class for parsing all network object"""
-
-    @classmethod
-    def from_xml_node(cls, xml_node):
-        try:
-            verifier_type = xml_node.attrib[Attributes.XSI_NAMESPACE_TYPE]
-        except KeyError:
-            msg = 'XML node is missing the XSI attribute "{}"'.format(Attributes.XSI_NAMESPACE_TYPE)
-            logger.error(msg)
-            raise ValueError(msg)
-        else:
-            try:
-                return cls.registry[verifier_type](xml_node)
-            except KeyError:
-                logger.error('Unknown violation object type "{}"'.format(verifier_type))
-
-
-class NetworkObject(VerifierNetwork):
-    """Base class for all sub type of the network object"""
-
-    def __init__(self, xml_node, element):
-        self.address_book = get_xml_text_value(xml_node, Elements.ADDRESS)
-        self.type_on_device = get_xml_text_value(xml_node, Elements.TYPE)
-        self.version_id = get_xml_int_value(xml_node, Elements.VERSION_ID)
-        self.referenced = get_xml_text_value(xml_node, Elements.REFERENCED)
-        interface_name = get_xml_text_value(xml_node, Elements.INTERFACE_NAME)
-        self.nat_info = type('NatInfo', (), {'interface_name': interface_name})()
-        self.installable_target = get_xml_text_value(xml_node, Elements.INSTALLABLE_TARGET)
-        self.group_id = get_xml_text_value(xml_node, Elements.GROUP_ID)
-        self.device_type = get_xml_text_value(xml_node, Elements.DEVICE_TYPE)
-        self.ip_type = get_xml_text_value(xml_node, Elements.IP_TYPE)
-        self.id = get_xml_text_value(xml_node, Elements.ID)
-        self.zone = PolicyZone(xml_node)
-        self.device_id = get_xml_int_value(xml_node, Elements.DEVICE_ID)
-        self.admin_domain = AdminDomain(xml_node)
-        self.inDomainElementId = get_xml_text_value(xml_node, Elements.INDOMAINELEMENTID)
-        self.global_el = Flat_XML_Object_Base(Elements.GLOBAL, None, get_xml_text_value(xml_node, Elements.GLOBAL))
-        self.origin = get_xml_text_value(xml_node, Elements.ORIGIN)
-        self.comment = get_xml_text_value(xml_node, Elements.COMMENT)
-        self.shared = get_xml_text_value(xml_node, Elements.SHARED)
-        self.name = get_xml_text_value(xml_node, Elements.NAME)
-        self.implicit = get_xml_text_value(xml_node, Elements.IMPLICIT)
-        self.class_name = get_xml_text_value(xml_node, Elements.CLASS_NAME)
-        self.display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
-        self.uid = get_xml_text_value(xml_node, Elements.UID)
-        super().__init__(element)
-
-
-class AnyNetworkObject(NetworkObject):
-    """The class represents the any_network_object"""
-    class_identifier = Attributes.VIOLATION_ANY_NETWORK_OBJECT
-
-    def __init__(self, xml_node):
-        super().__init__(xml_node, xml_node.find('.').tag)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.VIOLATION_ANY_NETWORK_OBJECT)
-
-
-class HostNetworkObject(NetworkObject):
-    """The class represents the host_network_object"""
-    class_identifier = Attributes.HOST_NETWORK_OBJECT
-
-    def __init__(self, xml_node):
-        self.subnet_mask = get_xml_text_value(xml_node, Elements.SUBNET_MASK)
-        self.ip = get_xml_text_value(xml_node, Elements.IP)
-        super().__init__(xml_node, xml_node.find('.').tag)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.HOST_NETWORK_OBJECT)
-
-
-class SubnetNetworkObject(NetworkObject):
-    """The class represents the subnet_network_object"""
-    class_identifier = Attributes.SUBNET_NETWORK_OBJECT
-
-    def __init__(self, xml_node):
-        self.subnet_mask = get_xml_text_value(xml_node, Elements.SUBNET_MASK)
-        self.ip = get_xml_text_value(xml_node, Elements.IP)
-        super().__init__(xml_node, xml_node.find('.').tag)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.SUBNET_NETWORK_OBJECT)
-
-
-class VerifierService(XML_Object_Base, metaclass=SubclassWithIdentifierRegistry):
-    """Base class for parsing all services objects"""
-
-    @classmethod
-    def from_xml_node(cls, xml_node):
-        if xml_node is None:
-            return None
-        try:
-            verifier_type = xml_node.attrib[Attributes.XSI_NAMESPACE_TYPE]
-        except KeyError:
-            msg = 'XML node is missing the XSI attribute "{}"'.format(Attributes.XSI_NAMESPACE_TYPE)
-            logger.error(msg)
-            raise ValueError(msg)
-        else:
-            try:
-                return cls.registry[verifier_type](xml_node)
-            except KeyError:
-                logger.error('Unknown violation object type "{}"'.format(verifier_type))
-
-
-class Service(VerifierService):
-    """Base class for all sub type of the services objects"""
-
-    def __init__(self, xml_node, element):
-        self.version_id = get_xml_text_value(xml_node, Elements.VERSION_ID)
-        self.referenced = get_xml_text_value(xml_node, Elements.REFERENCED)
-        self.match_rule = get_xml_text_value(xml_node, Elements.MATCH_RULE)
-        self.id = get_xml_text_value(xml_node, Elements.ID)
-        self.device_id = get_xml_int_value(xml_node, Elements.DEVICE_ID)
-        self.admin_domain = AdminDomain(xml_node)
-        self.in_domain_element_id = get_xml_text_value(xml_node, Elements.INDOMAINELEMENTID)
-        self.global_el = Flat_XML_Object_Base(Elements.GLOBAL, None, get_xml_text_value(xml_node, Elements.GLOBAL))
-        self.origin = get_xml_text_value(xml_node, Elements.ORIGIN)
-        self.comment = get_xml_text_value(xml_node, Elements.COMMENT)
-        self.shared = get_xml_text_value(xml_node, Elements.SHARED)
-        self.name = get_xml_text_value(xml_node, Elements.NAME)
-        self.implicit = get_xml_text_value(xml_node, Elements.IMPLICIT)
-        self.class_name = get_xml_text_value(xml_node, Elements.CLASS_NAME)
-        self.display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
-        self.uid = get_xml_text_value(xml_node, Elements.UID)
-        super().__init__(element)
-
-
-class AnyService(Service):
-    """The class represents the any_service_object"""
-    class_identifier = Attributes.VIOLATION_ANY_SERVICE
-
-    def __init__(self, xml_node):
-        self.negate = get_xml_text_value(xml_node, Elements.NEGATE)
-        self.match_for_any = get_xml_text_value(xml_node, Elements.MATCH_FOR_ANY)
-        self.timeout = get_xml_text_value(xml_node, Elements.TIMEOUT)
-        self.min_protocol = get_xml_int_value(xml_node, Elements.MIN_PROTOCOL)
-        self.max_protocol = get_xml_int_value(xml_node, Elements.MAX_PROTOCOL)
-        super().__init__(xml_node, xml_node.find('.').tag)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.VIOLATION_ANY_SERVICE)
-
-
-class TransportService(Service):
-    """The class represents the transport_service_object"""
-    class_identifier = Attributes.TRANSPORT_SERVICE
-
-    def __init__(self, xml_node):
-        self.cp_inspect_streaming_name = get_xml_text_value(xml_node, Elements.CP_INSPECT_STREAMING_NAME)
-        self.min_protocol = get_xml_int_value(xml_node, Elements.MIN_PROTOCOL)
-        self.max_protocol = get_xml_int_value(xml_node, Elements.MAX_PROTOCOL)
-        self.protocol = get_xml_int_value(xml_node, Elements.PROTOCOL)
-        self.min_value_source = get_xml_int_value(xml_node, Elements.MIN_VALUE_SOURCE)
-        self.max_value_source = get_xml_int_value(xml_node, Elements.MAX_VALUE_SOURCE)
-        self.cp_prototype_name = get_xml_text_value(xml_node, Elements.CP_PROTOTYPE_NAME)
-        self.match_for_any = get_xml_text_value(xml_node, Elements.MATCH_FOR_ANY)
-        self.negate = get_xml_text_value(xml_node, Elements.NEGATE)
-        self.timeout = get_xml_text_value(xml_node, Elements.TIMEOUT)
-        super().__init__(xml_node, xml_node.find('.').tag)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.TRANSPORT_SERVICE)
-
-
-class Binding(XML_Object_Base, metaclass=SubclassWithIdentifierRegistry):
-    """Base Binding Class that handles all Binding sub Binding DTO parsing"""
-
-    @classmethod
-    def from_xml_node(cls, xml_node):
-        if xml_node is None:
-            return None
-        try:
-            binding_type = xml_node.attrib[Attributes.XSI_NAMESPACE_TYPE]
-        except KeyError:
-            msg = 'XML node is missing the XSI attribute "{}"'.format(Attributes.XSI_NAMESPACE_TYPE)
-            logger.error(msg)
-            raise ValueError(msg)
-        else:
-            try:
-                return cls.registry[binding_type](xml_node)
-            except KeyError:
-                logger.error('Unknown binding object type "{}"'.format(binding_type))
-
-    def get_binding_info(self):
-        raise NotImplemented
-
-
-class AclBinding(Binding):
-    """The class represents the acl_binding_object which is sub type of Binding_DTO"""
-    class_identifier = Attributes.ACL__BINDING
-
-    def __init__(self, xml_node):
-        self.acl_name = get_xml_text_value(xml_node, Elements.ACL_NAME)
-
-        self.incoming_interface_names = [node.text for node in xml_node.iter(Elements.INCOMING_INTERFACE_NAME)]
-        self.outgoing_interface_names = [node.text for node in xml_node.iter(Elements.OUTGOING_INTERFACE_NAME)]
-
-        super().__init__(Elements.BINDING)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.ACL__BINDING)
-
-    def get_binding_info(self):
-        print([attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")])
-        return {"acl_name": self.acl_name,
-                "incoming_interface_name": self.incoming_interface_name,
-                "outgoing_interface_name": self.outgoing_interface_name}
-
-
-class ZoneBinding(Binding):
-    """The class represents the zone_binding object which is sub type of Binding_DTO"""
-    class_identifier = Attributes.ZONE__BINDING
-
-    def __init__(self, xml_node):
-        self.from_zone = get_xml_text_value(xml_node, Elements.FROM_ZONE)
-        self.to_zone = get_xml_text_value(xml_node, Elements.TO_ZONE)
-        super().__init__(Elements.BINDING)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.ZONE__BINDING)
-
-    def get_binding_info(self):
-        return {"from_zone": self.from_zone,
-                "to_zone": self.to_zone
-                }
-
-
-class PolicyBinding(Binding):
-    class_identifier = Attributes.POLICY__BINDING
-
-    def __init__(self, xml_node):
-        self.policy_name = get_xml_text_value(xml_node, Elements.POLICY_NAME)
-        self.installed_on_module = get_xml_text_value(xml_node, Elements.INSTALLED_ON_MODULE)
-        super().__init__(Elements.BINDING)
-        self.set_attrib(Attributes.XSI_TYPE, Attributes.POLICY__BINDING)
-
-    def get_binding_info(self):
-        return {"policy_name": self.policy_name,
-                "installed_on_module": self.installed_on_module
-                }
-
-class PolicyZone(XML_Object_Base):
-    """The class represents the PolicyZoneDTO"""
-
-    def __init__(self, xml_node):
-        self.zone_name_in_parent = get_xml_text_value(xml_node, Elements.ZONE_NAME_IN_PARENT)
-        self.address_book = get_xml_text_value(xml_node, Elements.ADDRESS_BOOK)
-        self.version_id = get_xml_int_value(xml_node, Elements.VERSION_ID)
-        self.admin_domain = AdminDomain(xml_node)
-        self.global_el = Flat_XML_Object_Base(Elements.GLOBAL, None, get_xml_text_value(xml_node, Elements.GLOBAL))
-        self.name = get_xml_text_value(xml_node, Elements.NAME)
-        super().__init__(Elements.ZONE)
-
-
-class AdminDomain(XML_Object_Base):
-    """The class represents the AdminDomainDTO"""
-
-    def __init__(self, xml_node):
-        self.name = get_xml_text_value(xml_node, Elements.NAME)
-        self.uid = get_xml_text_value(xml_node, Elements.UID)
-        super().__init__(Elements.ADMIN_DOMAIN)

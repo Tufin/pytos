@@ -23,6 +23,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="Brocade">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Build server">
         <serverdata>
           <mappings>
@@ -38,6 +45,13 @@
         </serverdata>
       </paths>
       <paths name="Guy Machine">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Nir RnV">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -65,6 +79,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="USPS">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Vodafone">
         <serverdata>
           <mappings>
@@ -72,10 +93,17 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="pyTOS">
+      <paths name="ohaio - usps">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="pytos">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/pytos_github" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

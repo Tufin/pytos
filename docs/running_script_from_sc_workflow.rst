@@ -9,10 +9,10 @@ read the ticket info and copy a field from previous step:
 	import sys
 	import logging
 
-	from pytos.common.logging.Logger import setup_loggers
-	from pytos.common.functions.Config import Secure_Config_Parser
+	from pytos.common.logging.logger import setup_loggers
+	from pytos.common.functions.config import Secure_Config_Parser
 	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
-	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+	from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
 	src_step_name = "Source step name"

@@ -8,11 +8,11 @@ The following example shows how to approve ticket in SecureChange by using the A
 	import sys
 	import logging
 
-	from pytos.common.logging.Logger import setup_loggers
-	from pytos.common.functions.Config import Secure_Config_Parser
-	from pytos.common.definitions.XML_Tags import Attributes
+	from pytos.common.logging.logger import setup_loggers
+	from pytos.common.functions.config import Secure_Config_Parser
+	from pytos.common.definitions.xml_tags import Attributes
 	from pytos.securechange.helpers import Secure_Change_Helper, Secure_Change_API_Handler
-	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
+	from pytos.common.logging.definitions import COMMON_LOGGER_NAME
 
 	logger = logging.getLogger(COMMON_LOGGER_NAME)
 
@@ -44,7 +44,7 @@ The following example shows how to approve ticket in SecureChange by using the A
 		cli_args = get_cli_args()
 		conf = Secure_Config_Parser(config_file_path="/usr/local/etc/pytos.conf")
 		setup_loggers(conf.dict("log_levels"), log_to_stdout=cli_args.debug)
-		logger.info("Script called.")
+		logger.info("Script called")
 
 		ticket = sc_helper.get_ticket_by_id(cli_args.ticket_id)
 		approve_step(ticket)

@@ -55,21 +55,28 @@ class Test_Secure_App_Helper(unittest.TestCase):
                                 "false", app_owner, None, None, None, None, None, None)
         app_list = Applications_List([])
         app_list.append(valid_app)
+        app_id = self.helper.post_apps(valid_app)
+        self.assertEqual(app_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            app_id = self.helper.post_apps(valid_app)
+            try:
+                self.helper.post_apps(valid_app)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/',
                 auth=('username', 'password'),
                 data=app_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
-        self.assertEqual(app_id, 1)
 
     def test_02_get_app_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
         app = self.helper.get_app_by_name(self.app_name)
         assert isinstance(app, Application)
+        self.assertEqual(app.name, self.app_name)
+
 
     def test_03_failed_get_app_by_id(self):
         self.mock_uri.return_value.status_code = 404
@@ -88,7 +95,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
         app_list = Applications_List([])
         app_list.append(app)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.update_app(app)
+            try:
+                self.helper.update_app(app)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -105,16 +115,21 @@ class Test_Secure_App_Helper(unittest.TestCase):
                                  1025, None, None, "Comment for Service Number One", timeout=1)
         services_list = Services_List([])
         services_list.append(service)
+        service_id = self.helper.post_services(service)
+        self.assertEqual(service_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            service_id = self.helper.post_services(service)
+            try:
+                self.helper.post_services(service)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/services/',
                 auth=('username', 'password'),
                 data=services_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
-        self.assertEqual(service_id, 1)
 
     def test_06_get_service_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("services")
@@ -135,7 +150,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
         services_list = Services_List([])
         services_list.append(service)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.update_services(service)
+            try:
+                self.helper.update_services(service)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/secureapp/repository/services/"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -154,17 +172,22 @@ class Test_Secure_App_Helper(unittest.TestCase):
                                              "host", "5.4.3.2")
         network_objects_list = Network_Objects_List([])
         network_objects_list.append(network_object)
+        net_obj_id = self.helper.create_network_objects_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
+                                                                     network_object)
+        self.assertEqual(net_obj_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            net_obj_id = self.helper.create_network_objects_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE,
-                                                                         network_object)
+            try:
+                self.helper.create_network_objects_for_app_name(VALID_TEST_APP_NAME_AFTER_UPDATE, network_object)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects',
                 auth=('username', 'password'),
                 data=network_objects_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
-        self.assertEqual(net_obj_id, 1)
 
     def test_09_get_network_object_by_id_for_app_id(self):
         self.mock_uri.return_value.content = fake_request_response("network_objects")
@@ -178,8 +201,13 @@ class Test_Secure_App_Helper(unittest.TestCase):
         network_object.display_name = VALID_TEST_NETWORK_OBJECT_NAME_AFTER_UPDATE
         network_objects_list = Network_Objects_List([])
         network_objects_list.append(network_object)
+        result = self.helper.update_network_objects_for_app_id(self.app_id, network_object)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            result = self.helper.update_network_objects_for_app_id(self.app_id, network_object)
+            try:
+                self.helper.update_network_objects_for_app_id(self.app_id, network_object)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -188,7 +216,6 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 data=network_objects_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
     @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
     def test_11_create_connection(self, mock_app_obj):
@@ -201,18 +228,24 @@ class Test_Secure_App_Helper(unittest.TestCase):
                                                      [service], [network_object], "COMMENT", None, None)
         connection_list = Connection_List([])
         connection_list.append(connection)
+        self.mock_uri.return_value.headers = {'location': '1'}
+        self.mock_uri.return_value.status_code = 201
+        connection_id = self.helper.create_connections_for_app_name(self.app_name, connection)
+        self.assertEqual(connection_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            self.mock_uri.return_value.headers = {'location': '1'}
-            self.mock_uri.return_value.status_code = 201
-            connection_id = self.helper.create_connections_for_app_name(self.app_name, connection)
+            try:
+                self.helper.create_connections_for_app_name(self.app_name, connection)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections',
                 auth=('username', 'password'),
                 data=connection_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
-        self.assertEqual(connection_id, 1)
+
 
     def test_12_get_connection_by_name_for_app_id(self):
         self.mock_uri.return_value.content = fake_request_response("connections")
@@ -224,7 +257,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
         connection = self.helper.get_connection_by_name_for_app_id(self.app_id, VALID_TEST_CONNECTION_NAME)
         connection.name = VALID_TEST_CONNECTION_NAME_AFTER_UPDATE
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.update_connection_for_app_id(connection, app_id=self.app_id)
+            try:
+                self.helper.update_connection_for_app_id(connection, app_id=self.app_id)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/31"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -236,7 +272,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
 
     def test_14_delete_connection_by_id_for_app_id(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            self.helper.delete_connection_by_id_for_app_id(app_id=self.app_id, connection_id=31)
+            try:
+                self.helper.delete_connection_by_id_for_app_id(app_id=self.app_id, connection_id=31)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/31',
@@ -245,45 +284,59 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
 
     def test_15_delete_service_by_name(self):
+        result = self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            result = self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
+            try:
+                self.helper.delete_service_by_name(VALID_TEST_SERVICE_NAME_AFTER_UPDATE)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/services?name={}'.format(VALID_TEST_SERVICE_NAME_AFTER_UPDATE),
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
     def test_16_delete_app_by_id(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
         app = self.helper.get_app_by_name(self.app_name)
+        result = self.helper.delete_app_by_id(app.id)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            result = self.helper.delete_app_by_id(app.id)
+            try:
+                self.helper.delete_app_by_id(app.id)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/{}'.format(app.id),
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
     def test_17_create_user(self):
         user = User("Test User", None, None, 'username', "local", "1.2.3.4")
         users_list = User_List([])
         users_list.append(user)
+        self.mock_uri.return_value.headers = {'location': '1'}
+        self.mock_uri.return_value.status_code = 201
+        user_id = self.helper.create_users(user)
+        self.assertEqual(user_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            self.mock_uri.return_value.headers = {'location': '1'}
-            self.mock_uri.return_value.status_code = 201
-            user_id = self.helper.create_users(user)
+            try:
+                self.helper.create_users(user)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/users/',
                 auth=('username', 'password'),
                 data=users_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
-        self.assertEqual(user_id, 1)
+
 
     def test_18_get_user_list(self):
         self.mock_uri.return_value.content = fake_request_response("users")
@@ -291,15 +344,19 @@ class Test_Secure_App_Helper(unittest.TestCase):
         self.assertIsInstance(users_list, User_List)
 
     def test_19_delete_user_by_id(self):
+        result = self.helper.delete_user_by_id(55)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            result = self.helper.delete_user_by_id(55)
+            try:
+                self.helper.delete_user_by_id(55)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/users/55',
                 auth=('username', 'password'),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
 
 if __name__ == '__main__':
