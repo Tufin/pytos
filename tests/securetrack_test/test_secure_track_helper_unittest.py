@@ -13,10 +13,12 @@ from pytos.common.exceptions import REST_Bad_Request_Error, REST_Not_Found_Error
 from pytos.securetrack.xml_objects.rest import security_policy
 from pytos.securetrack.xml_objects.rest.device import Device_Revision, Device, Devices_List, RuleSearchDeviceList, \
     Device_Revisions_List
+from pytos.securetrack.xml_objects.rest.nat_rules import NatRules
 from pytos.securetrack.xml_objects.rest.rules import Rule_Documentation, Record_Set, Bindings_List, \
     Interfaces_List, Cleanup_Set, Rules_List, Network_Objects_List, Policy_Analysis_Query_Result, \
     SecurityPolicyDeviceViolations, Policy_List, Topology_Interfaces_List, Services_List
 from pytos.securetrack.xml_objects.rest.security_policy import Security_Policies_List, Security_Policy
+from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults
 from pytos.securetrack.xml_objects.rest.zones import Zone_List, Zone, Zone_Entry, ZoneDescendantsList
 
 
@@ -205,6 +207,11 @@ class TestRules(unittest.TestCase):
         network_objects = self.helper.network_object_text_search("81.81.81.5", "any_field")
         self.assertIsInstance(network_objects, Network_Objects_List)
 
+    def test_14_get_nat_rules_by_device_id(self):
+        self.mock_get_uri.return_value.content = fake_request_response("nats")
+        nats = self.helper.get_nat_rules_by_device_id("156")
+        self.assertIsInstance(nats, NatRules)
+
 
 class TestZonesPoliciesAndRevisions(unittest.TestCase):
     def setUp(self):
@@ -233,9 +240,12 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         dst_tree.getroottree().write_c14n(dst_b)
         self.assertEqual(src_b.getvalue(), dst_b.getvalue())
 
-    def test_03_post_security_policy_matrix(self):
+    @patch('pytos.securetrack.helpers.Secure_Track_Helper.get_zones')
+    def test_03_post_security_policy_matrix(self, mock_obj):
         self.mock_get_uri.return_value.headers = {'location': '1'}
+        self.mock_get_uri.return_value.status_code = 201
         self.mock_get_uri.return_value.content = fake_request_response("zones")
+        mock_obj.return_value = Zone_List.from_xml_string(fake_request_response("zones").decode())
         security_policy_name = 'Some Policy Name'
         security_policy = {
             'internal': {
@@ -272,18 +282,30 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.status_code = 201
         zone_entry = Zone_Entry(1234, "Description", "1.1.1.1", 0, '255.255.255.255', 36)
+        entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
+        self.assertEqual(entry_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            entry_id = self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
-            self.assertEqual(entry_id, 1)
-            mock_post_uri.assert_called_with('POST',
-                                             'https://localhost/securetrack/api/zones/36/entries?context=1',
-                                              auth=('username', 'password'),
-                                              data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
+            try:
+                self.helper.post_zone_entry(zone_entry.zoneId, zone_entry)
+            except OSError:
+                pass
+            mock_post_uri.assert_called_with(
+                'POST',
+                'https://localhost/securetrack/api/zones/36/entries?context=1',
+                auth=('username', 'password'),
+                data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>',
+                headers={'Content-Type': 'application/xml'},
+                files=None
+            )
 
     def test_05_delete_zone_entry(self):
+        result = self.helper.delete_zone_entry_by_zone_and_entry_id(1, 1)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            result = self.helper.delete_zone_entry_by_zone_and_entry_id(1, 1)
-            self.assertTrue(result)
+            try:
+                result = self.helper.delete_zone_entry_by_zone_and_entry_id(1, 1)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with('DELETE',
                                              'https://localhost/securetrack/api/zones/1/entries/1?context=1',
                                              auth=('username', 'password'),
@@ -297,9 +319,13 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         zone_entry.ip = '101.101.101.101'
         zone_entry.negate = 0
         zone_entry.netmask = '255.255.255.255'
+        result = self.helper.put_zone_entry(13, zone_entry)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            result = self.helper.put_zone_entry(13, zone_entry)
-            self.assertTrue(result)
+            try:
+                result = self.helper.put_zone_entry(13, zone_entry)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with('PUT',
                                              'https://localhost/securetrack/api/zones/13/entries/54?context=1',
                                              auth=('username', 'password'),
@@ -339,9 +365,13 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertEqual(policy.id, 3)
 
     def test_13_delete_security_policy_matrix(self):
+        result = self.helper.delete_security_policy_matrix(3)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            result = self.helper.delete_security_policy_matrix(3)
-            self.assertTrue(result)
+            try:
+                result = self.helper.delete_security_policy_matrix(3)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with('DELETE',
                                              'https://localhost/securetrack/api/security_policies/3',
                                              auth=('username', 'password'),
@@ -369,18 +399,25 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         xml = fake_request_response("exception")
         policy_exception = security_policy.Security_Policy_Exception.from_xml_string(xml.decode("utf-8"))
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            self.helper.post_security_policy_exception(policy_exception)
+            try:
+                self.helper.post_security_policy_exception(policy_exception)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securetrack/api/security_policies/exceptions/?context=1',
                 auth=('username', 'password'),
                 data=policy_exception.to_xml_string(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                files=None
             )
 
     def test_18_delete_zone_by_zone_id(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            self.helper.delete_zone_by_zone_id(1, True)
+            try:
+                self.helper.delete_zone_by_zone_id(1, True)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securetrack/api/zones/1',
@@ -395,7 +432,10 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
 
     def test_20_delete_security_policy_exception(self):
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
-            self.helper.delete_security_policy_exception(1)
+            try:
+                self.helper.delete_security_policy_exception(1)
+            except OSError:
+                pass
             mock_delete_uri.assert_called_with(
                 'DELETE',
                 'https://localhost/securetrack/api/security_policies/exceptions/1',
@@ -414,16 +454,21 @@ class TestTopology(unittest.TestCase):
     def tearDown(self):
         self.patcher.stop()
 
-    def test_03_get_topology_interfaces(self):
+    def test_01_get_topology_interfaces(self):
         self.mock_get_uri.return_value.content = fake_request_response("interfaces")
         topology_interfaces_list = self.helper.get_topology_interfaces(173)
         self.assertIsInstance(topology_interfaces_list, Topology_Interfaces_List)
 
-    def test_03_failed_to_get_topology_interfaces(self):
+    def test_02_failed_to_get_topology_interfaces(self):
         self.mock_get_uri.return_value.content = fake_request_response("bad_request_error")
         self.mock_get_uri.return_value.status_code = 400
         with self.assertRaises(REST_Bad_Request_Error):
             self.helper.get_topology_interfaces(173)
+
+    def test_03_get_topology_path(self):
+        self.mock_get_uri.return_value.content = fake_request_response("path")
+        topology_path = self.helper.get_topology_path(None, None, None)
+        self.assertIsInstance(topology_path, PathCalculationResults)
 
 
 class TestDomains(unittest.TestCase):
@@ -445,7 +490,10 @@ class TestDomains(unittest.TestCase):
     def test_02_get_domain_by_id(self, mock_domain):
         mock_domain.return_value = Domain(1, 'default')
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            self.helper.get_domain_by_id(1)
+            try:
+                self.helper.get_domain_by_id(1)
+            except ValueError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/domains/1',
@@ -472,8 +520,13 @@ class TestNetworkObjects(unittest.TestCase):
 
     def test_02_network_object_text_search(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
+        network_objects = self.helper.network_object_text_search("192.168", "any_field")
+        self.assertIsInstance(network_objects, Network_Objects_List)
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            network_objects = self.helper.network_object_text_search("192.168", "any_field")
+            try:
+                network_objects = self.helper.network_object_text_search("192.168", "any_field")
+            except OSError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.168',
@@ -481,12 +534,14 @@ class TestNetworkObjects(unittest.TestCase):
                 headers={},
                 params=None
             )
-        self.assertIsInstance(network_objects, Network_Objects_List)
 
     def test_03_network_object_subnet_search(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
+            try:
+                network_objects = self.helper.network_object_subnet_search("192.168.0.0", "contained_in")
+            except OSError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/network_objects/search?filter=subnet&contained_in=192.168.0.0',
@@ -503,7 +558,10 @@ class TestNetworkObjects(unittest.TestCase):
     def test_04_get_network_object_by_device_and_object_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            network_object = self.helper.get_network_object_by_device_and_object_id(158, 3418214)
+            try:
+                network_object = self.helper.get_network_object_by_device_and_object_id(158, 3418214)
+            except OSError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/devices/158/network_objects/3418214',
@@ -537,7 +595,10 @@ class TestServices(unittest.TestCase):
     def test_02_get_service_for_device_by_name(self):
         self.mock_get_uri.return_value.content = fake_request_response("services")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            service = self.helper.get_service_for_device_by_name(158, 'service1')
+            try:
+                service = self.helper.get_service_for_device_by_name(158, 'service1')
+            except OSError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/devices/158/services?name=service1',
@@ -549,7 +610,10 @@ class TestServices(unittest.TestCase):
     def test_03_get_service_by_device_and_object_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("services")
         with patch('pytos.common.rest_requests.requests.Request') as mock_get_uri:
-            service = self.helper.get_service_by_device_and_object_id(158, 17973529)
+            try:
+                service = self.helper.get_service_by_device_and_object_id(158, 17973529)
+            except OSError:
+                pass
             mock_get_uri.assert_called_with(
                 'GET',
                 'https://localhost/securetrack/api/devices/158/services/17973529',

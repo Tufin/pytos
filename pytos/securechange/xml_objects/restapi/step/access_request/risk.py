@@ -1,5 +1,7 @@
 
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
+from pytos.securechange.xml_objects.restapi.step.access_request.analysisresult import Analysis_Result
+from pytos.common.definitions import xml_tags
 
 logger = logging.getLogger(XML_LOGGER_NAME)
 
@@ -238,9 +240,17 @@ class ViolationNetworkObject(XML_Object_Base, metaclass=ViolationNetworkObjectMe
         try:
             violation_type = xml_node.attrib[Attributes.XSI_NAMESPACE_TYPE]
         except KeyError:
-            msg = 'XML node is missing the XSI attribute "{}"'.format(Attributes.XSI_NAMESPACE_TYPE)
-            logger.error(msg)
-            raise ValueError(msg)
+            try:
+                object_type = xml_node.attrib[xml_tags.TYPE_ATTRIB]
+            except KeyError:
+                # a workaround a bug. Some object types (such as Internet) have no xsi:type or type.
+                # Checking these based on their "name" tag
+                if xml_node.find('name').text.lower() == Attributes.INTERNET.lower():
+                    return cls.registry[xml_node.tag][Attributes.INTERNET].from_xml_node(xml_node)
+                else:
+                    msg = 'XML node is missing the XSI attribute "{}"'.format(Attributes.XSI_NAMESPACE_TYPE)
+                    logger.error(msg)
+                    raise ValueError(msg)
         else:
             try:
                 return cls.registry[xml_node.tag][violation_type].from_xml_node(xml_node)

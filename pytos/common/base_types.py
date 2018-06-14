@@ -1,4 +1,3 @@
-
 import codecs
 import logging
 import socket
@@ -174,11 +173,11 @@ class XML_List(XML_Base):
                         raise KeyError(message)
                 try:
                     list_data.append(type_to_class_dict[type_attribute].from_xml_node(child_node))
-                except KeyError as error:
+                except KeyError:
                     if default_class:
                         list_data.append(default_class.from_xml_node(child_node))
                     else:
-                        raise error
+                        logger.critical("Unknown element '{}'. Skipping it.".format(type_attribute))
 
         return cls(list_element_name, list_data)
 

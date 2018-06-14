@@ -37,16 +37,21 @@ class TestSecureChangeHelper(unittest.TestCase):
         sub_resources_dir = sys._getframe(1).f_locals['self'].__class__.__name__.lower()
         resource_file = os.path.join(full_path, "resources", sub_resources_dir, "{}.xml".format('new_ticket'))
         ticket_obj = self.helper.read_ticket_template(resource_file)
+        ticket_id = self.helper.post_ticket(ticket_obj)
+        self.assertEqual(ticket_id, 1)
         with patch('pytos.common.rest_requests.requests.Request') as mock_post_uri:
-            ticket_id = self.helper.post_ticket(ticket_obj)
+            try:
+                ticket_id = self.helper.post_ticket(ticket_obj)
+            except OSError:
+                pass
             mock_post_uri.assert_called_with(
                 'POST',
                 'https://localhost/securechangeworkflow/api/securechange/tickets/',
                 auth=('username', 'password'),
                 data=ticket_obj.to_xml_string().encode(),
+                files=None,
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertEqual(ticket_id, 1)
 
     def test_02_get_ticket(self):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
@@ -59,7 +64,10 @@ class TestSecureChangeHelper(unittest.TestCase):
         step_task_obj = ticket.get_current_task()
         target_task_id = ticket.get_previous_step()
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.redo_step(step_task_obj, target_task_id, 'Redoing step')
+            try:
+                self.helper.redo_step(step_task_obj, target_task_id, 'Redoing step')
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/redo/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -86,7 +94,10 @@ class TestSecureChangeHelper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_current_task()
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
+            try:
+                self.helper.reassign_task(step_task_obj, self.user_id, 'Reassign message')
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/reassign/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -99,7 +110,10 @@ class TestSecureChangeHelper(unittest.TestCase):
     def test_07_change_requester(self):
         requester_id = 3
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.change_requester(self.ticket_id, requester_id, 'Modify requester')
+            try:
+                self.helper.change_requester(self.ticket_id, requester_id, 'Modify requester')
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/change_requester/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -112,7 +126,10 @@ class TestSecureChangeHelper(unittest.TestCase):
     def test_08_cancel_ticket_with_requester(self):
         requester_id = 3
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            self.helper.cancel_ticket(self.ticket_id, requester_id)
+            try:
+                self.helper.cancel_ticket(self.ticket_id, requester_id)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/cancel?requester_id={}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -128,8 +145,13 @@ class TestSecureChangeHelper(unittest.TestCase):
         last_task = ticket.get_last_task()
         text_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TEXT)[0]
         text_field.text = "new text"
+        result = self.helper.put_task(last_task)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            result = self.helper.put_task(last_task)
+            try:
+                result = self.helper.put_task(last_task)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -138,7 +160,6 @@ class TestSecureChangeHelper(unittest.TestCase):
                 data=last_task.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
     def test_10_put_field(self):
         self.mock_get_uri.return_value.content = fake_request_response("ticket")
@@ -146,8 +167,13 @@ class TestSecureChangeHelper(unittest.TestCase):
         last_task = ticket.get_last_task()
         text_field = last_task.get_field_list_by_type(xml_tags.Attributes.FIELD_TYPE_TEXT)[0]
         text_field.text = "new text"
+        result = self.helper.put_field(text_field)
+        self.assertTrue(result)
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
-            result = self.helper.put_field(text_field)
+            try:
+                result = self.helper.put_field(text_field)
+            except OSError:
+                pass
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/fields/{}"
             mock_put_uri.assert_called_with(
                 'PUT',
@@ -156,7 +182,6 @@ class TestSecureChangeHelper(unittest.TestCase):
                 data=text_field.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'}
             )
-        self.assertTrue(result)
 
     def test_11_get_user_by_username(self):
         self.mock_get_uri.return_value.content = fake_request_response("users")
@@ -203,8 +228,13 @@ class TestSecureChangeHelper(unittest.TestCase):
         ticket = self.helper.get_ticket_by_id(self.ticket_id)
         step_task_obj = ticket.get_step_by_id(step_id).get_last_task()
         self.mock_get_uri.return_value.content = fake_request_response("verifier_results")
+        verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+        self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
         with patch('pytos.common.rest_requests.requests.Request') as mock_uri:
-            verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+            try:
+                verifier_result = self.helper.get_verifier_results(self.ticket_id, step_id, step_task_obj.id, ar_id)
+            except OSError:
+                pass # we don't need to continue to the session.send function. The mock object doesn't contain the request parameters such as url
             url = "https://localhost/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/multi_access_request/{}/verifier"
             mock_uri.assert_called_with(
                 'GET',
@@ -213,7 +243,11 @@ class TestSecureChangeHelper(unittest.TestCase):
                 headers={},
                 params=None
             )
-        self.assertIsInstance(verifier_result, AccessRequestVerifierResult)
+
+    def test_18_get_server_decomm_ticket(self):
+        self.mock_get_uri.return_value.content = fake_request_response("server_decomm_ticket")
+        server_decomm_ticket = self.helper.get_ticket_by_id(self.ticket_id)
+        self.assertIsInstance(server_decomm_ticket, Ticket)
 
 
 if __name__ == '__main__':

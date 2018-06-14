@@ -105,6 +105,10 @@ class REST_Request(object):
         else:
             self.session = session
 
+        proxies = kwargs.get("proxies")
+        if proxies is not None:
+            self.session.proxies = proxies
+
         self.hostname = hostname
 
         uri_length = len(uri)
@@ -335,9 +339,12 @@ class GET_Request(REST_Request):
         """
         super().__init__(hostname, uri, protocol, **kwargs)
         logger.info("Sending GET request to '%s'", self.url)
-        request_obj = requests.Request("GET", self.url, auth=self.auth_tuple, headers=self.headers,
-                                       params=kwargs.get("params"))
-        self.request = request_obj.prepare()
+        request_obj = requests.Request("GET", self.url, auth=self.auth_tuple,
+                                       params=kwargs.get("params"), headers=self.headers)
+        if self.session:
+            self.request = self.session.prepare_request(request_obj)
+        else:
+            self.request = request_obj.prepare()
         self._perform_request()
 
 
@@ -368,6 +375,8 @@ class POST_Request(REST_Request):
         # Handle parameters in dict form
         params = kwargs.get("params")
 
+        # Handle files
+        files = kwargs.get("files")
 
         # Handle multi part params
         multi_part_form_params = kwargs.get("multi_part_form_params")
@@ -383,7 +392,8 @@ class POST_Request(REST_Request):
             multi_part_form = requests_toolbelt.MultipartEncoder(fields=multi_part_form_params)
             self.headers["Content-Type"] = multi_part_form.content_type
             self.body = multi_part_form.to_string()
-            self.headers["Content-Size"] = str(multi_part_form.len)
+            multi_part_form_length = str(multi_part_form.len) if hasattr(multi_part_form, 'len') else len(multi_part_form)
+            self.headers["Content-Size"] = multi_part_form_length
             self.headers["Accept"] = "*/*"
         else:
             if params is not None:
@@ -397,8 +407,12 @@ class POST_Request(REST_Request):
                     self.headers["Content-Type"] = "application/xml"
 
         logger.info("Sending POST request to '%s'", self.url)
-        request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
-        self.request = request_obj.prepare()
+        request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers,
+                                       files=files)
+        if self.session:
+            self.request = self.session.prepare_request(request_obj)
+        else:
+            self.request = request_obj.prepare()
         self._perform_request()
 
 
@@ -438,7 +452,10 @@ class PUT_Request(REST_Request):
                     self.headers["Content-Type"] = "application/xml"
         logger.info("Sending PUT request to '%s'", self.url)
         request_obj = requests.Request("PUT", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
-        self.request = request_obj.prepare()
+        if self.session:
+            self.request = self.session.prepare_request(request_obj)
+        else:
+            self.request = request_obj.prepare()
         self._perform_request()
 
 
@@ -462,5 +479,8 @@ class DELETE_Request(REST_Request):
                 self.headers["Content-Type"] = "application/xml"
         logger.info("Sending DELETE request to '%s'", self.url)
         request_obj = requests.Request("DELETE", self.url, auth=self.auth_tuple, headers=self.headers)
-        self.request = request_obj.prepare()
+        if self.session:
+            self.request = self.session.prepare_request(request_obj)
+        else:
+            self.request = request_obj.prepare()
         self._perform_request()
