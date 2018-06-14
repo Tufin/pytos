@@ -252,7 +252,7 @@ class Device_Revision(XML_Object_Base):
                    revision_id, modules_and_policy, policy_package, ready,ticket)
 
     def is_authorized(self):
-        return self.authorizationStatus == AUTHORIZED_STATUS
+        return self.authorizationStatus == Device_Revision.AUTHORIZED_STATUS
 
     def is_ready(self):
         return str_to_bool(self.ready)
