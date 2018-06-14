@@ -197,14 +197,17 @@ class Device_Revisions_List(XML_List):
 
 
 class Device_Revision(XML_Object_Base):
+    # TODO: These should probably be removed or fixed, they are no longer valid
     AUTHORIZED_STATUSES = ("AUTOMATICALLY_AUTHORIZED", "MANUALLY_AUTHORIZED")
     UNAUTHORIZED_STATUSES = ("AUTOMATICALLY_UNAUTHORIZED", "MANUALLY_UNAUTHORIZED")
     OTHER_STATUSES = ("N_A", "CALCULATING", "ERROR", "PENDING")
+
+    AUTHORIZED_STATUS = "authorized"
     REVISION_DATE_FORMAT_STRING = "%Y-%m-%d"
     REVISION_TIME_FORMAT_STRING = "%H:%M:%S.%f"
 
     def __init__(self, action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
-                 revision_id, modules_and_policy, policy_package, ready):
+                 revision_id, modules_and_policy, policy_package, ready, tickets):
         self.action = action
         self.admin = admin
         self.auditLog = auditLog
@@ -217,6 +220,7 @@ class Device_Revision(XML_Object_Base):
         self.revisionId = revision_id
         self.time = revision_time
         self.ready = ready
+        self.tickets = tickets
         super().__init__(xml_tags.Elements.REVISION)
 
     @classmethod
@@ -238,11 +242,17 @@ class Device_Revision(XML_Object_Base):
         revision_id = get_xml_int_value(xml_node, xml_tags.Elements.REVISIONID)
         revision_time = get_xml_text_value(xml_node, xml_tags.Elements.TIME)
         ready = get_xml_text_value(xml_node, xml_tags.Elements.READY)
+        ticket = []
+        for ticket_node in xml_node.iter(tag=xml_tags.Elements.TICKET):
+               ticket_obj = Device_Revision_Ticket.from_xml_node(ticket_node)
+               ticket.append(ticket_obj)	
+
+
         return cls(action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
-                   revision_id, modules_and_policy, policy_package, ready)
+                   revision_id, modules_and_policy, policy_package, ready,ticket)
 
     def is_authorized(self):
-        return self.authorizationStatus in Device_Revision.AUTHORIZED_STATUSES
+        return self.authorizationStatus == AUTHORIZED_STATUS
 
     def is_ready(self):
         return str_to_bool(self.ready)
@@ -266,7 +276,18 @@ class Device_Revision(XML_Object_Base):
             logger.error("Could not parse date time '{}' using format string '{}'".format(datetime_str, datetime_frmt))
             raise error
 
-
+class Device_Revision_Ticket (XML_Object_Base):
+    """ Ticket object for device revision"""
+    def __init__(self, ticket_id, source):
+        self.id = ticket_id
+        self.source = source
+        super().__init__(xml_tags.Elements.TICKET)
+        
+    @classmethod
+    def from_xml_node(cls,xml_node):
+        ticket_id = get_xml_int_value(xml_node,xml_tags.Elements.ID)
+        source = get_xml_text_value(xml_node,xml_tags.Elements.SOURCE)
+        return cls(ticket_id,source)
 
 class RuleSearchDevice(XML_Object_Base):
     """Device object that return from rule_search API based on the rule documentation"""
