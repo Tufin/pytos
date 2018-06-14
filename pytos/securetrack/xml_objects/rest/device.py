@@ -215,17 +215,16 @@ class Module_And_Policy(XML_Object_Base):
 
 
 class Device_Revision(XML_Object_Base):
-    # TODO: These should probably be removed or fixed, they are no longer valid
-    AUTHORIZED_STATUSES = ("AUTOMATICALLY_AUTHORIZED", "MANUALLY_AUTHORIZED")
-    UNAUTHORIZED_STATUSES = ("AUTOMATICALLY_UNAUTHORIZED", "MANUALLY_UNAUTHORIZED")
+    
+    AUTHORIZED_STATUSES = ("AUTOMATICALLY_AUTHORIZED", "MANUALLY_AUTHORIZED","authorized")
+    UNAUTHORIZED_STATUSES = ("AUTOMATICALLY_UNAUTHORIZED", "MANUALLY_UNAUTHORIZED","unauthorized")
     OTHER_STATUSES = ("N_A", "CALCULATING", "ERROR", "PENDING")
 
-    AUTHORIZED_STATUS = "authorized"
     REVISION_DATE_FORMAT_STRING = "%Y-%m-%d"
     REVISION_TIME_FORMAT_STRING = "%H:%M:%S.%f"
 
     def __init__(self, action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
-                 revision_id, modules_and_policy, policy_package, ready, tickets):
+                 revision_id, modules_and_policy, policy_package, ready, tickets=None):
         self.action = action
         self.admin = admin
         self.auditLog = auditLog
@@ -276,7 +275,7 @@ class Device_Revision(XML_Object_Base):
                    revision_id, modules_and_policy, policy_package, ready,ticket)
 
     def is_authorized(self):
-        return self.authorizationStatus == Device_Revision.AUTHORIZED_STATUS
+        return self.authorizationStatus in Device_Revision.AUTHORIZED_STATUSES
 
     def is_ready(self):
         return str_to_bool(self.ready)
