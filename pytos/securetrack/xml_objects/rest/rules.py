@@ -1002,7 +1002,7 @@ class Subnet_Network_Object(Network_Object):
         return "{}/{}".format(self.ip, self.netmask)
 
     def as_netaddr_obj(self):
-        return netaddr.IPNetwork("{}/{}".format(self.ip, '.'.join(int(o) for o in self.netmask.split('.'))))
+        return netaddr.IPNetwork("{}/{}".format(self.ip, '.'.join(str(int(o)) for o in self.netmask.split('.'))))
 
 
 class Base_Network_Object(Network_Object):
