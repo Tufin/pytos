@@ -871,7 +871,7 @@ class Range_Network_Object(Network_Object):
         return "{}-{}".format(self.first_ip, self.last_ip)
 
     def as_netaddr_obj(self):
-        return netaddr.IPRange(self.first_ip, self.last_ip)
+        return netaddr.IPRange(self.first_ip, self.last_ip, flags=netaddr.ZEROFILL)
 
 
 class Host_Network_Object(Network_Object):
@@ -1002,7 +1002,7 @@ class Subnet_Network_Object(Network_Object):
         return "{}/{}".format(self.ip, self.netmask)
 
     def as_netaddr_obj(self):
-        return netaddr.IPNetwork("{}/{}".format(self.ip, self.netmask))
+        return netaddr.IPNetwork("{}/{}".format(self.ip, '.'.join(str(int(o)) for o in self.netmask.split('.'))))
 
 
 class Base_Network_Object(Network_Object):
@@ -1972,7 +1972,7 @@ class TrafficRange(XML_Object_Base):
         if self.src.from_ == self.src.to:
             src = netaddr.IPNetwork(self.src.from_)
         else:
-            src = netaddr.IPRange(self.src.from_, self.src.to)
+            src = netaddr.IPRange(self.src.from_, self.src.to, flags=netaddr.ZEROFILL)
         return src
 
     def as_netaddr_set(self):

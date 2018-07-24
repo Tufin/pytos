@@ -138,7 +138,7 @@ def get_ip_subnets(ip):
         return [netaddr.IPNetwork(ip)]
     elif "-" in ip:
         start_ip, end_ip = ip.split("-")
-        ip_set_object = netaddr.IPSet(netaddr.IPRange(start_ip, end_ip))
+        ip_set_object = netaddr.IPSet(netaddr.IPRange(start_ip, end_ip, flags=netaddr.ZEROFILL))
         return [address for address in ip_set_object.iter_cidrs()]
     else:
         if is_ipv4_string(ip):
