@@ -1970,7 +1970,7 @@ class TrafficRange(XML_Object_Base):
 
     def as_netaddr_obj(self):
         if self.src.from_ == self.src.to:
-            src = netaddr.IPNetwork(self.src.from_)
+            src = netaddr.IPNetwork(self.src.from_, flags=netaddr.ZEROFILL)
         else:
             src = netaddr.IPRange(self.src.from_, self.src.to, flags=netaddr.ZEROFILL)
         return src
