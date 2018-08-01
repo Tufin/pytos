@@ -3,8 +3,9 @@ CHANGES
 =======
 
 1.0.1
-* Fixed a bug that causes issues with as_netaddr_obj() for Fortinet network objects
+=====
 
+* Fixed a bug that causes issues with as_netaddr_obj() for Fortinet network objects
 
 1.0.0
 =====
