@@ -1,4 +1,4 @@
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
 from pytos.securechange.xml_objects.restapi.step.step import AbsNetwork, AbsService, Binding
 
 logger = logging.getLogger(XML_LOGGER_NAME)

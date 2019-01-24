@@ -1,5 +1,5 @@
 
-from pytos.securechange.xml_objects.restapi.step.access_request.initialize import *
+from pytos.securechange.xml_objects.restapi.step.initialize import *
 from pytos.securechange.xml_objects.restapi.step.access_request.analysisresult import Analysis_Result
 from pytos.common.definitions import xml_tags
 

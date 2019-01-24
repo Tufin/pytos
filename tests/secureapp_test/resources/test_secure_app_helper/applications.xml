@@ -7,7 +7,7 @@
         <decommissioned>false</decommissioned>
         <owner>
             <id>3</id>
-            <display_name>Tzachi Gratziani</display_name>
+            <display_name>Joe Dow</display_name>
             <name>tzachi</name>
             <link href="https://localhost/securechangeworkflow/api/securechange/users/3"/>
         </owner>
@@ -38,6 +38,40 @@
                 <link href="https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/32"/>
             </connection>
         </connections>
+        <connection_to_application_packs/>
+    </application>
+    <application>
+        <id>18</id>
+        <name>test2</name>
+        <comment/>
+        <decommissioned>false</decommissioned>
+        <owner>
+            <id>3</id>
+            <display_name>Joe Dow</display_name>
+            <name>tzachi</name>
+            <link href="https://localhost/securechangeworkflow/api/securechange/users/3"/>
+        </owner>
+        <editors>
+            <editor>
+                <id>11</id>
+                <display_name>Joe Dow</display_name>
+                <name>adam</name>
+                <link href="https://localhost/securechangeworkflow/api/securechange/users/11"/>
+            </editor>
+        </editors>
+        <viewers/>
+        <created>2017-10-24T00:31:12.217+03:00</created>
+        <modified>2017-11-04T09:05:57.425+02:00</modified>
+        <open_tickets/>
+        <customer>
+            <id>1</id>
+            <display_name>Default</display_name>
+            <name>Default</name>
+            <link href="https://localhost/securechangeworkflow/api/secureapp/customers/1"/>
+        </customer>
+        <status>NOT_APPLICABLE</status>
+        <vendors/>
+        <connections/>
         <connection_to_application_packs/>
     </application>
 </applications>

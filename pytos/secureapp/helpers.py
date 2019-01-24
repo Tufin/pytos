@@ -134,13 +134,12 @@ class Secure_App_Helper(Secure_Change_Helper):
         try:
             if app_domain:
                 try:
-                    return [app for app in found_apps if app.customer.name.lower() == app_domain.lower()][0]
+                    return [app for app in found_apps if app.customer.name.lower() == app_domain.lower() and app.name == app_name][0]
                 except (KeyError, AttributeError):
                     logger.info("No domain found, assuming single domain mode")
-                    return found_apps[0]
-
+                    return [app for app in found_apps if app.name == app_name][0]
             else:
-                return found_apps[0]
+                return [app for app in found_apps if app.name == app_name][0]
         except IndexError:
             message = "An application with the name '{}' does not exist.".format(app_name)
             logger.critical(message)

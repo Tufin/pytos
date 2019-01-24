@@ -2,20 +2,23 @@
 CHANGES
 =======
 
+1.0.1
+* Fixed a bug that causes issues with as_netaddr_obj() for Fortinet network objects
+
+
 1.0.0
 =====
 
-* New elements and new attributes
 * Added method to get file via SFTP
-* File can be sent via POST
+* Added file to POST
 * Added more attributes to the designer instructions
-* Added rule and server decomission
-* NAT rules
-* UID parameter was added to Base_Object
+* Added rule and server decommission
+* Added NAT rules
+* Added UID parameter to Base_Object
 * Added pagination to rule search
 * Added more parameters to the get services and get network objects methods
-* New helpers get_topology_path and get_nat_rules_by_device_id
-* Bugs fix
+* Added new helper get_topology_path and get_nat_rules_by_device_id
+* Bugs correction
 
 0.0.3
 =====

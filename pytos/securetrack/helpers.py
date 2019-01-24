@@ -330,6 +330,21 @@ class Secure_Track_Helper(Secure_API_Helper):
             logger.error(message)
             raise ValueError(message)
 
+        # FIXME: Workaround because of the bug, API ignores domain ID and needs domain name
+        # FIXME: BUG was fixed, keeping it for backward compatability
+        if domain_id:
+            if domain_name:
+                logger.debug("Both domain name and ID are passed to function, using ID and ignoring name")
+            try:
+                domain_name = self.get_domain_by_id(domain_id).name
+            except (ValueError, IOError, REST_HTTP_Exception, AttributeError) as error:
+                logger.debug("Failed to get domain with ID {} for new device, setting to default. Error: {}".format(
+                             domain_id, error))
+                domain_name = "Default"
+
+        if not domain_id and not domain_name:
+            domain_name = "Default"
+
         device = Device(model, vendor, domain_id, domain_name, None, name, offline, topology)
         try:
             response = self.post_uri("/securetrack/api/devices/", device.to_xml_string(), expected_status_codes=201)
@@ -341,6 +356,34 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise IOError(message)
         except REST_Bad_Request_Error as http_exception:
             message = "Could not create device, got error: '{}'".format(http_exception)
+            logger.critical(message)
+            raise ValueError(message)
+
+    def update_offline_device(self, device):
+        """Add an offline device to SecureTrack.
+
+        :param device: The device object to be sent
+        :type device: Device
+        :raise ValueError: If the device could not be created.
+        :raise IOError: If there was a communication problem while trying to create the device.
+        """
+        # FIXME: Workaround because of the bug, API ignores domain ID and needs domain name
+        if device.domain_id and not device.domain_name:
+            try:
+                device.domain_name = self.get_domain_by_id(device.domain_id).name
+            except (ValueError, IOError, REST_HTTP_Exception, AttributeError) as error:
+                logger.debug("Failed to get domain with ID {} for new device, setting to default. Error: {}".format(
+                             device.domain_id, error))
+                device.domain_name = "Default"
+        try:
+            self.put_uri("/securetrack/api/devices/{}".format(device.id),
+                         device.to_xml_string(), expected_status_codes=[200, 201])
+        except RequestException:
+            message = "Failed to update device."
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Bad_Request_Error as http_exception:
+            message = "Could not update device, got error: '{}'".format(http_exception)
             logger.critical(message)
             raise ValueError(message)
 
@@ -1118,11 +1161,6 @@ class Secure_Track_Helper(Secure_API_Helper):
             csv_buffer = io.StringIO()
             csv_writer = csv.writer(csv_buffer)
             existing_zones = [zone.name for zone in self.get_zones()]
-
-            logger.debug("")
-            logger.debug(existing_zones)
-            logger.debug("")
-
             valid_access_types = ("restricted", "blocked", "ignored")
             valid_severity_types = ("low", "medium", "high", "critical")
             csv_writer.writerow(("from zone", "to zone", "severity", "access type", "allowed services"))
@@ -1362,9 +1400,6 @@ class Secure_Track_Helper(Secure_API_Helper):
         url = "/securetrack/api/zones?context={}".format(domain_id)
         try:
             response_string = self.get_uri(url, expected_status_codes=200).response.content
-            logger.debug("")
-            logger.debug(response_string)
-            logger.debug("")
         except RequestException:
             message = "Failed to get the list of zones."
             logger.critical(message)
@@ -1735,17 +1770,13 @@ class Secure_Track_Helper(Secure_API_Helper):
                     network_object = net_obj
                     break
             else:
-                message = "Network object with id {} does not exists on device id {}".format(network_object_id,
-                                                                                             device_id)
-                logger.critical(message)
-                raise ValueError(message)
+                message = "Network object with id {} does not exists on device id {}"
+                raise ValueError(message.format(network_object_id, device_id))
         except RequestException:
-            message = "Failed to get the list of rules for device ID {}.".format(device_id)
-            logger.critical(message)
+            message = "Failed to get network objects for device ID {}.".format(device_id)
             raise IOError(message)
         except (REST_Not_Found_Error, IndexError):
-            message = "Device with ID {} does not exist.".format(device_id)
-            logger.critical(message)
+            message = "Object with ID {} does not exist on Device with ID {}.".format(network_object_id, device_id)
             raise ValueError(message)
         if network_object.device_id is None:  # BUG: For group network objects, it seems that the device_id element is
             # not set.

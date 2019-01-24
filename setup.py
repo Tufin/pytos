@@ -41,7 +41,6 @@ setup(
         'paramiko>=1.15.2',
         'requests>=2.6.0',
         'requests_toolbelt==0.7.1',
-        'pyinotify==0.9.6',
         'netifaces==0.10.5',
         'dnspython3==1.15.0',
         'Mako',
