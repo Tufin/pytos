@@ -2,10 +2,24 @@
 <project version="4">
   <component name="PublishConfigData">
     <serverData>
-      <paths name="161">
+      <paths name="(203) PM">
         <serverdata>
           <mappings>
-            <mapping deploy="/opt/tufin/securitysuite/ps/bin" local="$PROJECT_DIR$/examples/bin" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="(204.160) TOS2.0">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="(204.169) Tzachi">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
@@ -51,6 +65,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="MSSP">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Nir RnV">
         <serverdata>
           <mappings>
@@ -65,6 +86,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="Orca">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/usr/local/orca/python/lib/python3.6/site-packages/pytos" local="$PROJECT_DIR$/pytos" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Remedy Demo">
         <serverdata>
           <mappings>
@@ -73,6 +101,13 @@
         </serverdata>
       </paths>
       <paths name="SCW">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Scale server">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -93,6 +128,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="hydra">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="ohaio - usps">
         <serverdata>
           <mappings>
@@ -104,6 +146,20 @@
         <serverdata>
           <mappings>
             <mapping deploy="/root/pytos_github" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@10.100.200.204:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@192.168.205.20:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

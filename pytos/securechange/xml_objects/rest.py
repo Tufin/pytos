@@ -343,6 +343,10 @@ class Ticket(XML_Object_Base):
         del self.steps[1:]
         self.current_step = None
 
+    @staticmethod
+    def has_no_pending_tasks(ticket):
+        return not any(task.is_pending() for task in ticket.get_current_step().tasks)
+
 
 class Ticket_Comment(XML_Object_Base):
     def __init__(self, content, created, task_name, comment_type, user):
@@ -971,11 +975,13 @@ class Step_Field_Multi_Group_Change(Step_Multi_Field_Base):
 
 
 class Group_Change_Node(XML_Object_Base):
-    def __init__(self, name, management_name, members, change_implementation_status=None, management_id=None):
+    def __init__(self, name, management_name, members, change_implementation_status=None, management_id=None,
+                 change_action=None):
         self.name = name
         self.management_name = management_name
         self.management_id = management_id
         self.members = members
+        self.change_action = change_action
         self.change_implementation_status = change_implementation_status
         super().__init__(Elements.GROUP_CHANGE)
 
@@ -994,8 +1000,9 @@ class Group_Change_Node(XML_Object_Base):
         members = XML_List.from_xml_node_by_type_dict(xml_node, Elements.MEMBERS, Elements.MEMBER, attr_to_class_dict,
                                                       optional=True)
         change_implementation_status = get_xml_text_value(xml_node, Elements.CHANGE_IMPLEMENTATION_STATUS)
+        change_action = get_xml_text_value(xml_node, Elements.CHANGE_ACTION)
         return cls(name, management_name, members, change_implementation_status=change_implementation_status,
-                   management_id=management_id)
+                   management_id=management_id, change_action=change_action)
 
     def to_pretty_str(self):
         pretty_string = "Modify Group Request '{}':\n".format(self.name)
@@ -1045,15 +1052,17 @@ class Multi_Target_Object(XML_Object_Base):
 
 class Group_Change_Member_Object(XML_Object_Base):
     def __init__(self, name, num_id, object_type, object_details, management_name, management_id, status, comment,
-                 attr_type):
+                 attr_type, uid=None, object_updated_status=None):
         self.name = name
         self.id = num_id
+        self.object_UID = uid
         self.object_type = object_type
         self.object_details = object_details
         self.management_name = management_name
         self.management_id = management_id
         self.status = status
         self.comment = comment
+        self.object_updated_status = object_updated_status
         super().__init__(Elements.MEMBER)
         self.set_attrib(TYPE_ATTRIB, attr_type)
 
@@ -1072,9 +1081,11 @@ class Group_Change_Member_Object(XML_Object_Base):
         management_id = get_xml_int_value(xml_node, Elements.MANAGEMENT_ID)
         status = get_xml_text_value(xml_node, Elements.STATUS)
         comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        uid = get_xml_text_value(xml_node, Elements.OBJECT_UID)
+        object_updated_status = get_xml_text_value(xml_node, Elements.OBJECT_UPDATED_STATUS)
         attr_type = xml_node.attrib[TYPE_ATTRIB]
         return cls(name, num_id, object_type, object_details, management_name, management_id, status, comment,
-                   attr_type)
+                   attr_type, uid, object_updated_status)
 
     def __str__(self):
         return self.to_pretty_str()
@@ -1115,6 +1126,9 @@ class Step_Field_Multi_Service(Step_Multi_Field_Base):
         service_objects = XML_List.from_xml_node_by_type_dict(xml_node, Elements.SERVICES, Elements.SERVICE,
                                                               service_type_class_dict, True)
         return cls(num_id, name, service_objects, read_only)
+
+    def to_pretty_str(self):
+        return ', '.join(service.to_pretty_str() for service in self.service_objects)
 
 
 class Step_Field_Hyperlink(Step_Field_Base):
@@ -1757,7 +1771,7 @@ class Members(XML_List):
 
 class Group(XML_Object_Base):
     def __init__(self, user_id, user_name, user_email, out_of_office_from, out_of_office_until, send_email, notes,
-                 ldapDn, group_permission, members, user_type=None):
+                 ldapDn, group_permission, members, user_type=None, roles=None):
         self.id = user_id
         self.name = user_name
         self.email = user_email
@@ -1769,6 +1783,7 @@ class Group(XML_Object_Base):
         self.group_permission = group_permission
         self.members = members
         self.type = user_type
+        self.roles = roles
         super().__init__(Elements.GROUP)
 
     def get_name_fields(self):
@@ -1801,9 +1816,13 @@ class Group(XML_Object_Base):
             members = Members.from_xml_node(members_node)
         else:
             members = []
-
+        roles_node = get_xml_node(xml_node, Elements.ROLES, True)
+        if roles_node:
+            roles = Roles.from_xml_node(roles_node)
+        else:
+            roles = []
         return cls(user_id, user_name, user_email, out_of_office_from, out_of_office_until, send_email, notes, ldapDn,
-                   group_permission, members, user_type)
+                   group_permission, members, user_type, roles)
 
 
 class Role(XML_Object_Base):
