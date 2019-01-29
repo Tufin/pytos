@@ -9,5 +9,8 @@
     <ticketCr>this is a comment</ticketCr>
   </record_set>
   <secure_app_applications></secure_app_applications>
+  <legacy_rule></legacy_rule>
+  <last_hit></last_hit>
+  <permissiveness_level></permissiveness_level>
   <tech_owner>admin</tech_owner>
 </rule_documentation>
