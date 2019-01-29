@@ -31,6 +31,7 @@ except ImportError:
 # http.client.HTTPConnection.debuglevel = 1
 logger = logging.getLogger(REQUESTS_LOGGER_NAME)
 
+
 class RESTAuthMethods(Enum):
     Digest = "digest"
     Basic = "basic"
@@ -210,10 +211,6 @@ class REST_Request(object):
         @raise requests.HTTPError: If the specified status code was not found in the self.response member object.
         """
         status_code_ok = True
-        logger.debug("")
-        logger.debug(self.expected_status_codes)
-        logger.debug(self.response.status_code)
-        logger.debug("")
         if not self.expected_status_codes:
             return True
         try:
