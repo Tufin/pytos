@@ -185,7 +185,7 @@ class TestRules(unittest.TestCase):
         record_sets = [
             Record_Set("support@tufin.com", "admin", "2019-01-08T00:00:00+02:00", 1235, "this is a comment", "")
         ]
-        rd = Rule_Documentation("admin", 'Comment for unittest suit', record_sets, '', True)
+        rd = Rule_Documentation("admin", 'Comment for unittest suit', record_sets, '', True, '', '', '')
         dst_tree = lxml.etree.fromstring(rd.to_xml_string())
         dst_b = io.BytesIO()
         dst_tree.getroottree().write_c14n(dst_b)

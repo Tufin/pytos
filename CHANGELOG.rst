@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+1.1.0
+=====
+
+* Added default value option to the get method in the config parser
+* Added missing attributes to classes
+* Added new triggers such as resolve, pre script and automatic step failed
+
 1.0.1
 =====
 

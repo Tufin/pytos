@@ -46,9 +46,26 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
         logger.debug("Reloading modified configuration files.")
         self._read_config_files()
 
-    def get(self, section, option, mandatory=True, raw=False, fallback=object()):
+    def get(self, section, option, mandatory=True, default_value=None, **kwargs):
         try:
-            return configparser.ConfigParser.get(self, section, option, raw=False, fallback=fallback).strip()
+            return configparser.ConfigParser.get(self, section, option, **kwargs).strip()
+        except (configparser.NoOptionError, configparser.NoSectionError):
+            if mandatory and default_value is None:
+                message = "Could not find configuration option '%s' in section '%s'." % (option, section)
+                logger.warning(message)
+                raise KeyError(message)
+            else:
+                if default_value is None:
+                    return None
+                else:
+                    if callable(default_value):
+                        return default_value()
+                    else:
+                        return default_value
+
+    def getint(self, section, option, mandatory=True, **kwargs):
+        try:
+            return configparser.ConfigParser.getint(self, section, option, **kwargs)
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
@@ -57,9 +74,9 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
             else:
                 return None
 
-    def getint(self, section, option, mandatory=True, raw=False, fallback=object()):
+    def getfloat(self, section, option, mandatory=True, **kwargs):
         try:
-            return configparser.ConfigParser.getint(self, section, option, raw=False, fallback=fallback)
+            return configparser.ConfigParser.getfloat(self, section, option, **kwargs)
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)
@@ -68,20 +85,9 @@ class Secure_Config_Parser(configparser.ConfigParser, FileMonitor):
             else:
                 return None
 
-    def getfloat(self, section, option, mandatory=True, raw=False, fallback=object()):
+    def getboolean(self, section, option, mandatory=True, **kwargs):
         try:
-            return configparser.ConfigParser.getfloat(self, section, option, raw=False, fallback=fallback)
-        except (configparser.NoOptionError, configparser.NoSectionError):
-            if mandatory:
-                message = "Could not find configuration option '%s' in section '%s'." % (option, section)
-                logger.warning(message)
-                raise KeyError(message)
-            else:
-                return None
-
-    def getboolean(self, section, option, mandatory=True, raw=False, fallback=object()):
-        try:
-            return configparser.ConfigParser.getboolean(self, section, option, raw=False, fallback=fallback)
+            return configparser.ConfigParser.getboolean(self, section, option, **kwargs)
         except (configparser.NoOptionError, configparser.NoSectionError):
             if mandatory:
                 message = "Could not find configuration option '%s' in section '%s'." % (option, section)

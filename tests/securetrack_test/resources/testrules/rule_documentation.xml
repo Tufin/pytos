@@ -1,5 +1,8 @@
 <rule_documentation>
   <comment>Comment for unittest suit</comment>
+  <last_hit></last_hit>
+  <legacy_rule></legacy_rule>
+  <permissiveness_level></permissiveness_level>
   <record_set>
     <automatic></automatic>
     <businessOwnerEmail>support@tufin.com</businessOwnerEmail>

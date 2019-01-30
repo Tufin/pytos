@@ -7,10 +7,12 @@ from pytos.common.definitions import xml_tags
 
 
 class Base_Object(XML_Object_Base):
-    def __init__(self, xml_tag, name, display_name, object_id, uid=None):
+    def __init__(self, xml_tag, name, display_name, object_id, uid=None, implicit=None):
         self.name = name
         self.display_name = display_name
         self.id = object_id
+        if implicit is not None:
+            self.implicit = implicit
         if uid is not None:
             self.uid = uid
         super().__init__(xml_tag)
@@ -23,11 +25,11 @@ class Base_Object(XML_Object_Base):
 
 
 class Service(Base_Object):
-    def __init__(self, xml_tag, service_id, display_name, is_global, name, service_type, attr_type, uid=None):
+    def __init__(self, xml_tag, service_id, display_name, is_global, name, service_type, attr_type, uid=None, implicit=None):
         self.global_ = is_global
         self.type = service_type
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, attr_type)
-        super().__init__(xml_tag, name, display_name, service_id, uid)
+        super().__init__(xml_tag, name, display_name, service_id, uid, implicit)
 
     def as_sa_service(self, *, alt_class_name=None):
         module = import_module('Secure_App.XML_Objects.REST')

@@ -2,6 +2,7 @@
 import codecs
 import copy
 import datetime
+import inspect
 import logging
 import os
 import re
@@ -273,7 +274,6 @@ class Secure_Change_Helper(Secure_API_Helper):
 
     def cancel_ticket(self, ticket_id, requester_id=None):
         """Cancel a ticket
-
         :param ticket_id: The Id of the ticket
         :type ticket_id: str|int
         :param requester_id: The ID of the requestor (on behalf)
@@ -1214,9 +1214,21 @@ class Secure_Change_API_Handler:
     REDO = "REDO"
     RESUBMIT = "RESUBMIT"
     REOPEN = "REOPEN"
-    TRIGGER_ACTIONS = (CREATE, CLOSE, CANCEL, REJECT, ADVANCE, REDO, RESUBMIT, REOPEN)
+    RESOLVE = "RESOLVE"
+    PRE_ASSIGNMENT_SCRIPT = "PRE_ASSIGNMENT_SCRIPT"
+    AUTOMATION_FAILED = "AUTOMATION_FAILED"
+    TRIGGER_ACTIONS = (CREATE, CLOSE, CANCEL, REJECT, ADVANCE, REDO, RESUBMIT, REOPEN, RESOLVE, PRE_ASSIGNMENT_SCRIPT,
+                       AUTOMATION_FAILED)
 
-    def __init__(self, ticket, ticket_info=None):
+    TARGET_SUGGESTION_STEP = "target"
+    VERIFIER_STEP = "verifier"
+    DESIGNER_STEP = "designer (design stage)"
+    RISK_STEP = "risk"
+    IMPLEMENTATION_STEP = "designer (update stage)"
+
+    AUTO_STEPS = {TARGET_SUGGESTION_STEP, VERIFIER_STEP, DESIGNER_STEP, RISK_STEP, IMPLEMENTATION_STEP}
+
+    def __init__(self, ticket, ticket_info=None, sc_helper=None):
         """
         :param ticket: The ticket that actions will be triggered for.
         :type ticket: Ticket
@@ -1225,12 +1237,14 @@ class Secure_Change_API_Handler:
         """
         self.ticket = ticket
         self.ticket_info = ticket_info
+        self.sc_helper = sc_helper
         self.steps = {}
         self.stages = {}
         self.completion_steps = {}
         self.statuses = {}
         self.indexes = {}
         self.actions = {}
+        self.auto_steps_failures = {}
 
     def _register_items(self, dict_name, items, func, args, kwargs):
         item_dict = getattr(self, dict_name)
@@ -1299,6 +1313,16 @@ class Secure_Change_API_Handler:
 
         self._register_items("actions", actions, func, args, kwargs)
 
+    def register_auto_step_failure(self, auto_steps, func, *args, **kwargs):
+        if not isinstance(auto_steps, (list, tuple)):
+            auto_steps = [auto_steps]
+
+        for auto_step in auto_steps:
+            if auto_step not in Secure_Change_API_Handler.AUTO_STEPS:
+                raise ValueError("Unknown auto step '{}'.".format(auto_step))
+
+        self._register_items("auto_steps_failures", auto_steps, func, args, kwargs)
+
     def register_previous_step(self, stage_name, func, *args, **kwargs):
         """
         :param stage_name: The name of the stage that the function will be triggered for.
@@ -1334,6 +1358,7 @@ class Secure_Change_API_Handler:
         """
 
         logger.info("Running for ticket with ID '%s'.", self.ticket.id)
+        self._run_auto_step_failure()
         try:
             stage_name = self.ticket_info.current_stage_name
         except (AttributeError, KeyError):
@@ -1378,6 +1403,14 @@ class Secure_Change_API_Handler:
     @staticmethod
     def _get_trigger_action():
         return os.environ.get("SCW_EVENT")
+
+    def _get_trigger_auto_step_type(self):
+        ticket_history = self.sc_helper.get_ticket_history_by_id(self.ticket.id)
+        for entry in reversed(ticket_history):
+            description = entry.description.lower()
+            for auto_step_type in self.AUTO_STEPS:
+                if entry.performed_by == 'System' and entry.step_name == self.ticket.current_step.name and auto_step_type in description:
+                    return auto_step_type, entry.description
 
     def _call_func(self, func, *args, **kwargs):
         try:
@@ -1427,7 +1460,37 @@ class Secure_Change_API_Handler:
             except KeyError:
                 logger.debug("No function registered for trigger action '%s'.", action)
             else:
+                if action == self.AUTOMATION_FAILED:
+                    failure_reason_arg_name = 'failure_reason'
+                    _, failure_reason = self._get_trigger_auto_step_type()
+                    if failure_reason_arg_name in inspect.signature(func).parameters:
+                        kwargs[failure_reason_arg_name] = failure_reason
+                    else:
+                        logger.debug("Add '%s' argument to '%s' function as a keyword-argument only in order to get the reason for the auto step failure",
+                            failure_reason_arg_name, func.__name__)
                 self._call_func(func, *args, **kwargs)
+
+    def _run_auto_step_failure(self):
+        action = self._get_trigger_action()
+        if action != self.AUTOMATION_FAILED:
+            return
+        failure_reason_arg_name = 'failure_reason'
+        try:
+            auto_step_type, failure_reason = self._get_trigger_auto_step_type()
+        except TypeError:
+            return
+        logger.info("Trigger auto step failure for Ticket ID '%s' is '%s'", self.ticket.id, auto_step_type)
+        try:
+            func, args, kwargs = self.auto_steps_failures[auto_step_type]
+        except KeyError:
+            logger.debug("No function registered for auto step failure '%s'", auto_step_type)
+        else:
+            if failure_reason_arg_name in inspect.signature(func).parameters:
+                kwargs[failure_reason_arg_name] = failure_reason
+            else:
+                logger.debug("Add '%s' argument to '%s' function as a keyword-argument only in order to get the reason for the auto step failure",
+                             failure_reason_arg_name, func.__name__)
+            self._call_func(func, *args, **kwargs)
 
     def _run_stage(self, stage_name):
         logger.info("Ticket ID '%s' was triggered from step '%s'", self.ticket.id, stage_name)
