@@ -145,7 +145,7 @@
       <paths name="pytos">
         <serverdata>
           <mappings>
-            <mapping deploy="/root/pytos_github" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/root/pytos/pytos" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
