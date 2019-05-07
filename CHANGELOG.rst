@@ -2,6 +2,15 @@
 CHANGES
 =======
 
+1.2.0
+=====
+
+* Added comment attribute to SecureApp network objects
+* Added comment attribute to SecureApp User
+* Added support both prefix and netmask in SecureApp Subnet_Network_Object
+* Added support for user group in extended connections
+* Added viewers attribute to to SecureApp Application
+
 1.1.0
 =====
 

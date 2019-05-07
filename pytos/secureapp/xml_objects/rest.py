@@ -1,4 +1,3 @@
-
 import logging
 import netaddr
 
@@ -34,7 +33,7 @@ class Applications_List(XML_List):
 
 class Application(XML_Object_Base, Comparable):
     def __init__(self, app_id, name, comment, decommissioned, owner, editors, created, modified, status, connections,
-                 open_tickets, customer=None, connection_to_application_packs=None):
+                 open_tickets, customer=None, connection_to_application_packs=None, viewers=None):
         self.id = app_id
         self.name = name
         self.comment = comment
@@ -68,6 +67,7 @@ class Application(XML_Object_Base, Comparable):
         modified = get_xml_text_value(xml_node, Elements.MODIFIED)
         status = get_xml_text_value(xml_node, Elements.STATUS)
         editors = XML_List.from_xml_node_by_tags(xml_node, Elements.EDITORS, Elements.EDITOR, Application_Editor)
+        viewers = XML_List.from_xml_node_by_tags(xml_node, Elements.VIEWERS, Elements.VIEWER, Application_Viewer)
         open_tickets = XML_List.from_xml_node_by_tags(xml_node, Elements.OPEN_TICKETS, Elements.TICKET,
                                                       Application_Open_Ticket)
         # For <15.1 compatibility we would not force to get this one as it will fail
@@ -86,7 +86,7 @@ class Application(XML_Object_Base, Comparable):
         for connection_node in xml_node.iter(tag=Elements.CONNECTION):
             connections.append(Application_Connection.from_xml_node(connection_node))
         return cls(app_id, name, comment, decommissioned, owner, editors, created, modified, status, connections,
-                   open_tickets, customer, connection_to_application_packs)
+                   open_tickets, customer, connection_to_application_packs, viewers)
 
     def is_decommissioned(self):
         return str_to_bool(self.decommissioned)
@@ -175,6 +175,25 @@ class Application_Owner(Base_Link_Target):
         display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
         link = URL_Link.from_xml_node(get_xml_node(xml_node, Elements.LINK))
         return cls(owner_id, display_name, name, link)
+
+
+class Application_Viewer(Base_Link_Target):
+    def __init__(self, viewer_id, display_name, name, link):
+        super().__init__(Elements.VIEWER, viewer_id, display_name, name, link)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+
+        viewer_id = get_xml_int_value(xml_node, Elements.ID)
+        name = get_xml_text_value(xml_node, Elements.NAME)
+        display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
+        link = URL_Link.from_xml_node(get_xml_node(xml_node, Elements.LINK))
+        return cls(viewer_id, display_name, name, link)
 
 
 class Server(Base_Link_Target):
@@ -330,9 +349,9 @@ class User_List(XML_List):
 
 
 class User(Base_Object):
-    def __init__(self, display_name, is_global, user_id, name, user_type, ip):
+    def __init__(self, display_name, is_global, user_id, name, user_type, ip, comment=None):
         self.ip = ip
-        super().__init__(Elements.USER, display_name, is_global, user_id, name, user_type)
+        super().__init__(Elements.USER, display_name, is_global, user_id, name, user_type, comment=comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -347,7 +366,8 @@ class User(Base_Object):
         user_type = get_xml_text_value(xml_node, Elements.TYPE)
         display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
         ip = get_xml_text_value(xml_node, Elements.IP)
-        return cls(display_name, is_global, user_id, name, user_type, ip)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        return cls(display_name, is_global, user_id, name, user_type, ip, comment)
 
     def _key(self):
         return self.ip,
@@ -519,7 +539,10 @@ class ConnectionExtended(XML_Object_Base):
         sources_node = get_xml_node(xml_node, Elements.SOURCES, True)
         if sources_node:
             for src_node in sources_node.iter(tag=Elements.SOURCE):
-                sources.append(Network_Object.from_xml_node_auto_type(src_node))
+                if src_node.attrib[Attributes.XSI_NAMESPACE_TYPE] in (Attributes.USER_TYPE_GROUP, Attributes.USER_TYPE):
+                    sources.append(UserGroup.from_xml_node_auto_type(src_node))
+                else:
+                    sources.append(Network_Object.from_xml_node_auto_type(src_node))
         destinations_node = get_xml_node(xml_node, Elements.DESTINATIONS, True)
         if destinations_node:
             for dst_node in destinations_node.iter(tag=Elements.DESTINATION):
@@ -785,12 +808,13 @@ class Single_Service(Service_Object):
 class Group_Service(Service_Object):
     class_identifier = Attributes.SERVICE_TYPE_GROUP
 
-    def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, application_id=None):
+    def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, application_id=None,
+                 comment=None):
         self.members = members
         self.uid = uid
 
         super().__init__(Elements.SERVICE, display_name, is_global, connection_id, name, service_type,
-                         Attributes.SERVICE_TYPE_GROUP, application_id)
+                         Attributes.SERVICE_TYPE_GROUP, application_id, comment)
 
     def as_service_type(self):
         return Group_Service_Type(self.members)
@@ -812,6 +836,7 @@ class Group_Service(Service_Object):
         service_type = get_xml_text_value(xml_node, Elements.TYPE)
         uid = get_xml_text_value(xml_node, Elements.UID)
         app_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
         members = []
         for member_node in xml_node.iter(tag=Elements.MEMBER):
             member_id = get_xml_int_value(member_node, Elements.ID)
@@ -819,7 +844,7 @@ class Group_Service(Service_Object):
             member_name = get_xml_text_value(member_node, Elements.NAME)
             member_link = URL_Link.from_xml_node(member_node.find(Elements.LINK))
             members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link))
-        return cls(display_name, is_global, connection_id, name, service_type, members, uid, app_id)
+        return cls(display_name, is_global, connection_id, name, service_type, members, uid, app_id, comment)
 
     @classmethod
     def from_st_service_object(cls, st_service_object):
@@ -915,11 +940,11 @@ class Network_Objects_List(XML_List):
 class Basic_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_BASIC
 
-    def __init__(self, display_name, is_global, object_id, name, object_type, ip, application_id=None):
+    def __init__(self, display_name, is_global, object_id, name, object_type, ip, application_id=None, comment=None):
 
         self.ip = ip
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_BASIC, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_BASIC, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -935,7 +960,8 @@ class Basic_Network_Object(Network_Object):
         display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
         ip = get_xml_text_value(xml_node, Elements.IP)
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, object_id, name, object_type, ip, application_id)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        return cls(display_name, is_global, object_id, name, object_type, ip, application_id, comment)
 
     def as_netaddr_obj(self):
         if self.ip:
@@ -952,9 +978,9 @@ class Basic_Network_Object(Network_Object):
 class Internet_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_INTERNET
 
-    def __init__(self, display_name, is_global, object_id, name, object_type, application_id=None):
+    def __init__(self, display_name, is_global, object_id, name, object_type, application_id=None, comment=None):
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_INTERNET, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_INTERNET, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -969,17 +995,19 @@ class Internet_Network_Object(Network_Object):
         object_type = get_xml_text_value(xml_node, Elements.TYPE)
         display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, object_id, name, object_type, application_id)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        return cls(display_name, is_global, object_id, name, object_type, application_id, comment)
 
 
 class Range_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_RANGE
 
-    def __init__(self, display_name, is_global, object_id, name, object_type, first_ip, last_ip, application_id=None):
+    def __init__(self, display_name, is_global, object_id, name, object_type, first_ip, last_ip, application_id=None,
+                 comment=None):
         self.first_ip = first_ip
         self.last_ip = last_ip
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_RANGE, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_RANGE, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -996,7 +1024,8 @@ class Range_Network_Object(Network_Object):
         first_ip = get_xml_text_value(xml_node, Elements.FIRST_IP)
         last_ip = get_xml_text_value(xml_node, Elements.LAST_IP)
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, object_id, name, object_type, first_ip, last_ip, application_id)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        return cls(display_name, is_global, object_id, name, object_type, first_ip, last_ip, application_id, comment)
 
     @classmethod
     def from_st_network_object(cls, st_network_obj):
@@ -1017,10 +1046,10 @@ class Range_Network_Object(Network_Object):
 class Host_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_HOST
 
-    def __init__(self, display_name, is_global, object_id, name, object_type, ip, application_id=None):
+    def __init__(self, display_name, is_global, object_id, name, object_type, ip, application_id=None, comment=None):
         self.ip = ip
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_HOST, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_HOST, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -1036,7 +1065,8 @@ class Host_Network_Object(Network_Object):
         display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
         ip = get_xml_text_value(xml_node, Elements.IP)
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, object_id, name, object_type, ip, application_id)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        return cls(display_name, is_global, object_id, name, object_type, ip, application_id, comment)
 
     @classmethod
     def from_st_network_object(cls, st_network_obj):
@@ -1059,11 +1089,19 @@ class Host_Network_Object(Network_Object):
 class Subnet_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_SUBNET
 
-    def __init__(self, display_name, is_global, object_id, name, object_type, ip, netmask, application_id=None):
-        self.netmask = netmask
+    def __init__(self, display_name, is_global, object_id, name, object_type, ip, netmask=None, application_id=None,
+                 comment=None, prefix=None):
         self.ip = ip
+        if netmask:
+            self.netmask = netmask
+        else:
+            self.netmask = None
+        if prefix:
+            self.prefix = prefix
+        else:
+            self.prefix = None
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_SUBNET, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_SUBNET, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -1080,7 +1118,9 @@ class Subnet_Network_Object(Network_Object):
         netmask = get_xml_text_value(xml_node, Elements.NETMASK)
         ip = get_xml_text_value(xml_node, Elements.IP)
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, object_id, name, object_type, ip, netmask, application_id)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        prefix = get_xml_text_value(xml_node, Elements.PREFIX)
+        return cls(display_name, is_global, object_id, name, object_type, ip, netmask, application_id, comment, prefix)
 
     @classmethod
     def from_st_network_object(cls, st_network_obj):
@@ -1088,13 +1128,14 @@ class Subnet_Network_Object(Network_Object):
                    st_network_obj.ip, st_network_obj.netmask)
 
     def as_netaddr_obj(self):
-        return netaddr.IPNetwork(str(self.ip) + "/" + str(self.netmask))
+        return netaddr.IPNetwork(str(self.ip) + "/" + str(self.netmask or self.prefix))
 
     def _key(self):
-        return self.ip, self.netmask
+        return self.ip, self.netmask or self.prefix
 
     def __repr__(self):
-        return 'Subnet Network Object. Name: {}, IP: {}, Netmask: {}'.format(self.display_name, self.ip, self.netmask)
+        return 'Subnet Network Object. Name: {}, IP: {}, Netmask: {}'.format(self.display_name, self.ip,
+                                                                             self.netmask or self.prefix)
 
     def __str__(self):
         return repr(self)
@@ -1128,11 +1169,10 @@ class Virtual_Server_Network_Object(Network_Object):
         self.protocol = protocol
         self.f5_device_name = f5_device_name
         self.port = port
-        self.comment = comment
         self.device_id = device_id
         self.pool_member = pool_member
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                         Attributes.NETWORK_OBJECT_TYPE_VIRTUAL_SERVER, app_id)
+                         Attributes.NETWORK_OBJECT_TYPE_VIRTUAL_SERVER, app_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -1183,10 +1223,9 @@ class VM_Instance(Network_Object):
         self.interfaces = interfaces
         self.original_instance_id = original_instance_id
         self.application_id = application_id
-        self.comment = comment
 
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
-                        Attributes.NETWORK_OBJECT_TYPE_VM_INSTANCE)
+                        Attributes.NETWORK_OBJECT_TYPE_VM_INSTANCE, comment=comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -1333,11 +1372,12 @@ class Interface_IPs(XML_List):
 class Group_Network_Object(Network_Object):
     class_identifier = Attributes.NETWORK_OBJECT_TYPE_GROUP
 
-    def __init__(self, display_name, is_global, connection_id, name, service_type, members, application_id=None):
+    def __init__(self, display_name, is_global, connection_id, name, service_type, members, application_id=None,
+                 comment=None):
         self.members = members
 
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, connection_id, name, service_type,
-                         Attributes.NETWORK_OBJECT_TYPE_GROUP, application_id)
+                         Attributes.NETWORK_OBJECT_TYPE_GROUP, application_id, comment)
 
     @classmethod
     def from_xml_node(cls, xml_node):
@@ -1351,6 +1391,7 @@ class Group_Network_Object(Network_Object):
         connection_id = get_xml_int_value(xml_node, Elements.ID)
         name = get_xml_text_value(xml_node, Elements.NAME)
         service_type = get_xml_text_value(xml_node, Elements.TYPE)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
         members = XML_List(Elements.MEMBERS, [])
         for member_node in xml_node.iter(tag=Elements.MEMBER):
             member_id = get_xml_int_value(member_node, Elements.ID)
@@ -1359,7 +1400,7 @@ class Group_Network_Object(Network_Object):
             member_link = URL_Link.from_xml_node(member_node.find(Elements.LINK))
             members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link))
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
-        return cls(display_name, is_global, connection_id, name, service_type, members, application_id)
+        return cls(display_name, is_global, connection_id, name, service_type, members, application_id, comment)
 
     @classmethod
     def from_st_network_object(cls, st_network_obj):
@@ -1485,3 +1526,32 @@ class Security_Groups(XML_List):
         for security_group_node in xml_node.iter(tag=Elements.SECURITY_GROUP):
             security_groups.append(Security_Group.from_xml_node(security_group_node))
         return cls(security_groups)
+
+
+class UserGroup(Network_Object):
+    class_identifier = Attributes.USER_TYPE_GROUP
+
+    def __init__(self, object_id, name, display_name, is_global, comment, object_type, members):
+        self.members = members
+
+        super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
+                         Attributes.USER_TYPE_GROUP, comment=comment)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        object_id = get_xml_int_value(xml_node, Elements.ID)
+        name = get_xml_text_value(xml_node, Elements.NAME)
+        display_name = get_xml_text_value(xml_node, Elements.DISPLAY_NAME)
+        global_ = get_xml_text_value(xml_node, Elements.GLOBAL)
+        comment = get_xml_text_value(xml_node, Elements.COMMENT)
+        type_ = get_xml_text_value(xml_node, Elements.TYPE)
+        members = []
+        for member_node in xml_node.iter(tag=Elements.MEMBER):
+            member_id = get_xml_int_value(member_node, Elements.ID)
+            member_display_name = get_xml_text_value(member_node, Elements.DISPLAY_NAME)
+            member_name = get_xml_text_value(member_node, Elements.NAME)
+            member_type = get_xml_text_value(member_node, Elements.TYPE)
+            member_link = URL_Link.from_xml_node(member_node.find(Elements.LINK))
+            members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link,
+                                            member_type))
+        return cls(object_id, name, display_name, global_, comment, type_, members)

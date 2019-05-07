@@ -12,16 +12,17 @@ logger = logging.getLogger(XML_LOGGER_NAME)
 
 
 class Base_Object(XML_Object_Base, Comparable):
-    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, application_id=None):
+    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, application_id=None,
+                 comment=None):
         self.id = object_id
         self.name = name
         self.type = object_type
         self.display_name = display_name
         self.global_ = is_global
         self.application_id = application_id
+        self.comment = comment
         super().__init__(xml_tag)
         self.set_attrib(NAMESPACE_FIELD_ATTRIB_CONTENT, XSI_NAMESPACE_URL)
-
 
     def is_global(self):
         return str_to_bool(self.global_)
@@ -89,8 +90,9 @@ class URL_Link(XML_Object_Base):
 
 
 class Network_Object(Base_Object, metaclass=SubclassWithIdentifierRegistry):
-    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, attr_type, application_id=None):
-        super().__init__(xml_tag, display_name, is_global, object_id, name, object_type, application_id)
+    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, attr_type, application_id=None,
+                 comment=None):
+        super().__init__(xml_tag, display_name, is_global, object_id, name, object_type, application_id, comment)
         self.set_attrib(Attributes.XSI_TYPE, attr_type)
 
     def as_netaddr_obj(self):
@@ -123,8 +125,9 @@ class Network_Object(Base_Object, metaclass=SubclassWithIdentifierRegistry):
 
 
 class Service_Object(Base_Object, metaclass=SubclassWithIdentifierRegistry):
-    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, attr_type, application_id=None):
-        super().__init__(xml_tag, display_name, is_global, object_id, name, object_type, application_id)
+    def __init__(self, xml_tag, display_name, is_global, object_id, name, object_type, attr_type, application_id=None,
+                 comment=None):
+        super().__init__(xml_tag, display_name, is_global, object_id, name, object_type, application_id, comment)
         self.set_attrib(Attributes.XSI_TYPE, attr_type)
 
 
