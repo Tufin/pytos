@@ -1094,12 +1094,8 @@ class Subnet_Network_Object(Network_Object):
         self.ip = ip
         if netmask:
             self.netmask = netmask
-        else:
-            self.netmask = None
         if prefix:
             self.prefix = prefix
-        else:
-            self.prefix = None
         super().__init__(Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
                          Attributes.NETWORK_OBJECT_TYPE_SUBNET, application_id, comment)
 

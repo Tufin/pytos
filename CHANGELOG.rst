@@ -2,6 +2,11 @@
 CHANGES
 =======
 
+1.2.1
+=====
+
+* Fixed a bug when creating a subnet network object
+
 1.2.0
 =====
 
