@@ -1388,13 +1388,15 @@ class Group_Network_Object(Network_Object):
         name = get_xml_text_value(xml_node, Elements.NAME)
         service_type = get_xml_text_value(xml_node, Elements.TYPE)
         comment = get_xml_text_value(xml_node, Elements.COMMENT)
-        members = XML_List(Elements.MEMBERS, [])
+        members = []
         for member_node in xml_node.iter(tag=Elements.MEMBER):
             member_id = get_xml_int_value(member_node, Elements.ID)
             member_display_name = get_xml_text_value(member_node, Elements.DISPLAY_NAME)
             member_name = get_xml_text_value(member_node, Elements.NAME)
+            member_type = get_xml_text_value(member_node, Elements.TYPE)
             member_link = URL_Link.from_xml_node(member_node.find(Elements.LINK))
-            members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link))
+            members.append(Base_Link_Target(Elements.MEMBER, member_id, member_display_name, member_name, member_link,
+                                            member_type))
         application_id = get_xml_int_value(xml_node, Elements.APPLICATION_ID)
         return cls(display_name, is_global, connection_id, name, service_type, members, application_id, comment)
 

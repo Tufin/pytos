@@ -32,11 +32,13 @@ class Base_Object(XML_Object_Base, Comparable):
 
 
 class Base_Link_Target(XML_Object_Base, Comparable):
-    def __init__(self, xml_tag, connection_id, display_name, name, link):
+    def __init__(self, xml_tag, connection_id, display_name, name, link, member_type=None):
         self.id = connection_id
         self.display_name = display_name
         self.name = name
         self.link = link
+        if member_type:
+            self.type = member_type
         super().__init__(xml_tag)
 
     def get_reference_link(self):
