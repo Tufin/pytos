@@ -203,6 +203,6 @@ class Secure_API_Helper:
     @classmethod
     def from_secure_config_parser(cls, secure_config_parser_obj, **kwlist):
         hostname = secure_config_parser_obj.get(cls.CONFIG_PARSER_SECTION_NAME, "hostname")
-        username = secure_config_parser_obj.get_username(cls.CONFIG_PARSER_SECTION_NAME)
-        password = secure_config_parser_obj.get_password(cls.CONFIG_PARSER_SECTION_NAME)
+        username = secure_config_parser_obj.get(cls.CONFIG_PARSER_SECTION_NAME, "username")
+        password = secure_config_parser_obj.get(cls.CONFIG_PARSER_SECTION_NAME, "password")
         return cls(hostname, (username, password), **kwlist)
