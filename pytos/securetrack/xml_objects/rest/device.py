@@ -12,7 +12,7 @@ logger = logging.getLogger(XML_LOGGER_NAME)
 
 class Device(XML_Object_Base, Comparable):
     def __init__(self, model, vendor, domain_id, domain_name, num_id, name, offline, topology=None, ip=None,
-                 virtual_type=None, is_virtual=None):
+                 virtual_type=None, is_virtual=None, parent_id=None):
         self.model = model
         self.vendor = vendor
         self.domain_name = domain_name
@@ -27,6 +27,7 @@ class Device(XML_Object_Base, Comparable):
         self._children = []
         self._parent = None
         self._is_virtual = is_virtual
+        self.parent_id = parent_id
         super().__init__(xml_tags.Elements.DEVICE)
 
     def _key(self):
@@ -48,7 +49,8 @@ class Device(XML_Object_Base, Comparable):
         topology = get_xml_text_value(xml_node, xml_tags.Elements.TOPOLOGY)
         offline = get_xml_text_value(xml_node, xml_tags.Elements.OFFLINE)
         ip = get_xml_text_value(xml_node, xml_tags.Elements.IP)
-        return cls(model, vendor, domain_id, domain_name, num_id, name, offline, topology, ip)
+        parent_id = get_xml_int_value(xml_node, xml_tags.Elements.PARENT_ID)
+        return cls(model, vendor, domain_id, domain_name, num_id, name, offline, topology, ip, parent_id=parent_id)
 
     @classmethod
     def from_db_device(cls, db_device, domain_name):
