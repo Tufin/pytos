@@ -237,7 +237,10 @@ class Device_Revision(XML_Object_Base):
         self.revisionId = revision_id
         self.time = revision_time
         self.ready = ready
-        self.tickets = tickets
+        if tickets:
+            self.tickets = tickets
+        else:
+            self.tickets = []
         super().__init__(xml_tags.Elements.REVISION)
 
     @classmethod
@@ -265,11 +268,10 @@ class Device_Revision(XML_Object_Base):
         revision_id = get_xml_int_value(xml_node, xml_tags.Elements.REVISIONID)
         revision_time = get_xml_text_value(xml_node, xml_tags.Elements.TIME)
         ready = get_xml_text_value(xml_node, xml_tags.Elements.READY)
-        ticket = []
+        tickets = []
         for ticket_node in xml_node.iter(tag=xml_tags.Elements.TICKET):
                ticket_obj = Device_Revision_Ticket.from_xml_node(ticket_node)
-               ticket.append(ticket_obj)	
-
+               tickets.append(ticket_obj)
 
         return cls(action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
                    revision_id, modules_and_policy, policy_package, ready,ticket)
