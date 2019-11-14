@@ -2,6 +2,14 @@
 CHANGES
 =======
 
+1.2.4
+=====
+* Added tickets attribute to Device_Revision class
+
+1.2.2
+=====
+* Fixed a bug that removed members from group network object when updating a group network object in SecureApp
+
 1.2.1
 =====
 
