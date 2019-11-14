@@ -274,7 +274,7 @@ class Device_Revision(XML_Object_Base):
                tickets.append(ticket_obj)
 
         return cls(action, num_id, admin, auditLog, authorizationStatus, revision_date, revision_time, gui_client,
-                   revision_id, modules_and_policy, policy_package, ready,ticket)
+                   revision_id, modules_and_policy, policy_package, ready, tickets)
 
     def is_authorized(self):
         return self.authorizationStatus in Device_Revision.AUTHORIZED_STATUSES
