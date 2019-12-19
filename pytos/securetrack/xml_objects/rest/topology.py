@@ -236,6 +236,42 @@ class PathCalculationResults(XML_Object_Base):
 
         return cls(traffic_allowed, devices_info)
 
+class TopologyCloud(XML_Object_Base):
+    def __init__(self, cloud_id, name, domain, cloud_type, ip, members):
+        super().__init__(XML_Tags.Elements.TOPOLOGY_CLOUD)
+        self.cloud_id = cloud_id
+        self.name = name
+        self.domain = domain
+        self.cloud_type = cloud_type
+        self.ip = ip
+        self.members = members
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        cloud_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
+        name = get_xml_text_value(xml_node, XML_Tags.Elements.NAME)
+        domain = get_xml_text_value(xml_node, XML_Tags.Elements.DOMAIN)
+        cloud_type = get_xml_text_value(xml_node, XML_Tags.Elements.TYPE)
+        ip = get_xml_text_value(xml_node, XML_Tags.Elements.IP)
+        members = []
+        for topology_cloud_members_node in xml_node.iter(tag=XML_Tags.Elements.MEMBERS):
+            members.append(TopologyCloudMember.from_xml_node(topology_cloud_members_node))
+        return cls(cloud_id, name, domain, cloud_type, ip, members)
+
+class TopologyCloudMember(XML_Object_Base):
+    def __init__(self, cloud_member_id, ip, name):
+        self.cloud_member_id = cloud_member_id
+        self.ip = ip
+        self.name = name
+        super().__init__(XML_Tags.Elements.MEMBERS)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        cloud_member_id = get_xml_int_value(xml_node, XML_Tags.Elements.ID)
+        ip = get_xml_text_value(xml_node, XML_Tags.Elements.IP)
+        name = get_xml_text_value(xml_node, XML_Tags.Elements.NAME)
+        return cls(cloud_member_id, ip, name)
+
 class TopologyCloudList(XML_Object_Base):
     def __init__(self, count, total, topology_clouds):
         super().__init__(Elements.TOPOLOGY_CLOUDS)

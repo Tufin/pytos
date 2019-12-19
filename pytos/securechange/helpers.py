@@ -1580,6 +1580,7 @@ class Secure_Change_API_Handler:
         :type ar_id: int
         :raise ValueError: If one of the id's of the function args does not exist in the system.
         :raise IOError: If there was a communication problem trying to get the services.
+		:return type: image path in base64
         """
         logger.info("Getting topology path image")
         if not all([ticket_id, step_id, task_id, ar_id]):
@@ -1634,41 +1635,3 @@ class Secure_Change_API_Handler:
             logger.error(message)
             raise IOError(message)
         return True
-	
-	@contextmanager
-    def temporary_reassign_task(self, task, reassign_to_user, reassign_back_to_user):
-        """A context manager that reassigns the provided task to reassign_to_user, yields the reassigned task and
-        then reassigns the task to reassign_back_to_user.Useful in cases where a task is self-assigned and some fields
-        need to be updated by script. In this case reassign_to_user should be the API user and reassign_back_to_user
-        should be the original participating user or group as chosen in the workflow.
-
-        Recommended usage:
-            try:
-                with sc_helper.temporary_reassign_task(task, 'user2', 'user1') as reassigned_task:
-                    # handle reassigned_task here
-            except ValueError as ex:  # in case the assignment to user2 fails. You may also catch other exceptions here
-                logger.error(ex)
-
-        :param Step_Task task: The SecureChange ticket task to be reassigned
-        :param str reassign_to_user: The user to which the task will be assigned to within the with block
-        :param str reassign_back_to_user: The group or user to which the task will be assigned to after the with block
-        """
-
-        reassigned_task = None
-        try:
-            reassigned_task = self.reassign_task_by_username(task, reassign_to_user,
-                                                             'Reassigning to {}'.format(reassign_to_user))
-        except ValueError as ex:
-            logger.error(ex)
-            raise  # raising here so the with block doesn't get executed at all
-        else:
-            yield reassigned_task
-        finally:
-            if reassigned_task is None:
-                reassigned_task = task
-            try:
-                self.reassign_task_by_username(reassigned_task, reassign_back_to_user,
-                                               'Reassigning back to {}'.format(reassign_back_to_user))
-            except ValueError as ex:
-                logger.error(ex)
-	
