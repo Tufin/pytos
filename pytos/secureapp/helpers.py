@@ -2015,3 +2015,24 @@ class Secure_App_Helper(Secure_Change_Helper):
             raise ValueError(message)
         return cloud_console_servers
 
+    def delete_local_network_object_by_id(self, app_id, network_object_id):
+        """Delete local network_object with in application in SecureApp.
+        :param app_id: The id of the application
+        :param network_object_id: The local network_object id
+        :return: True if the network_object deletion was successful.
+        :raise ValueError: If the specified network_object does not exist or there was another problem with the parameters.
+        :raise IOError: If there was a communication error.
+        """
+        logger.info("Deleting local network_object id '{}' for application id '{}'".format(app_id, network_object_id))
+        url = "/securechangeworkflow/api/secureapp/repository/applications/{}/network_objects/{}".format(app_id, network_object_id)
+        try:
+            self.delete_uri(url, expected_status_codes=200)
+        except RequestException as error:
+            message = "Could not delete network_object with ID: '{}', error was '{}'".format(network_object_id, error)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Client_Error as error:
+            message = "Could not delete network_object with ID: '{}', error was '{}'".format(network_object_id, error)
+            logger.critical(message)
+            raise ValueError(message)
+        return True

@@ -359,5 +359,21 @@ class Test_Secure_App_Helper(unittest.TestCase):
             )
 
 
+    def test_20_delete_local_network_object_by_id(self):
+        result = self.helper.delete_local_network_object_by_id(self.app_id, 286)
+        self.assertTrue(result)
+        with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
+            try:
+                self.helper.delete_local_network_object_by_id(self.app_id, 286)
+            except OSError:
+                pass
+            mock_delete_uri.assert_called_with(
+                'DELETE',
+                'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects/286',
+                auth=('username', 'password'),
+                headers={'Content-Type': 'application/xml'}
+            )
+
+
 if __name__ == '__main__':
     unittest.main()
