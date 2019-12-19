@@ -4,6 +4,7 @@ import csv
 import io
 import itertools
 import logging
+import base64
 import multiprocessing.pool
 import xml.etree.ElementTree as ET
 
@@ -2533,3 +2534,53 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Failed to create DCR test, error was '{}'.".format(client_error.message)
             logger.critical(message)
             raise ValueError(message)
+			
+	def post_domain(self, domain):
+		"""Create a new Unified Security Policy exception in SecureTrack.
+
+		:param domain: The domain to create.
+		:type domain: Domain
+		:return: The ID of the created domain.
+		:rtype: int
+		"""
+		logger.info("Posting new domain.")
+		uri = "/securetrack/api/domains"
+		try:
+			response = self.post_uri(uri, domain.to_xml_string().encode(), expected_status_codes=[200, 201, 204])
+			domain_id = response.get_created_item_id()
+			logger.info("Created domain with ID '%s'", domain_id)
+			return domain_id
+		except RequestException:
+			message = "Failed to create domain."
+			logger.critical(message)
+			raise IOError(message)
+		except REST_HTTP_Exception as error:
+			message = "Failed to create domain exception, error was '{}'.".format(error.message)
+			logger.critical(message)
+			raise ValueError(message)
+
+	def get_topology_path_img(self, sources='0.0.0.0', destinations='0.0.0.0', services='ANY', url_params=None):
+        """
+        :param sources: comma separated list of source addresses e.g. 1.1.1.0:24
+        :param destinations: comma separated list of destination addresses
+        :param services: comma separated list of services
+        :param url_params:
+        :return: base64 string
+        """
+        logger.debug("sources={}, destinations={}, services={}, url_params={}".format(
+             sources, destinations, services, url_params))
+        if not url_params:
+            url_params = ""
+        else:
+            param_builder = URLParamBuilderDict(url_params)
+            url_params = param_builder.build(prepend_question_mark=False)
+
+        src = ",".join(sources) if isinstance(sources, (list, tuple, set)) else sources
+        dst = ",".join(destinations) if isinstance(destinations, (list, tuple, set)) else destinations
+        srv = ",".join(services) if isinstance(services, (list, tuple, set)) else services
+        uri = "/securetrack/api/topology/path_image?src={}&dst={}&service={}&{}".format(src, dst, srv, url_params)
+        try:
+            img = self.get_uri(uri, expected_status_codes=200).response.content
+        except RequestException as error:
+            raise IOError("Failed to securetrack configuration. Error: {}".format(error))
+        return base64.encodebytes(img)
