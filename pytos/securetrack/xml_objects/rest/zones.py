@@ -194,4 +194,66 @@ class ZoneDescendants(XML_Object_Base, Comparable):
     def __repr__(self):
         return "Zone({id},{name})".format(**self.__dict__)
 
+class Interface_Mapping(XML_Object_Base):
+    def __init__(self, device_id, interface_name):
+        self.device_id = device_id
+        self.interface_name = interface_name
+        super().__init__(Elements.INTERFACE_MAPPING)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+        device_id = get_xml_text_value(xml_node, Elements.DEVICE_ID)
+        interface_name = get_xml_text_value(xml_node, Elements.INTERFACE_NAME)
+        return cls(device_id, interface_name)
+
+class Device_Zone(XML_Object_Base):
+    def __init__(self, name, num_id, is_global, interface_mappings=None):
+
+        self.name = name
+        self.id = num_id
+        self.interface_mappings = interface_mappings
+        self.global_ = is_global
+        super().__init__(Elements.DEVICE_ZONE, Attributes.DEVICE_ZONE)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+        name = get_xml_text_value(xml_node, Elements.NAME)
+        num_id = get_xml_int_value(xml_node, Elements.ID)
+        global_ = get_xml_text_value(xml_node, Elements.GLOBAL)
+        interface_mappings = XML_List(Elements.INTERFACE_MAPPINGS)
+        for interface_mapping_node in xml_node.iter(tag=Elements.INTERFACE_MAPPING):
+            interface_mappings.append(Interface_Mapping.from_xml_node(interface_mapping_node))
+        return cls(name, num_id, global_, interface_mappings)
+
+
+class Device_Zones_List(XML_List):
+    def __init__(self, device_zones):
+        """
+        :type device_zones: list[Device_Device_Zone]
+        """
+        super().__init__(Elements.DEVICE_ZONES, device_zones)
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        """
+        Initialize the object from a XML node.
+        :param xml_node: The XML node from which all necessary parameters will be parsed.
+        :type xml_node: xml.etree.Element
+        """
+        device_zones = []
+
+        for device_zone_node in xml_node.iter(tag=Elements.DEVICE_ZONE):
+            device_zones.append(Device_Zone.from_xml_node(device_zone_node))
+
+        return cls(device_zones)
 

@@ -4,7 +4,9 @@ import csv
 import io
 import itertools
 import logging
+import base64
 import multiprocessing.pool
+import xml.etree.ElementTree as ET
 
 from pytos.common.definitions.Url_Params_Builder import URLParamBuilderDict
 from requests import RequestException
@@ -25,9 +27,9 @@ from pytos.securetrack.xml_objects.rest.rules import Rules_List, Cleanup_Set, Po
     Rule_Documentation, SecurityPolicyDeviceViolations, Change_Authorization
 from pytos.securetrack.xml_objects.rest.security_policy import SecurityPolicyExceptionList, Security_Policy_Exception, \
     Security_Policies_List
-from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults
+from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults, TopologyCloudList
 from pytos.securetrack.xml_objects.rest.zones import Zone_Entries_List, Zone_List, \
-    ZoneDescendantsList
+    ZoneDescendantsList, Device_Zones_List
 
 logger = logging.getLogger(HELPERS_LOGGER_NAME)
 
@@ -2406,3 +2408,149 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Device with ID {} does not have a ready revision.".format(device_id)
             raise ValueError(message)
         return NatRules.from_xml_string(response_string)
+
+	def get_topology_clouds(self, context=DEFAULT_DOMAIN_ID, cloud_type=None, name=None, start=None, count=None):
+        """Returns a list of the topology clouds for all the domains for which the user has permission to access.
+        Use the optional name parameter to restrict the results to topology clouds that contain the specified string.
+        The default pagination is start=0 and count=50.
+
+        :param context: domain ID, If a context is not specified, the Global context will be used.
+        :type context: int
+        :param cloud_type: the type of cloud (Allowed Values: joined,non-joined)
+        :type cloud_type: str
+        :param name: Cloud name
+        :type name: str
+        :param start: The starting element to include in the returned results
+        :type start: int
+        :param count: Number of elements to include in the results
+        :type count: int
+        :return: The topology clouds
+        :rtype: Clouds_List
+        :raise ValueError: If a context with the specified ID does not exist
+        :raise IOError: If there was a communication problem trying to get the clouds
+        """
+        logger.info(
+            "Getting topology clouds for context {} and type {} and name {} (start={},count={})".format(context,
+                                                                                                        cloud_type,
+                                                                                                        name, start,
+                                                                                                        count))
+        args = {arg: value for arg, value in locals().items() if value}
+        args.pop('self')
+        param_builder = URLParamBuilderDict(args)
+        url_params = param_builder.build()
+        try:
+            response_string = self.get_uri(
+                "/securetrack/api/topology/clouds{}".format(url_params),
+                expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of the topology clouds for context {} and type {} and name {} (start={},count={}).".format(
+                context, cloud_type, name, start, count)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Context ID {} does not exists.".format(context)
+            logger.critical(message)
+            raise ValueError(message)
+        return TopologyCloudList.from_xml_string(response_string)
+
+	def add_descendant_to_zone(self, parent_id, child_id, domain_id=DEFAULT_DOMAIN_ID):
+        """Add descendents to SecureTrack zone.
+
+        :param parent_id: The ID of the parent zone.
+        :type: int
+        :param child_ids:  comma separated list of ids or single id
+        :type: inf
+        :param domain_id: The ID of the domain in which to delete the zone entry.
+        :type domain_id: int
+        :return: True if call is successful
+        """
+        logger.info('Setting SecureTrack Zone descendants')
+        if isinstance(child_id, list):
+            child_id = ','.join(child_id)
+        try:
+            self.put_uri("/securetrack/api/zones/{}/descendants/{}/?context={}".format(parent_id, child_id, domain_id),
+                            expected_status_codes=[200, 204])
+        except REST_Not_Found_Error:
+            message = "Failed to set set the descendants of the zone."
+            logger.critical(message)
+            raise ValueError(message)
+        except RequestException:
+            message = "Failed to set the descendants of the zone."
+            logger.critical(message)
+            raise IOError(message)
+        return True
+			
+	def post_domain(self, domain):
+		"""Create a new domain in SecureTrack.
+		:param domain: The domain to create.
+		:type domain: Domain
+		:return: The ID of the created domain.
+		:rtype: int
+		"""
+		logger.info("Posting new domain.")
+		uri = "/securetrack/api/domains"
+		try:
+			response = self.post_uri(uri, domain.to_xml_string().encode(), expected_status_codes=[200, 201, 204])
+			domain_id = response.get_created_item_id()
+			logger.info("Created domain with ID '%s'", domain_id)
+			return domain_id
+		except RequestException:
+			message = "Failed to create domain."
+			logger.critical(message)
+			raise IOError(message)
+		except REST_HTTP_Exception as error:
+			message = "Failed to create domain exception, error was '{}'.".format(error.message)
+			logger.critical(message)
+			raise ValueError(message)
+
+	def get_topology_path_img(self, sources='0.0.0.0', destinations='0.0.0.0', services='ANY', url_params=None):
+        """
+        :param sources: comma separated list of source addresses e.g. 1.1.1.0:24
+        :param destinations: comma separated list of destination addresses
+        :param services: comma separated list of services
+        :param url_params:
+        :return: base64 string
+        """
+        logger.debug("sources={}, destinations={}, services={}, url_params={}".format(
+             sources, destinations, services, url_params))
+        if not url_params:
+            url_params = ""
+        else:
+            param_builder = URLParamBuilderDict(url_params)
+            url_params = param_builder.build(prepend_question_mark=False)
+
+        src = ",".join(sources) if isinstance(sources, (list, tuple, set)) else sources
+        dst = ",".join(destinations) if isinstance(destinations, (list, tuple, set)) else destinations
+        srv = ",".join(services) if isinstance(services, (list, tuple, set)) else services
+        uri = "/securetrack/api/topology/path_image?src={}&dst={}&service={}&{}".format(src, dst, srv, url_params)
+        try:
+            img = self.get_uri(uri, expected_status_codes=200).response.content
+        except RequestException as error:
+            raise IOError("Failed to securetrack configuration. Error: {}".format(error))
+        return base64.encodebytes(img)
+
+	def get_zones_for_device(self, device_id, domain_id=DEFAULT_DOMAIN_ID):
+        """Get the interfaces for a device.
+
+        :param device_id: The device ID for which we want to get interfaces.
+        :type device_id: int
+        :param domain_id: The ID of the domain
+        :type domain_id: int|str
+        :return: The zones for the specified device.
+        :rtype: Device_Zones_List
+        :raise ValueError: If a device with the specified ID does not exist.
+        :raise IOError: If there was a communication problem trying to get the interfaces.
+        """
+        logger.info("Getting zones for device with ID '%s'.", device_id)
+        try:
+            response_string = self.get_uri("/securetrack/api/devices/{}/zones?context={}".format(device_id, domain_id),
+                                           expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of zones for device ID {}.".format(device_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Device with ID {} does not exist.".format(device_id)
+            logger.critical(message)
+            raise ValueError(message)
+        return Device_Zones_List.from_xml_string(response_string)
