@@ -5,7 +5,7 @@ from requests.exceptions import RequestException
 
 from pytos.common.definitions.Url_Params_Builder import URLParamBuilderDict
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Client_Error, REST_Unauthorized_Error, \
-    REST_Bad_Request_Error
+    REST_Bad_Request_Error, REST_HTTP_Exception
 from pytos.common.logging.definitions import HELPERS_LOGGER_NAME
 from pytos.secureapp.xml_objects.rest import Connection_List, User_List, Applications_List, Services_List, Customers_List, \
     Network_Objects_List, Application, User, Single_Service, Group_Service, Basic_Network_Object,\
@@ -2015,3 +2015,44 @@ class Secure_App_Helper(Secure_Change_Helper):
             raise ValueError(message)
         return cloud_console_servers
 
+    def delete_local_network_object_by_id(self, app_id, network_object_id):
+        """Delete local network_object with in application in SecureApp.
+        :param app_id: The id of the application
+        :param network_object_id: The local network_object id
+        :return: True if the network_object deletion was successful.
+        :raise ValueError: If the specified network_object does not exist or there was another problem with the parameters.
+        :raise IOError: If there was a communication error.
+        """
+        logger.info("Deleting local network_object id '{}' for application id '{}'".format(app_id, network_object_id))
+        url = "/securechangeworkflow/api/secureapp/repository/applications/{}/network_objects/{}".format(app_id, network_object_id)
+        try:
+            self.delete_uri(url, expected_status_codes=200)
+        except RequestException as error:
+            message = "Could not delete network_object with ID: '{}', error was '{}'".format(network_object_id, error)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Client_Error as error:
+            message = "Could not delete network_object with ID: '{}', error was '{}'".format(network_object_id, error)
+            logger.critical(message)
+            raise ValueError(message)
+        return True
+
+	def delete_network_object_for_app_id(self, app_id, network_object_id, force=False):
+		"""Delete network_object with in application in SecureApp.
+        :param app_id: The id of the application
+        :param network_object_id: The network_object id
+		:param force: To indicate if we need to force the change
+        :raise IOError: If there was a communication error.
+        """
+        logger.info("Deleting network object with ID %s from application with ID '%s'.", network_object_id, app_id)
+        uri = "/securechangeworkflow/api/secureapp/repository/applications/{}/network_objects/{}".format(
+            app_id, network_object_id)
+        if force:
+            uri += '?force=true'
+        try:
+            self.delete_uri(uri, expected_status_codes=[200, 201, 202])
+        except (REST_HTTP_Exception, RequestException) as error:
+            msg = "Failed to delete network object with ID {} from application with ID {}. Error: {}".format(network_object_id,
+                                                                                                             app_id, error)
+            logger.critical(error)
+            raise IOError(error)

@@ -2128,3 +2128,8 @@ class ExcludedDevicesList(XML_List):
         for device_node in xml_node.iter(tag=Elements.ID):
             device_ids.append(ExcludedDevice.from_xml_node(device_node))
         return cls(device_ids)
+
+class RejectComment(Comment):
+    def __init__(self, comment):
+        super().__init__(comment, Elements.REJECT_COMMENT)
+

@@ -21,7 +21,8 @@ from pytos.common.functions import xml_node_from_string, read_multiline_str_from
 from pytos.common.definitions.xml_tags import Attributes, Elements
 from pytos.securechange.xml_objects.base_types import Step_Field_Base
 from pytos.securechange.xml_objects.rest import Ticket, Ticket_History_Activities, Comment, Step_Task, \
-    MultiGroupChangeImplementResult, User_List, User, Group, TicketList, Reassign_Comment, Redo_Comment
+    MultiGroupChangeImplementResult, User_List, User, Group, TicketList, Reassign_Comment, Redo_Comment, \
+	RejectComment, ExcludedDevicesList
 from pytos.securechange.xml_objects.restapi.step.access_request.accessrequest import DNS_Access_Request_Target, \
     IP_Access_Request_Target, IP_Range_Access_Request_Target, Any_Access_Request_Target, Internet_Access_Request_Target, \
     Object_Access_Request_Target, Named_Access_Request_Device, Any_Access_Request_Device, Any_Service_Target, \
@@ -555,21 +556,6 @@ class Secure_Change_Helper(Secure_API_Helper):
             message = "Could not import user {}, error was '{}'.".format(username, create_error)
             logger.error(message)
             raise IOError(message)
-
-    def get_ticket_ids_by_status(self, status):
-        url = "/securechangeworkflow/api/securechange/tickets?status={}".format(status)
-        try:
-            response_string = self.get_uri(url, expected_status_codes=200).response.content
-        except REST_Not_Found_Error:
-            message = "Failed to find tickets with status '{}'".format(status)
-            logger.error(message)
-            raise ValueError(message)
-        except requests.RequestException:
-            message = "Failed to GET tickets with status '{}'.".format(status)
-            logger.error(message)
-            raise IOError(message)
-        xml_node = ET.fromstring(response_string)
-        return TicketList.from_xml_node(xml_node)
 
     def reassign_task(self, task_obj, user_id, reassign_message):
         """Reassign Ticket Task to other user by his ID
@@ -1510,3 +1496,142 @@ class Secure_Change_API_Handler:
             logger.debug("No function registered for completion step {}".format(completion_step_name))
         else:
             self._call_func(func, *args, **kwargs)
+	
+	def reject_ticket(self, ticket_id, comment, handler_id=None):
+        """Reject a ticket
+        :param ticket_id: The Id of the ticket
+        :type ticket_id: str|int
+        :param comment: Rejection comment
+        :type comment: str
+        :param handler_id: The ID of the requestor (on behalf)
+        :type handler_id: str|int
+        :raise ValueError: If no requester or/and ticket were found or missing the comment.
+        :raise IOError: If there was a communication error.
+        """
+        logger.info("Rejecting ticket with ID {} for"
+                    " requester with id {}. Comment: '{}'".format(ticket_id, handler_id, comment))
+        if handler_id:
+            handler_info = "?requester_id={}".format(handler_id)
+        else:
+            handler_info = ''
+        ticket_rejection_comment = RejectComment(comment)
+        try:
+            self.put_uri("/securechangeworkflow/api/securechange/tickets/{}/reject{}".format(ticket_id, handler_info),
+                         ticket_rejection_comment.to_xml_string(), expected_status_codes=[200, 201])
+        except (REST_Not_Found_Error, REST_Bad_Request_Error) as error:
+            msg = "Could not reject ticket. Error: {}".format(error)
+            logger.error(msg)
+            raise ValueError(msg)
+        except requests.RequestException as error:
+            msg = "Could not reject ticket. Error: {}.".format(error)
+            logger.error(msg)
+            raise IOError(msg)
+	
+	def get_ticket_ids_by_status(self, status):
+		"""get ticket ids by their status
+        :param status: the status of the ticket
+        :type status: str
+        :raise ValueError: If there is no tickets with the requested status.
+        :raise IOError: If there was a communication error."""
+        url = "/securechangeworkflow/api/securechange/tickets?status={}".format(status)
+        try:
+            response_string = self.get_uri(url, expected_status_codes=200).response.content
+        except REST_Not_Found_Error:
+            message = "Failed to find tickets with status '{}'".format(status)
+            logger.error(message)
+            raise ValueError(message)
+        except requests.RequestException:
+            message = "Failed to GET tickets with status '{}'.".format(status)
+            logger.error(message)
+            raise IOError(message)
+        xml_node = ET.fromstring(response_string)
+        ticket_list = TicketList.from_xml_node(xml_node)
+
+        next_node = xml_node.find('next')
+        while next_node is not None:
+            next_page_url = next_node.attrib['href']
+            parsed_url = urlparse(next_page_url)
+            url = '{}?{}'.format(parsed_url.path, parsed_url.query)
+            try:
+                response_string = self.get_uri(url, expected_status_codes=200).response.content
+            except REST_Not_Found_Error:
+                message = "Failed to find tickets with status '{}'".format(status)
+                logger.error(message)
+                raise ValueError(message)
+            except requests.RequestException:
+                message = "Failed to GET tickets with status '{}'.".format(status)
+                logger.error(message)
+                raise IOError(message)
+            xml_node = ET.fromstring(response_string)
+            ticket_list.extend(TicketList.from_xml_node(xml_node).get_contents())
+            next_node = xml_node.find('next')
+
+        return ticket_list
+	
+	def get_topology_path_image_by_ar(self, ticket_id, step_id, task_id, ar_id):
+        """Get topology path image
+        :param ticket_id: ticket id for the requested topology path image
+        :type ticket_id: int
+        :param step_id: step id for the requested topology path image
+        :type step_id: int
+        :param task_id: task id the requested topology path image
+        :type task_id: int
+        :param ar_id: access request id for the requested topology path image
+        :type ar_id: int
+        :raise ValueError: If one of the id's of the function args does not exist in the system.
+        :raise IOError: If there was a communication problem trying to get the services.
+		:return type: image path in base64
+        """
+        logger.info("Getting topology path image")
+        if not all([ticket_id, step_id, task_id, ar_id]):
+            logger.error("ticket id, step id, task id and ar id must be provided")
+            return
+
+        url = "/securechangeworkflow/api/securechange/tickets/{}/steps/{}/tasks/{}/multi_access_request/{}/verifier/topology_map".format(ticket_id, step_id, task_id, ar_id)
+
+        try:
+            response_string = self.get_uri(url, expected_status_codes=200).response.content
+        except requests.RequestException as e:
+            message = "Failed to get topology map. Error '{}'".format(e)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Bad_Request_Error as e:
+            message = "Failed to get topology map".format(e)
+            logger.critical(message)
+            raise ValueError(message)
+        return response_string
+	
+	def get_excluded_devices(self):
+        """Returns the list of devices ids that are excluded from appearing in target suggestion
+        :return:
+        """
+        url = self.get_uri("/securechangeworkflow/api/securechange/devices/excluded",
+                           expected_status_codes=200).response.content
+        devices_ids_node = ET.fromstring(url)
+        devices_list = ExcludedDevicesList.from_xml_node(devices_ids_node)
+        return devices_list
+
+	def put_excluded_devices(self, device_ids_list):
+		"""Updating excluded devices list in the target suggestion
+        :param device_ids_list: the device ids we want to exclude
+        :type ticket_id: list
+        :raise ValueError: If the list is not a ExcludedDevicesList or we can't update the list.
+        :raise IOError: If there was a communication problem trying to update the list.
+        """
+        if not isinstance(device_ids_list, ExcludedDevicesList):
+            raise ValueError("device_ids_list must be a ExcludedDevicesList object.")
+        logger.info("Updating excluded devices list in SecureChange.")
+        device_ids_list_xml = device_ids_list.to_xml_string().encode()
+        logger.debug("Data: '%s'", device_ids_list_xml)
+        try:
+            self.put_uri("/securechangeworkflow/api/securechange/devices/excluded",
+                         device_ids_list_xml, expected_status_codes=200)
+        except REST_Bad_Request_Error as update_error:
+            message = "Could not update excluded devices, error was '{}'.".format(update_error)
+            logger.error(message)
+            raise ValueError(message)
+        except requests.RequestException as update_error:
+            message = "Could not update excluded devices, error was '{}'.".format(update_error)
+            logger.error(message)
+            raise IOError(message)
+        return True
