@@ -31,7 +31,7 @@ from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults, 
 from pytos.securetrack.xml_objects.rest.audit import DCR_Test_Group, DCR_Test_Concrete, DCR_Test_Definition, \
 	DCR_Test_Product, DCR_Test_Param
 from pytos.securetrack.xml_objects.rest.zones import Zone_Entries_List, Zone_List, \
-    ZoneDescendantsList
+    ZoneDescendantsList, Device_Zones_List
 
 logger = logging.getLogger(HELPERS_LOGGER_NAME)
 
@@ -2584,3 +2584,29 @@ class Secure_Track_Helper(Secure_API_Helper):
         except RequestException as error:
             raise IOError("Failed to securetrack configuration. Error: {}".format(error))
         return base64.encodebytes(img)
+
+	def get_zones_for_device(self, device_id, domain_id=DEFAULT_DOMAIN_ID):
+        """Get the interfaces for a device.
+
+        :param device_id: The device ID for which we want to get interfaces.
+        :type device_id: int
+        :param domain_id: The ID of the domain
+        :type domain_id: int|str
+        :return: The zones for the specified device.
+        :rtype: Device_Zones_List
+        :raise ValueError: If a device with the specified ID does not exist.
+        :raise IOError: If there was a communication problem trying to get the interfaces.
+        """
+        logger.info("Getting zones for device with ID '%s'.", device_id)
+        try:
+            response_string = self.get_uri("/securetrack/api/devices/{}/zones?context={}".format(device_id, domain_id),
+                                           expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of zones for device ID {}.".format(device_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Device with ID {} does not exist.".format(device_id)
+            logger.critical(message)
+            raise ValueError(message)
+        return Device_Zones_List.from_xml_string(response_string)
