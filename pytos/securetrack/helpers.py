@@ -5,6 +5,7 @@ import io
 import itertools
 import logging
 import multiprocessing.pool
+import xml.etree.ElementTree as ET
 
 from pytos.common.definitions.Url_Params_Builder import URLParamBuilderDict
 from requests import RequestException
@@ -25,7 +26,9 @@ from pytos.securetrack.xml_objects.rest.rules import Rules_List, Cleanup_Set, Po
     Rule_Documentation, SecurityPolicyDeviceViolations, Change_Authorization
 from pytos.securetrack.xml_objects.rest.security_policy import SecurityPolicyExceptionList, Security_Policy_Exception, \
     Security_Policies_List
-from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults
+from pytos.securetrack.xml_objects.rest.topology import PathCalculationResults, TopologyCloudList
+from pytos.securetrack.xml_objects.rest.audit import DCR_Test_Group, DCR_Test_Concrete, DCR_Test_Definition, \
+	DCR_Test_Product, DCR_Test_Param
 from pytos.securetrack.xml_objects.rest.zones import Zone_Entries_List, Zone_List, \
     ZoneDescendantsList
 
@@ -2406,3 +2409,127 @@ class Secure_Track_Helper(Secure_API_Helper):
             message = "Device with ID {} does not have a ready revision.".format(device_id)
             raise ValueError(message)
         return NatRules.from_xml_string(response_string)
+
+	def get_topology_clouds(self, context=DEFAULT_DOMAIN_ID, cloud_type=None, name=None, start=None, count=None):
+        """Returns a list of the topology clouds for all the domains for which the user has permission to access.
+        Use the optional name parameter to restrict the results to topology clouds that contain the specified string.
+        The default pagination is start=0 and count=50.
+
+        :param context: domain ID, If a context is not specified, the Global context will be used.
+        :type context: int
+        :param cloud_type: the type of cloud (Allowed Values: joined,non-joined)
+        :type cloud_type: str
+        :param name: Cloud name
+        :type name: str
+        :param start: The starting element to include in the returned results
+        :type start: int
+        :param count: Number of elements to include in the results
+        :type count: int
+        :return: The topology clouds
+        :rtype: Clouds_List
+        :raise ValueError: If a context with the specified ID does not exist
+        :raise IOError: If there was a communication problem trying to get the clouds
+        """
+        logger.info(
+            "Getting topology clouds for context {} and type {} and name {} (start={},count={})".format(context,
+                                                                                                        cloud_type,
+                                                                                                        name, start,
+                                                                                                        count))
+        args = {arg: value for arg, value in locals().items() if value}
+        args.pop('self')
+        param_builder = URLParamBuilderDict(args)
+        url_params = param_builder.build()
+        try:
+            response_string = self.get_uri(
+                "/securetrack/api/topology/clouds{}".format(url_params),
+                expected_status_codes=200).response.content
+        except RequestException:
+            message = "Failed to get the list of the topology clouds for context {} and type {} and name {} (start={},count={}).".format(
+                context, cloud_type, name, start, count)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "Context ID {} does not exists.".format(context)
+            logger.critical(message)
+            raise ValueError(message)
+        return TopologyCloudList.from_xml_string(response_string)
+
+	def add_descendant_to_zone(self, parent_id, child_id, domain_id=DEFAULT_DOMAIN_ID):
+        """Add descendents to SecureTrack zone.
+
+        :param parent_id: The ID of the parent zone.
+        :type: int
+        :param child_ids:  comma separated list of ids or single id
+        :type: inf
+        :param domain_id: The ID of the domain in which to delete the zone entry.
+        :type domain_id: int
+        :return: True if call is successful
+        """
+        logger.info('Setting SecureTrack Zone descendants')
+        if isinstance(child_id, list):
+            child_id = ','.join(child_id)
+        try:
+            self.put_uri("/securetrack/api/zones/{}/descendants/{}/?context={}".format(parent_id, child_id, domain_id),
+                            expected_status_codes=[200, 204])
+        except REST_Not_Found_Error:
+            message = "Failed to set set the descendants of the zone."
+            logger.critical(message)
+            raise ValueError(message)
+        except RequestException:
+            message = "Failed to set the descendants of the zone."
+            logger.critical(message)
+            raise IOError(message)
+        return True
+		
+	def get_dcr_test_by_id(self, dcr_test_id):
+        """Get a DCR (Device Configuration Report) test definition from SecureTrack by its ID.
+
+        :param dcr_test_id: The ID of the DCR test to get.
+        :type dcr_test_id: int
+        :rtype: DCR_Test_Concrete|DCR_Test_Group
+        :raise RequestException: If there is a connection problem to SecureTrack.
+        :raise REST_Not_Found_Error: If a test with the specified ID was not found.
+        """
+        logger.info("Getting new DCR test with ID '%s'.", dcr_test_id)
+        try:
+            dcr_xml_string = self.get_uri("/securetrack/api/dcrTests/{}".format(dcr_test_id),
+                                          expected_status_codes=200).response.content
+            dcr_xml_node = ET.fromstring(dcr_xml_string)
+            if dcr_xml_node.tag == Elements.DCR_TEST_CONCRETE:
+                return DCR_Test_Concrete.from_xml_node(dcr_xml_node)
+            elif dcr_xml_node.tag == Elements.DCR_TEST_GROUP:
+                return DCR_Test_Group.from_xml_node(dcr_xml_node)
+            else:
+                message = "Unknown DCR type '{}'.".format(dcr_xml_node.tag)
+                logger.critical(message)
+                raise ValueError(message)
+        except RequestException:
+            message = "Failed to get DCR test with ID '{}'.".format(dcr_test_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Not_Found_Error:
+            message = "DCR Test with ID '{}' does not exist.".format(dcr_test_id)
+            logger.critical(message)
+            raise ValueError(message)
+
+    def post_dcr_test(self, dcr_test):
+        """Create a DCR (Device Configuration Report) in SecureTrack.
+
+        :param: dcr_test: The DCR test object.
+        :type dcr_test: DCR_Test_Group|DCR_Test_Concrete
+        """
+        logger.info("Creating new DCR test.")
+        try:
+            response = self.post_uri("/securetrack/api/dcrTests/custom", dcr_test.to_xml_string().encode(),
+                                     expected_status_codes=201)
+            dcr_test_id = response.get_created_item_id()
+            logger.info("Created a DCR test with an ID of '%s'.", dcr_test_id)
+            return dcr_test_id
+        except RequestException:
+            message = "Failed to create DCR test."
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Client_Error as client_error:
+            message = "Failed to create DCR test, error was '{}'.".format(client_error.message)
+            logger.critical(message)
+            raise ValueError(message)

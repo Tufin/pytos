@@ -120,6 +120,7 @@ class Attributes:
 class Elements:
     CREATE_DATE = "createDate"
     ID = "id"
+	REJECT_COMMENT = "reject_comment"
     TICKET_INFO = "ticket_info"
     UPDATE_DATE = "updateDate"
     CURRENT_STAGE = "current_stage"
@@ -712,6 +713,8 @@ class Elements:
     TO_DOMAIN = "to_domain"
     TO_ZONE = "to_zone"
     TOTAL = "total"
+	TOPOLOGY_CLOUD = "topology_cloud"
+	TOPOLOGY_CLOUDS = "topology_clouds"
     TRACK = "track"
     TRACK_LEVEL = "track_level"
     TRACK_INTERVAL = "track_interval"

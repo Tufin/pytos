@@ -235,3 +235,19 @@ class PathCalculationResults(XML_Object_Base):
             devices_info.append(DeviceInfo.from_xml_node(device_info_node))
 
         return cls(traffic_allowed, devices_info)
+
+class TopologyCloudList(XML_Object_Base):
+    def __init__(self, count, total, topology_clouds):
+        super().__init__(Elements.TOPOLOGY_CLOUDS)
+        self.count = count
+        self.total = total
+        self.topology_clouds = topology_clouds
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        count = get_xml_text_value(xml_node, Elements.COUNT)
+        total = get_xml_text_value(xml_node, Elements.TOTAL)
+        topology_clouds = []
+        for topology_cloud_node in xml_node.iter(tag=Elements.TOPOLOGY_CLOUD):
+            topology_clouds.append(TopologyCloud.from_xml_node(topology_cloud_node))
+        return cls(count, total, topology_clouds)
