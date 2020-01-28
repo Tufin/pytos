@@ -1,6 +1,11 @@
 =======
 CHANGES
 =======
+1.2.5
+=====
+* added delete_network_object_for_app_id to SA helpers
+* added reject_ticket, get_topology_path_image_by_ar, get_excluded_devices, put_excluded_devices to SC helpers
+* added get_topology_clouds, add_descendant_to_zone, post_domain, get_topology_path_img, get_zones_for_device to ST helpers
 
 1.2.4
 =====
