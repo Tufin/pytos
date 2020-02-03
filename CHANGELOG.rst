@@ -1,6 +1,10 @@
 =======
 CHANGES
 =======
+1.2.6
+=====
+* Secure_Track_Helper.get_topology_clouds - fixed "type" argument name in the generated url
+
 1.2.5
 =====
 * added delete_network_object_for_app_id to SA helpers
