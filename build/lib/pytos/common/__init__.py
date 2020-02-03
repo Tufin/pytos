@@ -1,2 +1,0 @@
-SECURETRACK = "securetrack"
-SECURECHANGE = "securechange"
