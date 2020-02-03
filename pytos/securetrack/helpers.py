@@ -2409,7 +2409,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise ValueError(message)
         return NatRules.from_xml_string(response_string)
 
-	def get_topology_clouds(self, context=DEFAULT_DOMAIN_ID, cloud_type=None, name=None, start=None, count=None):
+    def get_topology_clouds(self, context=DEFAULT_DOMAIN_ID, cloud_type=None, name=None, start=None, count=None):
         """Returns a list of the topology clouds for all the domains for which the user has permission to access.
         Use the optional name parameter to restrict the results to topology clouds that contain the specified string.
         The default pagination is start=0 and count=50.
@@ -2434,8 +2434,9 @@ class Secure_Track_Helper(Secure_API_Helper):
                                                                                                         cloud_type,
                                                                                                         name, start,
                                                                                                         count))
-        args = {arg: value for arg, value in locals().items() if value}
+        args = {arg: value for arg, value in locals().items() if value is not None}
         args.pop('self')
+        args['type'] = args.pop('cloud_type')
         param_builder = URLParamBuilderDict(args)
         url_params = param_builder.build()
         try:
@@ -2453,7 +2454,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise ValueError(message)
         return TopologyCloudList.from_xml_string(response_string)
 
-	def add_descendant_to_zone(self, parent_id, child_id, domain_id=DEFAULT_DOMAIN_ID):
+    def add_descendant_to_zone(self, parent_id, child_id, domain_id=DEFAULT_DOMAIN_ID):
         """Add descendents to SecureTrack zone.
 
         :param parent_id: The ID of the parent zone.
@@ -2480,30 +2481,30 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise IOError(message)
         return True
 			
-	def post_domain(self, domain):
-		"""Create a new domain in SecureTrack.
+    def post_domain(self, domain):
+        """Create a new domain in SecureTrack.
 		:param domain: The domain to create.
 		:type domain: Domain
 		:return: The ID of the created domain.
 		:rtype: int
 		"""
-		logger.info("Posting new domain.")
-		uri = "/securetrack/api/domains"
-		try:
-			response = self.post_uri(uri, domain.to_xml_string().encode(), expected_status_codes=[200, 201, 204])
-			domain_id = response.get_created_item_id()
-			logger.info("Created domain with ID '%s'", domain_id)
-			return domain_id
-		except RequestException:
-			message = "Failed to create domain."
-			logger.critical(message)
-			raise IOError(message)
-		except REST_HTTP_Exception as error:
-			message = "Failed to create domain exception, error was '{}'.".format(error.message)
-			logger.critical(message)
-			raise ValueError(message)
+        logger.info("Posting new domain.")
+        uri = "/securetrack/api/domains"
+        try:
+            response = self.post_uri(uri, domain.to_xml_string().encode(), expected_status_codes=[200, 201, 204])
+            domain_id = response.get_created_item_id()
+            logger.info("Created domain with ID '%s'", domain_id)
+            return domain_id
+        except RequestException:
+            message = "Failed to create domain."
+            logger.critical(message)
+            raise IOError(message)
+        except REST_HTTP_Exception as error:
+            message = "Failed to create domain exception, error was '{}'.".format(error.message)
+            logger.critical(message)
+            raise ValueError(message)
 
-	def get_topology_path_img(self, sources='0.0.0.0', destinations='0.0.0.0', services='ANY', url_params=None):
+    def get_topology_path_img(self, sources='0.0.0.0', destinations='0.0.0.0', services='ANY', url_params=None):
         """
         :param sources: comma separated list of source addresses e.g. 1.1.1.0:24
         :param destinations: comma separated list of destination addresses
@@ -2529,7 +2530,7 @@ class Secure_Track_Helper(Secure_API_Helper):
             raise IOError("Failed to securetrack configuration. Error: {}".format(error))
         return base64.encodebytes(img)
 
-	def get_zones_for_device(self, device_id, domain_id=DEFAULT_DOMAIN_ID):
+    def get_zones_for_device(self, device_id, domain_id=DEFAULT_DOMAIN_ID):
         """Get the interfaces for a device.
 
         :param device_id: The device ID for which we want to get interfaces.
