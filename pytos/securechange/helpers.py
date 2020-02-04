@@ -12,6 +12,8 @@ import time
 import traceback
 import xml.etree.ElementTree as ET
 
+from urllib.parse import urlparse
+
 from pytos.common.definitions import xml_tags
 from pytos.common.exceptions import REST_Not_Found_Error, REST_Bad_Request_Error, REST_Unauthorized_Error
 from pytos.common.helpers import Secure_API_Helper
@@ -1527,12 +1529,12 @@ class Secure_Change_API_Handler:
             logger.error(msg)
             raise IOError(msg)
 
-        def get_ticket_ids_by_status(self, status):
-            """get ticket ids by their status
-    :param status: the status of the ticket
-    :type status: str
-    :raise ValueError: If there is no tickets with the requested status.
-    :raise IOError: If there was a communication error."""
+    def get_ticket_ids_by_status(self, status):
+        """get ticket ids by their status
+        :param status: the status of the ticket
+        :type status: str
+        :raise ValueError: If there is no tickets with the requested status.
+        :raise IOError: If there was a communication error."""
         url = "/securechangeworkflow/api/securechange/tickets?status={}".format(status)
         try:
             response_string = self.get_uri(url, expected_status_codes=200).response.content
