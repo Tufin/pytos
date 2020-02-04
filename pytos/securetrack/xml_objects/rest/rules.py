@@ -830,6 +830,8 @@ class Network_Objects_List(XML_List):
                 network_objects.append(Group_Network_Object.from_xml_node(network_object_node))
             elif network_object_type == xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD:
                 network_objects.append(Cloud_Network_Object.from_xml_node(network_object_node))
+            elif network_object_type == xml_tags.Attributes.NETWORK_OBJECT_TYPE_DOMAIN:
+                network_objects.append(DomainNetworkObject.from_xml_node(network_object_node))
             else:
                 message = "Got unknown type '{}'".format(network_object_type)
                 logger.error(message)
@@ -1149,6 +1151,35 @@ class Cloud_Network_Object(Base_Network_Object):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
                          implicit)
+
+
+class DomainNetworkObject(Network_Object):
+    def __init__(
+            self, display_name, is_global, object_id, name, object_type, device_id, comment, implicit,
+            class_name, domain, management_domain, uid
+    ):
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_DOMAIN)
+        super().__init__(xml_tags.Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
+                         device_id, comment, implicit, class_name)
+        self.domain = domain
+        self.uid = uid
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        name = get_xml_text_value(xml_node, xml_tags.Elements.NAME)
+        display_name = get_xml_text_value(xml_node, xml_tags.Elements.DISPLAY_NAME)
+        comment = get_xml_text_value(xml_node, xml_tags.Elements.COMMENT)
+        uid = get_xml_text_value(xml_node, xml_tags.Elements.UID)
+        implicit = get_xml_text_value(xml_node, xml_tags.Elements.IMPLICIT)
+        is_global = get_xml_text_value(xml_node, xml_tags.Elements.GLOBAL)
+        management_domain = get_xml_text_value(xml_node, xml_tags.Elements.MANAGEMENT_DOMAIN)
+        domain = get_xml_text_value(xml_node, xml_tags.Elements.DOMAIN)
+        device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
+        object_type = get_xml_text_value(xml_node, xml_tags.Elements.TYPE)
+        class_name = get_xml_text_value(xml_node, xml_tags.Elements.CLASS_NAME)
+        return cls(display_name, is_global, id, name, object_type, device_id, comment, implicit, class_name,
+                   domain, management_domain, uid)
 
 
 class Policy_Analysis_Query_Result(XML_Object_Base):
