@@ -2436,7 +2436,8 @@ class Secure_Track_Helper(Secure_API_Helper):
                                                                                                         count))
         args = {arg: value for arg, value in locals().items() if value is not None}
         args.pop('self')
-        args['type'] = args.pop('cloud_type')
+        if 'cloud_type' in args:
+            args['type'] = args.pop('cloud_type')
         param_builder = URLParamBuilderDict(args)
         url_params = param_builder.build()
         try:

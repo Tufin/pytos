@@ -1,7 +1,7 @@
 =======
 CHANGES
 =======
-1.2.6
+1.2.7
 =====
 * Secure_Track_Helper.get_topology_clouds - fixed "type" argument name in the generated url
 

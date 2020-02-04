@@ -1497,7 +1497,7 @@ class Secure_Change_API_Handler:
         else:
             self._call_func(func, *args, **kwargs)
 
-        def reject_ticket(self, ticket_id, comment, handler_id=None):
+    def reject_ticket(self, ticket_id, comment, handler_id=None):
         """Reject a ticket
         :param ticket_id: The Id of the ticket
         :type ticket_id: str|int
@@ -1568,7 +1568,7 @@ class Secure_Change_API_Handler:
 
         return ticket_list
 
-        def get_topology_path_image_by_ar(self, ticket_id, step_id, task_id, ar_id):
+    def get_topology_path_image_by_ar(self, ticket_id, step_id, task_id, ar_id):
         """Get topology path image
         :param ticket_id: ticket id for the requested topology path image
         :type ticket_id: int
@@ -1601,7 +1601,7 @@ class Secure_Change_API_Handler:
             raise ValueError(message)
         return response_string
 
-        def get_excluded_devices(self):
+    def get_excluded_devices(self):
         """Returns the list of devices ids that are excluded from appearing in target suggestion
         :return:
         """
@@ -1611,13 +1611,13 @@ class Secure_Change_API_Handler:
         devices_list = ExcludedDevicesList.from_xml_node(devices_ids_node)
         return devices_list
 
-        def put_excluded_devices(self, device_ids_list):
-            """Updating excluded devices list in the target suggestion
-    :param device_ids_list: the device ids we want to exclude
-    :type ticket_id: list
-    :raise ValueError: If the list is not a ExcludedDevicesList or we can't update the list.
-    :raise IOError: If there was a communication problem trying to update the list.
-    """
+    def put_excluded_devices(self, device_ids_list):
+        """Updating excluded devices list in the target suggestion
+        :param device_ids_list: the device ids we want to exclude
+        :type ticket_id: list
+        :raise ValueError: If the list is not a ExcludedDevicesList or we can't update the list.
+        :raise IOError: If there was a communication problem trying to update the list.
+        """
         if not isinstance(device_ids_list, ExcludedDevicesList):
             raise ValueError("device_ids_list must be a ExcludedDevicesList object.")
         logger.info("Updating excluded devices list in SecureChange.")
