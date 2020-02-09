@@ -26,7 +26,7 @@ Common Use Cases
 Installation
 ************
 
-Install the package by running the following command::
+Install the package by running the following command (it is recommended that you upgrade pip first)::
 
 	# pip install pytos
 
