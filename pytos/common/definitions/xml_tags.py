@@ -73,6 +73,7 @@ class Attributes:
     IP_SERVICE = "ip_service"
     NETWORK_OBJECT_GROUP = "network_object_group"
     NETWORK_OBJECT_TYPE_BASIC = "basicNetworkObjectDTO"
+    NETWORK_OBJECT_TYPE_DOMAIN = "domainNetworkObjectDTO"
     NETWORK_OBJECT_TYPE_GROUP = "networkObjectGroupDTO"
     NETWORK_OBJECT_TYPE_HOST = "hostNetworkObjectDTO"
     NETWORK_OBJECT_TYPE_HOST_WITH_INTERFACES = "hostNetworkObjectWithInterfacesDTO"
