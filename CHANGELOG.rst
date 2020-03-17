@@ -1,6 +1,11 @@
 =======
 CHANGES
 =======
+
+1.2.8
+======
+* Re-using cookies in subsequent requests to improve authentication efficiency
+
 1.2.7
 =====
 * Secure_Track_Helper.get_topology_clouds - fixed "type" argument name in the generated url
