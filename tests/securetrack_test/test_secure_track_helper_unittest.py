@@ -214,6 +214,17 @@ class TestRules(unittest.TestCase):
 
 
 class TestZonesPoliciesAndRevisions(unittest.TestCase):
+    # @classmethod
+    # def setUpClass(cls):
+    #     cls.helper = Secure_Track_Helper("localhost", ("username", "password"))
+    #     cls.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+    #     cls.mock_get_uri = cls.patcher.start()
+    #     cls.mock_get_uri.return_value.status_code = 200
+    # 
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.patcher.stop()
+
     def setUp(self):
         self.helper = Secure_Track_Helper("localhost", ("username", "password"))
         self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
@@ -295,7 +306,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 auth=('username', 'password'),
                 data='<zone_entry>\n  <comment>Description</comment>\n  <id>1234</id>\n  <ip>1.1.1.1</ip>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>36</zoneId>\n</zone_entry>',
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_05_delete_zone_entry(self):
@@ -309,7 +321,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             mock_post_uri.assert_called_with('DELETE',
                                              'https://localhost/securetrack/api/zones/1/entries/1?context=1',
                                              auth=('username', 'password'),
-                                             headers={'Content-Type': 'application/xml'})
+                                             headers={'Content-Type': 'application/xml'},
+                                             cookies=self.mock_get_uri.return_value.cookies)
 
     def test_06_modify_zone_entry(self):
         self.mock_get_uri.return_value.content = fake_request_response("zone_entries")
@@ -329,7 +342,9 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             mock_post_uri.assert_called_with('PUT',
                                              'https://localhost/securetrack/api/zones/13/entries/54?context=1',
                                              auth=('username', 'password'),
-                                             data='<zone_entry>\n  <comment>Modified entry</comment>\n  <id>54</id>\n  <ip>101.101.101.101</ip>\n  <negate>0</negate>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>13</zoneId>\n</zone_entry>', headers={'Content-Type': 'application/xml'})
+                                             data='<zone_entry>\n  <comment>Modified entry</comment>\n  <id>54</id>\n  <ip>101.101.101.101</ip>\n  <negate>0</negate>\n  <netmask>255.255.255.255</netmask>\n  <zoneId>13</zoneId>\n</zone_entry>',
+                                             headers={'Content-Type': 'application/xml'},
+                                             cookies=self.mock_get_uri.return_value.cookies)
 
     def test_07_get_zone_by_name(self):
         self.mock_get_uri.return_value.content = fake_request_response("zones")
@@ -375,7 +390,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
             mock_post_uri.assert_called_with('DELETE',
                                              'https://localhost/securetrack/api/security_policies/3',
                                              auth=('username', 'password'),
-                                             headers={'Content-Type': 'application/xml'})
+                                             headers={'Content-Type': 'application/xml'},
+                                             cookies=self.mock_get_uri.return_value.cookies)
 
     def test_14_get_revision_by_id(self):
         self.mock_get_uri.return_value.content = fake_request_response("revision")
@@ -394,6 +410,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertIsInstance(policies, Policy_List)
 
     def test_17_post_security_policy_exception(self):
+        self.helper.cookies_dict['securetrack'] = None
         self.mock_get_uri.return_value.headers = {'location': '1'}
         self.mock_get_uri.return_value.status_code = 201
         xml = fake_request_response("exception")
@@ -409,10 +426,12 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 auth=('username', 'password'),
                 data=policy_exception.to_xml_string(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=None
             )
 
     def test_18_delete_zone_by_zone_id(self):
+        self.helper.cookies_dict['securetrack'] = None
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             try:
                 self.helper.delete_zone_by_zone_id(1, True)
@@ -422,7 +441,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securetrack/api/zones/1',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=None
             )
 
     def test_19_get_zone_descendants(self):
@@ -431,6 +451,7 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
         self.assertIsInstance(zone_descendants_list, ZoneDescendantsList)
 
     def test_20_delete_security_policy_exception(self):
+        self.helper.cookies_dict['securetrack'] = None
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             try:
                 self.helper.delete_security_policy_exception(1)
@@ -440,7 +461,8 @@ class TestZonesPoliciesAndRevisions(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securetrack/api/security_policies/exceptions/1',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=None
             )
 
 
@@ -472,14 +494,16 @@ class TestTopology(unittest.TestCase):
 
 
 class TestDomains(unittest.TestCase):
-    def setUp(self):
-        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
-        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
-        self.mock_get_uri = self.patcher.start()
-        self.mock_get_uri.return_value.status_code = 200
+    @classmethod
+    def setUpClass(cls):
+        cls.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        cls.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        cls.mock_get_uri = cls.patcher.start()
+        cls.mock_get_uri.return_value.status_code = 200
 
-    def tearDown(self):
-        self.patcher.stop()
+    @classmethod
+    def tearDownClass(cls):
+        cls.patcher.stop()
 
     def test_01_get_domains(self):
         self.mock_get_uri.return_value.content = fake_request_response("domains")
@@ -499,19 +523,22 @@ class TestDomains(unittest.TestCase):
                 'https://localhost/securetrack/api/domains/1',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
 
 class TestNetworkObjects(unittest.TestCase):
-    def setUp(self):
-        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
-        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
-        self.mock_get_uri = self.patcher.start()
-        self.mock_get_uri.return_value.status_code = 200
+    @classmethod
+    def setUpClass(cls):
+        cls.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        cls.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        cls.mock_get_uri = cls.patcher.start()
+        cls.mock_get_uri.return_value.status_code = 200
 
-    def tearDown(self):
-        self.patcher.stop()
+    @classmethod
+    def tearDownClass(cls):
+        cls.patcher.stop()
 
     def test_01_get_network_objects_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("network_objects")
@@ -532,7 +559,8 @@ class TestNetworkObjects(unittest.TestCase):
                 'https://localhost/securetrack/api/network_objects/search?filter=text&any_field=192.168',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_03_network_object_subnet_search(self):
@@ -547,7 +575,8 @@ class TestNetworkObjects(unittest.TestCase):
                 'https://localhost/securetrack/api/network_objects/search?filter=subnet&contained_in=192.168.0.0',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     # def test_04_get_network_objects(self):
@@ -567,7 +596,8 @@ class TestNetworkObjects(unittest.TestCase):
                 'https://localhost/securetrack/api/devices/158/network_objects/3418214',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_05_get_member_network_objects_for_group_network_object(self):
@@ -578,14 +608,16 @@ class TestNetworkObjects(unittest.TestCase):
 
 
 class TestServices(unittest.TestCase):
-    def setUp(self):
-        self.helper = Secure_Track_Helper("localhost", ("username", "password"))
-        self.patcher = patch('pytos.common.rest_requests.requests.Session.send')
-        self.mock_get_uri = self.patcher.start()
-        self.mock_get_uri.return_value.status_code = 200
+    @classmethod
+    def setUpClass(cls):
+        cls.helper = Secure_Track_Helper("localhost", ("username", "password"))
+        cls.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+        cls.mock_get_uri = cls.patcher.start()
+        cls.mock_get_uri.return_value.status_code = 200
 
-    def tearDown(self):
-        self.patcher.stop()
+    @classmethod
+    def tearDownClass(cls):
+        cls.patcher.stop()
 
     def test_01_get_services_for_device(self):
         self.mock_get_uri.return_value.content = fake_request_response("services")
@@ -604,7 +636,8 @@ class TestServices(unittest.TestCase):
                 'https://localhost/securetrack/api/devices/158/services?name=service1',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_03_get_service_by_device_and_object_id(self):
@@ -619,7 +652,8 @@ class TestServices(unittest.TestCase):
                 'https://localhost/securetrack/api/devices/158/services/17973529',
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_04_get_member_services_for_group_service(self):

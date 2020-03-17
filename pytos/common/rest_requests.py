@@ -17,7 +17,8 @@ import requests_toolbelt
 from requests.auth import HTTPDigestAuth
 
 from pytos.common.logging.definitions import REQUESTS_LOGGER_NAME
-from pytos.common.exceptions import REST_HTTP_Exception, REST_Bad_Gateway, REST_Service_Unavailable_Error
+from pytos.common.exceptions import REST_HTTP_Exception, REST_Bad_Gateway, REST_Service_Unavailable_Error, \
+    REST_Unauthorized_Error
 from pytos.common.functions.xml import get_xml_text_value
 
 requests.packages.urllib3.disable_warnings()
@@ -254,6 +255,7 @@ class REST_Request(object):
     def _perform_request(self):
         start_time = datetime.datetime.now()
         exception_copy = None
+        unauthorized_error = False
         for retry_count in range(self.max_retries + 1):
             try:
                 self.response = self.session.send(self.request, verify=self.verify_ssl, timeout=self.timeout)
@@ -290,6 +292,14 @@ class REST_Request(object):
                 except (REST_Bad_Gateway, REST_Service_Unavailable_Error) as request_exception:
                     exception_copy = request_exception
                     self.log_error_details(request_exception)
+                except REST_Unauthorized_Error as request_exception:
+                    if unauthorized_error:
+                        exception_copy = request_exception
+                        self.log_error_details(request_exception)
+                        break
+                    else:
+                        unauthorized_error = True
+                        REST_Request.cookies = None
                 except REST_HTTP_Exception as request_exception:
                     exception_copy = request_exception
                     self.log_error_details(request_exception)
@@ -340,7 +350,8 @@ class GET_Request(REST_Request):
         super().__init__(hostname, uri, protocol, **kwargs)
         logger.info("Sending GET request to '%s'", self.url)
         request_obj = requests.Request("GET", self.url, auth=self.auth_tuple,
-                                       params=kwargs.get("params"), headers=self.headers)
+                                       params=kwargs.get("params"), headers=self.headers,
+                                       cookies=kwargs.get('cookies'))
         if self.session:
             self.request = self.session.prepare_request(request_obj)
         else:
@@ -408,7 +419,7 @@ class POST_Request(REST_Request):
 
         logger.info("Sending POST request to '%s'", self.url)
         request_obj = requests.Request("POST", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers,
-                                       files=files)
+                                       files=files, cookies=kwargs.get('cookies'))
         if self.session:
             self.request = self.session.prepare_request(request_obj)
         else:
@@ -451,7 +462,8 @@ class PUT_Request(REST_Request):
                 else:
                     self.headers["Content-Type"] = "application/xml"
         logger.info("Sending PUT request to '%s'", self.url)
-        request_obj = requests.Request("PUT", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers)
+        request_obj = requests.Request("PUT", self.url, data=self.body, auth=self.auth_tuple, headers=self.headers,
+                                       cookies=kwargs.get('cookies'))
         if self.session:
             self.request = self.session.prepare_request(request_obj)
         else:
@@ -478,7 +490,8 @@ class DELETE_Request(REST_Request):
             else:
                 self.headers["Content-Type"] = "application/xml"
         logger.info("Sending DELETE request to '%s'", self.url)
-        request_obj = requests.Request("DELETE", self.url, auth=self.auth_tuple, headers=self.headers)
+        request_obj = requests.Request("DELETE", self.url, auth=self.auth_tuple, headers=self.headers,
+                                       cookies=kwargs.get('cookies'))
         if self.session:
             self.request = self.session.prepare_request(request_obj)
         else:

@@ -29,6 +29,18 @@ class TestSecureChangeHelper(unittest.TestCase):
 
     def tearDown(self):
         self.patcher.stop()
+    
+    # @classmethod
+    # def setUpClass(cls):
+    #     cls.ticket_id = 445
+    #     cls.user_id = 11
+    #     cls.helper = Secure_Change_Helper("localhost", ("username", "password"))
+    #     cls.patcher = patch('pytos.common.rest_requests.requests.Session.send')
+    #     cls.mock_get_uri = cls.patcher.start()
+    #     cls.mock_get_uri.return_value.status_code = 200
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.patcher.stop()
 
     def test_01_post_ticket(self):
         self.mock_get_uri.return_value.headers = {'location': '1'}
@@ -50,7 +62,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=ticket_obj.to_xml_string().encode(),
                 files=None,
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_02_get_ticket(self):
@@ -74,7 +87,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, target_task_id),
                 auth=('username', 'password'),
                 data='<redo_step_comment>\n  <comment>Redoing step</comment>\n</redo_step_comment>',
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_04_get_ticket_history_by_id(self):
@@ -104,10 +118,12 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, ticket.get_current_step().id, step_task_obj.id, self.user_id),
                 auth=('username', 'password'),
                 data='<reassign_task_comment>\n  <comment>Reassign message</comment>\n</reassign_task_comment>',
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_07_change_requester(self):
+        self.helper.cookies_dict['securechange'] = None
         requester_id = 3
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
             try:
@@ -120,10 +136,12 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, requester_id),
                 auth=('username', 'password'),
                 data='<comment>\n  <comment>Modify requester</comment>\n</comment>',
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=None
             )
 
     def test_08_cancel_ticket_with_requester(self):
+        self.helper.cookies_dict['securechange'] = None
         requester_id = 3
         with patch('pytos.common.rest_requests.requests.Request') as mock_put_uri:
             try:
@@ -136,7 +154,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, requester_id),
                 auth=('username', 'password'),
                 data=None,
-                headers={}
+                headers={},
+                cookies=None
             )
 
     def test_09_put_task(self):
@@ -158,7 +177,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, ticket.get_current_step().id, last_task.id),
                 auth=('username', 'password'),
                 data=last_task.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_10_put_field(self):
@@ -180,7 +200,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, ticket.get_current_step().id, last_task.id, text_field.id),
                 auth=('username', 'password'),
                 data=text_field.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_11_get_user_by_username(self):
@@ -241,7 +262,8 @@ class TestSecureChangeHelper(unittest.TestCase):
                 url.format(self.ticket_id, step_id, step_task_obj.id, ar_id),
                 auth=('username', 'password'),
                 headers={},
-                params=None
+                params=None,
+                cookies=self.mock_get_uri.return_value.cookies
             )
 
     def test_18_get_server_decomm_ticket(self):

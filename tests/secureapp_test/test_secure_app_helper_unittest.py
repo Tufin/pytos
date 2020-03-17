@@ -68,8 +68,10 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=app_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_uri.return_value.cookies
             )
+
 
     def test_02_get_app_by_name(self):
         self.mock_uri.return_value.content = fake_request_response("applications")
@@ -105,7 +107,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 url,
                 auth=('username', 'password'),
                 data=app_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_05_create_service(self):
@@ -128,7 +131,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=services_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_06_get_service_by_name(self):
@@ -160,7 +164,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 url,
                 auth=('username', 'password'),
                 data=services_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
@@ -186,7 +191,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=network_objects_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_09_get_network_object_by_id_for_app_id(self):
@@ -214,7 +220,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 url,
                 auth=('username', 'password'),
                 data=network_objects_list.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     @patch('pytos.secureapp.helpers.Secure_App_Helper.get_app_by_name')
@@ -243,7 +250,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=connection_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_uri.return_value.cookies
             )
 
 
@@ -267,10 +275,12 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 url,
                 auth=('username', 'password'),
                 data=connection.to_xml_string().encode(),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_14_delete_connection_by_id_for_app_id(self):
+        self.helper.cookies_dict['secureapp'] = None
         with patch('pytos.common.rest_requests.requests.Request') as mock_delete_uri:
             try:
                 self.helper.delete_connection_by_id_for_app_id(app_id=self.app_id, connection_id=31)
@@ -280,7 +290,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/connections/31',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=None
             )
 
     def test_15_delete_service_by_name(self):
@@ -295,7 +306,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/services?name={}'.format(VALID_TEST_SERVICE_NAME_AFTER_UPDATE),
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_16_delete_app_by_id(self):
@@ -312,7 +324,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/{}'.format(app.id),
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
     def test_17_create_user(self):
@@ -334,7 +347,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 auth=('username', 'password'),
                 data=users_list.to_xml_string().encode(),
                 headers={'Content-Type': 'application/xml'},
-                files=None
+                files=None,
+                cookies=self.mock_uri.return_value.cookies
             )
 
 
@@ -355,7 +369,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/users/55',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
 
@@ -371,7 +386,8 @@ class Test_Secure_App_Helper(unittest.TestCase):
                 'DELETE',
                 'https://localhost/securechangeworkflow/api/secureapp/repository/applications/15/network_objects/286',
                 auth=('username', 'password'),
-                headers={'Content-Type': 'application/xml'}
+                headers={'Content-Type': 'application/xml'},
+                cookies=self.mock_uri.return_value.cookies
             )
 
 
