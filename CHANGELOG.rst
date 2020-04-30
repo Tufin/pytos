@@ -1,6 +1,9 @@
 =======
 CHANGES
 =======
+1.2.9
+======
+* Changed owner getter in Secureapp rest xml api, to check if I get a response first
 
 1.2.8
 ======
