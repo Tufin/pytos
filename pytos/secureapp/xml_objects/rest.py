@@ -62,7 +62,12 @@ class Application(XML_Object_Base, Comparable):
         name = get_xml_text_value(xml_node, Elements.NAME)
         comment = get_xml_text_value(xml_node, Elements.COMMENT)
         decommissioned = get_xml_text_value(xml_node, Elements.DECOMMISSIONED)
-        owner = Application_Owner.from_xml_node(get_xml_node(xml_node, Elements.OWNER))
+#         owner = Application_Owner.from_xml_node(get_xml_node(xml_node, Elements.OWNER))
+        owner_node = get_xml_node(xml_node, Elements.OWNER, optional=True)
+        if owner_node:
+                owner = Application_Owner.from_xml_node(owner_node)
+        else:
+                owner = Application_Owner(None, 'No owner', 'No owner', URL_Link(''))
         created = get_xml_text_value(xml_node, Elements.CREATED)
         modified = get_xml_text_value(xml_node, Elements.MODIFIED)
         status = get_xml_text_value(xml_node, Elements.STATUS)
@@ -76,7 +81,7 @@ class Application(XML_Object_Base, Comparable):
             customer = Customer.from_xml_node(customer_xml_node)
         else:
             customer = None
-
+            
         connection_to_application_packs = XML_List.from_xml_node_by_tags(xml_node,
                                                                          Elements.CONNECTION_TO_APPLICATION_PACKS,
                                                                          Elements.CONNECTION_TO_APPLICATION_PACK,
