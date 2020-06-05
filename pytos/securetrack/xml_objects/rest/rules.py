@@ -274,6 +274,10 @@ class Rule(XML_Object_Base, Comparable):
         self.additional_parameters = kwargs['additional_parameters']
         self.applications = kwargs['applications']
         self.rule_text = kwargs['rule_text']
+        self.sub_policy = kwargs['sub_policy']
+        self.sub_policy_global = kwargs['sub_policy_global']
+        self.sub_policy_shared = kwargs['sub_policy_shared']
+        self.sub_policy_uid = kwargs['sub_policy_uid']
         super().__init__(xml_tags.Elements.RULE)
 
     def _key(self):
@@ -334,6 +338,11 @@ class Rule(XML_Object_Base, Comparable):
         install_node = get_xml_node(xml_node, xml_tags.Elements.INSTALL, True)
         install = Install.from_xml_node(install_node) if install_node else None
 
+        sub_policy = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY)
+        sub_policy_global = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_GLOBAL)
+        sub_policy_shared = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_SHARED)
+        sub_policy_uid  = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_UID)
+
         src_zones = [Flat_XML_Object_Base(xml_tags.Elements.SRC_ZONE, content=s_zone.text) for s_zone in xml_node.iter(tag=xml_tags.Elements.SRC_ZONE)]
         dst_zones = [Flat_XML_Object_Base(xml_tags.Elements.DST_ZONE, content=d_zone.text) for d_zone in xml_node.iter(tag=xml_tags.Elements.DST_ZONE)]
         additional_parameters = create_tagless_xml_objects_list(xml_node, xml_tags.Elements.ADDITIONAL_PARAMETER, AdditionalParameter)
@@ -344,7 +353,8 @@ class Rule(XML_Object_Base, Comparable):
                    dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                    src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
                    application, vpn, install, src_zones, dst_zones, rule_type_type, rule_text=rule_text,
-                   additional_parameters=additional_parameters, applications=applications)
+                   additional_parameters=additional_parameters, applications=applications, sub_policy=sub_policy,
+                   sub_policy_global=sub_policy_global, sub_policy_shared=sub_policy_shared, sub_policy_uid=sub_policy_uid)
 
     def __str__(self):
         src_negated, dst_negated, srv_negated = "", "", ""
