@@ -1106,8 +1106,9 @@ class Subnet_Network_Object(Network_Object):
 
 class Base_Network_Object(Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.members = members
+        self.exclusions = exclusions
         self.uid = uid
         super().__init__(xml_tags.Elements.NETWORK_OBJECT, display_name, is_global, connection_id, name, service_type,
                          device_id, comment, implicit)
@@ -1132,11 +1133,18 @@ class Base_Network_Object(Network_Object):
             member_name = get_xml_text_value(member_node, xml_tags.Elements.NAME)
             member_uid = get_xml_text_value(member_node, xml_tags.Elements.UID)
             members.append(Base_Object(xml_tags.Elements.MEMBER, member_name, member_display_name, member_id, member_uid))
+        exclusions = XML_List(xml_tags.Elements.EXCLUSIONS, [])
+        for exclusion_node in xml_node.iter(tag=xml_tags.Elements.EXCLUSION):
+            exclusion_id = get_xml_int_value(exclusion_node, xml_tags.Elements.ID)
+            exclusion_display_name = get_xml_text_value(exclusion_node, xml_tags.Elements.DISPLAY_NAME)
+            exclusion_name = get_xml_text_value(exclusion_node, xml_tags.Elements.NAME)
+            exclusion_uid = get_xml_text_value(exclusion_node, xml_tags.Elements.UID)
+            exclusions.append(Base_Object(xml_tags.Elements.EXCLUSION, exclusion_name, exclusion_display_name, exclusion_id, exclusion_uid))
         device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
         comment = get_xml_text_value(xml_node, xml_tags.Elements.COMMENT)
         implicit = get_xml_text_value(xml_node, xml_tags.Elements.IMPLICIT)
         return cls(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                   implicit)
+                   implicit, exclusions)
 
     def __str__(self):
         spacer = 4 * " "
@@ -1149,10 +1157,10 @@ class Base_Network_Object(Network_Object):
 
 class Group_Network_Object(Base_Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_GROUP)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                         implicit)
+                         implicit, exclusions)
 
 
 class Cloud_Network_Object(Base_Network_Object):
@@ -1160,7 +1168,7 @@ class Cloud_Network_Object(Base_Network_Object):
                  implicit):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                         implicit)
+                         implicit, exclusions)
 
 
 class DomainNetworkObject(Network_Object):

@@ -310,6 +310,7 @@ class Elements:
     ENFORCEDON = "enforcedOn"
     EXCLUDE_ANY = "exclude_any"
     EXCLUSION = "exclusion"
+    EXCLUSIONS = "exclusions"
     EXEMPTED_TRAFFIC = "exempted_traffic"
     EXEMPTED_TRAFFIC_LIST = "exempted_traffic_list"
     EXPIRATION_DATE = "expiration_date"
