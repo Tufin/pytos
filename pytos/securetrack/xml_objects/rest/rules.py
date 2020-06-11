@@ -1165,7 +1165,7 @@ class Group_Network_Object(Base_Network_Object):
 
 class Cloud_Network_Object(Base_Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
                          implicit, exclusions)
