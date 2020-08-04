@@ -274,6 +274,10 @@ class Rule(XML_Object_Base, Comparable):
         self.additional_parameters = kwargs['additional_parameters']
         self.applications = kwargs['applications']
         self.rule_text = kwargs['rule_text']
+        self.sub_policy = kwargs['sub_policy']
+        self.sub_policy_global = kwargs['sub_policy_global']
+        self.sub_policy_shared = kwargs['sub_policy_shared']
+        self.sub_policy_uid = kwargs['sub_policy_uid']
         super().__init__(xml_tags.Elements.RULE)
 
     def _key(self):
@@ -334,6 +338,11 @@ class Rule(XML_Object_Base, Comparable):
         install_node = get_xml_node(xml_node, xml_tags.Elements.INSTALL, True)
         install = Install.from_xml_node(install_node) if install_node else None
 
+        sub_policy = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY)
+        sub_policy_global = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_GLOBAL)
+        sub_policy_shared = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_SHARED)
+        sub_policy_uid  = get_xml_text_value(xml_node, xml_tags.Elements.SUB_POLICY_UID)
+
         src_zones = [Flat_XML_Object_Base(xml_tags.Elements.SRC_ZONE, content=s_zone.text) for s_zone in xml_node.iter(tag=xml_tags.Elements.SRC_ZONE)]
         dst_zones = [Flat_XML_Object_Base(xml_tags.Elements.DST_ZONE, content=d_zone.text) for d_zone in xml_node.iter(tag=xml_tags.Elements.DST_ZONE)]
         additional_parameters = create_tagless_xml_objects_list(xml_node, xml_tags.Elements.ADDITIONAL_PARAMETER, AdditionalParameter)
@@ -344,7 +353,8 @@ class Rule(XML_Object_Base, Comparable):
                    dst_services, dst_services_negated, disabled, external, name, rule_number, src_networks,
                    src_networks_negated, src_services_negated, track, rule_type, documentation, device_id, implicit,
                    application, vpn, install, src_zones, dst_zones, rule_type_type, rule_text=rule_text,
-                   additional_parameters=additional_parameters, applications=applications)
+                   additional_parameters=additional_parameters, applications=applications, sub_policy=sub_policy,
+                   sub_policy_global=sub_policy_global, sub_policy_shared=sub_policy_shared, sub_policy_uid=sub_policy_uid)
 
     def __str__(self):
         src_negated, dst_negated, srv_negated = "", "", ""
@@ -830,6 +840,8 @@ class Network_Objects_List(XML_List):
                 network_objects.append(Group_Network_Object.from_xml_node(network_object_node))
             elif network_object_type == xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD:
                 network_objects.append(Cloud_Network_Object.from_xml_node(network_object_node))
+            elif network_object_type == xml_tags.Attributes.NETWORK_OBJECT_TYPE_DOMAIN:
+                network_objects.append(DomainNetworkObject.from_xml_node(network_object_node))
             else:
                 message = "Got unknown type '{}'".format(network_object_type)
                 logger.error(message)
@@ -1094,8 +1106,9 @@ class Subnet_Network_Object(Network_Object):
 
 class Base_Network_Object(Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.members = members
+        self.exclusions = exclusions
         self.uid = uid
         super().__init__(xml_tags.Elements.NETWORK_OBJECT, display_name, is_global, connection_id, name, service_type,
                          device_id, comment, implicit)
@@ -1120,11 +1133,18 @@ class Base_Network_Object(Network_Object):
             member_name = get_xml_text_value(member_node, xml_tags.Elements.NAME)
             member_uid = get_xml_text_value(member_node, xml_tags.Elements.UID)
             members.append(Base_Object(xml_tags.Elements.MEMBER, member_name, member_display_name, member_id, member_uid))
+        exclusions = XML_List(xml_tags.Elements.EXCLUSIONS, [])
+        for exclusion_node in xml_node.iter(tag=xml_tags.Elements.EXCLUSION):
+            exclusion_id = get_xml_int_value(exclusion_node, xml_tags.Elements.ID)
+            exclusion_display_name = get_xml_text_value(exclusion_node, xml_tags.Elements.DISPLAY_NAME)
+            exclusion_name = get_xml_text_value(exclusion_node, xml_tags.Elements.NAME)
+            exclusion_uid = get_xml_text_value(exclusion_node, xml_tags.Elements.UID)
+            exclusions.append(Base_Object(xml_tags.Elements.EXCLUSION, exclusion_name, exclusion_display_name, exclusion_id, exclusion_uid))
         device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
         comment = get_xml_text_value(xml_node, xml_tags.Elements.COMMENT)
         implicit = get_xml_text_value(xml_node, xml_tags.Elements.IMPLICIT)
         return cls(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                   implicit)
+                   implicit, exclusions)
 
     def __str__(self):
         spacer = 4 * " "
@@ -1137,18 +1157,47 @@ class Base_Network_Object(Network_Object):
 
 class Group_Network_Object(Base_Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_GROUP)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                         implicit)
+                         implicit, exclusions)
 
 
 class Cloud_Network_Object(Base_Network_Object):
     def __init__(self, display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                 implicit):
+                 implicit, exclusions):
         self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_CLOUD)
         super().__init__(display_name, is_global, connection_id, name, service_type, members, uid, device_id, comment,
-                         implicit)
+                         implicit, exclusions)
+
+
+class DomainNetworkObject(Network_Object):
+    def __init__(
+            self, display_name, is_global, object_id, name, object_type, device_id, comment, implicit,
+            class_name, domain, management_domain, uid
+    ):
+        self.set_attrib(xml_tags.Attributes.XSI_TYPE, xml_tags.Attributes.NETWORK_OBJECT_TYPE_DOMAIN)
+        super().__init__(xml_tags.Elements.NETWORK_OBJECT, display_name, is_global, object_id, name, object_type,
+                         device_id, comment, implicit, class_name)
+        self.domain = domain
+        self.uid = uid
+
+    @classmethod
+    def from_xml_node(cls, xml_node):
+        id = get_xml_int_value(xml_node, xml_tags.Elements.ID)
+        name = get_xml_text_value(xml_node, xml_tags.Elements.NAME)
+        display_name = get_xml_text_value(xml_node, xml_tags.Elements.DISPLAY_NAME)
+        comment = get_xml_text_value(xml_node, xml_tags.Elements.COMMENT)
+        uid = get_xml_text_value(xml_node, xml_tags.Elements.UID)
+        implicit = get_xml_text_value(xml_node, xml_tags.Elements.IMPLICIT)
+        is_global = get_xml_text_value(xml_node, xml_tags.Elements.GLOBAL)
+        management_domain = get_xml_text_value(xml_node, xml_tags.Elements.MANAGEMENT_DOMAIN)
+        domain = get_xml_text_value(xml_node, xml_tags.Elements.DOMAIN)
+        device_id = get_xml_int_value(xml_node, xml_tags.Elements.DEVICE_ID)
+        object_type = get_xml_text_value(xml_node, xml_tags.Elements.TYPE)
+        class_name = get_xml_text_value(xml_node, xml_tags.Elements.CLASS_NAME)
+        return cls(display_name, is_global, id, name, object_type, device_id, comment, implicit, class_name,
+                   domain, management_domain, uid)
 
 
 class Policy_Analysis_Query_Result(XML_Object_Base):
