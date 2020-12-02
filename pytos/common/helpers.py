@@ -62,7 +62,7 @@ class Secure_API_Helper:
         else:
             return False
 
-    def get_uri(self, uri, expected_status_codes=None, headers=None, timeout=None, max_retries=None, session=None):
+    def get_uri(self, uri, expected_status_codes=None, headers=None, timeout=None, max_retries=None, session=None, **kwargs):
         """Make a GET request to a URI for the configured host.
 
         :param uri: The URI relative to the configured host to GET.
@@ -75,8 +75,7 @@ class Secure_API_Helper:
         """
         if headers is None:
             headers = {}
-        expected_status_codes = expected_status_codes
-        timeout = timeout
+
         if timeout is None:
             timeout = self.timeout
         if max_retries is None:
@@ -86,7 +85,7 @@ class Secure_API_Helper:
                                                 headers=headers, verify_ssl=False,
                                                 expected_status_codes=expected_status_codes,
                                                 timeout=timeout, cookies=self.cookie_jar,
-                                                session=session, max_retries=max_retries)
+                                                session=session, max_retries=max_retries, **kwargs)
         return get_request
 
     def post_uri(self, uri, body=None, params_dict=None, multi_part_form_params=None, expected_status_codes=None,
@@ -147,7 +146,7 @@ class Secure_API_Helper:
         return post_request
 
     def put_uri(self, uri, body=None, expected_status_codes=None, headers=None, timeout=None,
-                session=None):
+                session=None, **kwargs):
         """Make a PUT request to a URI for the configured host.
 
         :param uri: The URI relative to the configured host to PUT.
@@ -172,10 +171,10 @@ class Secure_API_Helper:
                                                 login_data=self.login_data, verify_ssl=False,
                                                 expected_status_codes=expected_status_codes,
                                                 timeout=timeout, cookies=self.cookie_jar,
-                                                session=session)
+                                                session=session, **kwargs)
         return put_request
 
-    def delete_uri(self, uri, headers=None, session=None, **kwargs):
+    def delete_uri(self, uri, headers=None, session=None, timeout=None, **kwargs):
         """Make a DELETE request to a URI for the configured host.
 
         :param uri: The URI relative to the configured host to DELETE.
@@ -189,7 +188,7 @@ class Secure_API_Helper:
         expected_status_codes = kwargs.get("expected_status_codes")
         if headers is None:
             headers = {}
-        timeout = kwargs.get("timeout")
+
         if timeout is None:
             timeout = self.timeout
 
@@ -197,7 +196,7 @@ class Secure_API_Helper:
                                                       login_data=self.login_data, verify_ssl=False,
                                                       expected_status_codes=expected_status_codes,
                                                       timeout=timeout, cookies=self.cookie_jar,
-                                                      session=session)
+                                                      session=session, **kwargs)
         return delete_request
 
     @classmethod
