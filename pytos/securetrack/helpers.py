@@ -6,6 +6,8 @@ import itertools
 import logging
 import base64
 import multiprocessing.pool
+import json
+import requests
 import xml.etree.ElementTree as ET
 
 from pytos.common.definitions.Url_Params_Builder import URLParamBuilderDict
@@ -298,6 +300,88 @@ class Secure_Track_Helper(Secure_API_Helper):
             msg = "Generic device with name '{}' on domain {} is not found".format(generic_device_name, domain_id)
             logger.error(msg)
             raise ValueError(msg)
+
+    def new_generic_device(self, name: str, config_file: str,  domain_id=1, update_topo=True):
+        """
+        It creates a new generic device on the specified domain.
+
+        :param name: the generic device name
+        :param config_file: the configuration file to upload to ST
+        :param domain_id: the domain id where the device needs to be created
+        :param update_topo: update the topology after the creation
+        """
+        gen_device = json.dumps({"generic_device": {"name": name, "customer_id": domain_id}})
+        multi_part_form_dict = {"device_data": ('data.txt', gen_device, 'application/json'),
+                                "configuration_file": (
+                                config_file, open(config_file, 'rb'), "application/octet-stream"),
+                                'update_topology': (None, update_topo, 'text/plain')
+                                }
+
+        try:
+            response = self.post_uri("/securetrack/api/generic_devices/",
+                                     multi_part_form_params=multi_part_form_dict, expected_status_codes=201)
+            logger.info("creation of generic device {} is successful.".format(name))
+        except RequestException:
+            message = "Failed to create the new device with name {}".format(name)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Bad_Request_Error as http_exception:
+            message = "Failed to create the new device with name {}, got error: '{}'.".format(name, http_exception)
+            logger.critical(message)
+            raise ValueError(message)
+
+    def update_generic_device(self, device_id: int, config_file: str, update_topology=False):
+        """
+        The update_generic_device function updates a generic device with the given configuration file.
+
+        :param self: Used to Reference the class instance.
+        :param device_id: Used to Pass in the id of the device that we want to update.
+        :param config_file: Used to Specify the path to the configuration file for the device.
+        :param update_topology: Used to Tell the update_generic_device function to not update the topology.
+        :return: :.
+        """
+
+        openBin = {'configuration_file': (config_file, open(config_file, 'rb'), 'application/octet-stream')}
+        try:
+            url = 'https://' + self._real_hostname + '/securetrack/api/generic_devices/{}'.format(device_id)
+
+            t = requests.put(url, headers={'Content-Type': 'multipart/form-data'},
+                             files=openBin, data={"update_topology": update_topology}, verify=False,
+                             auth=(self.login_data['username'], self.login_data['password']))
+            if t.status_code != 204:
+                message = "Failed to update the device with id {}.  status code is {}".format(device_id, t.status_code)
+                logger.critical(message)
+                raise ValueError(message)
+
+            logger.info("Upload successful.")
+
+        except RequestException:
+            message = "Failed to update the new device with id {}".format(device_id)
+            logger.critical(message)
+            raise IOError(message)
+        except REST_Bad_Request_Error as http_exception:
+            message = "Failed to create the new device with id {}, got error: '{}'.".format(device_id, http_exception)
+            logger.critical(message)
+            raise ValueError(message)
+
+    def delete_generic_device(self, device_id: int):
+        """
+        It deletes a generic device from SecureTrack map
+
+        :parameter device_id: Used to Pass in the id of the device that we want to delete
+        """
+        logger.info("Deleting generic device with ID {}.".format(device_id))
+        url = "/securetrack/api/generic_devices/{}?update_topology=false".format(device_id)
+        try:
+            self.delete_uri(url, expected_status_codes=[200, 204])
+        except REST_Not_Found_Error:
+            message = "Generic device with ID {} doesn't exist.".format(device_id)
+            logger.critical(message)
+            raise ValueError(message)
+        except (RequestException, REST_HTTP_Exception):
+            message = "Failed to delete generic device with ID {}.".format(device_id)
+            logger.critical(message)
+            raise IOError(message)
 
     def add_offline_device(self, name, vendor, model, domain_id=None, domain_name="Default", topology="true",
                            offline="true"):
