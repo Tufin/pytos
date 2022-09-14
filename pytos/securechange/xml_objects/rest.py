@@ -1,7 +1,11 @@
 import datetime
 import time
 import enum
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except:
+    from collections.abc import OrderedDict
+
 
 # For backward compatibility import FileLock
 from pytos.securechange.xml_objects.restapi.step.rule_decommission.rule_decommission import Step_Field_Rule_Decommission
@@ -2132,4 +2136,3 @@ class ExcludedDevicesList(XML_List):
 class RejectComment(Comment):
     def __init__(self, comment):
         super().__init__(comment, Elements.REJECT_COMMENT)
-

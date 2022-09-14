@@ -1,5 +1,8 @@
 # coding=utf-8
-import collections
+try:
+    from collections import Iterable
+except:
+    from collections.abc import Iterable
 import csv
 import io
 import itertools
@@ -1320,7 +1323,7 @@ class Secure_Track_Helper(Secure_API_Helper):
     def get_rule_base(self, get_documentation=False, device_ids=None):
         """Get the rules for each of the devices configured in SecureTrack.
 
-        :type device_ids: collections.Iterable[int]
+        :type device_ids: Iterable[int]
         :param device_ids: If specified, get the rule base only for the specified devices.
         :param get_documentation: Whether or not to get the rule documentation together with the rule base.
         :type get_documentation: bool
@@ -2140,13 +2143,13 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param device_id: The device ID for which we want to get network objects.
         :type device_id: int
         :param service_ids: The ID of the service
-        :type service_ids: int|collections.Iterable[int]
+        :type service_ids: int|Iterable[int]
         :return: The service for the specified device with the specified ID.
         :rtype: Single_Service|Group_Service
         :raise ValueError: If a device with the specified ID does not exist.
         :raise IOError: If there was a communication problem trying to get the network objects.
         """
-        if isinstance(service_ids, collections.Iterable):
+        if isinstance(service_ids, Iterable):
             service_ids = ",".join([str(service_id) for service_id in service_ids])
         logger.info("Getting service with ID %s for device %s.", service_ids, device_id)
         try:
@@ -2169,13 +2172,13 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param revision_id: The revision ID for which we want to get network objects.
         :type revision_id: int
         :param service_ids: The ID of the service
-        :type service_ids: int|collections.Iterable[int]
+        :type service_ids: int|Iterable[int]
         :return: The service for the specified revision with the specified ID.
         :rtype: Services_List
         :raise ValueError: If a revision with the specified ID does not exist.
         :raise IOError: If there was a communication problem trying to get the services.
         """
-        if isinstance(service_ids, collections.Iterable):
+        if isinstance(service_ids, Iterable):
             service_ids = ",".join([str(service_id) for service_id in service_ids])
         logger.info("Getting service with ID %s for revision %s.", service_ids, revision_id)
         try:
@@ -2198,14 +2201,14 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param revision_id: The revision ID for which we want to get network objects.
         :type revision_id: int
         :param network_object_ids: The ID of the network object to get
-        :type network_object_ids: int|collections.Iterable[int]
+        :type network_object_ids: int|Iterable[int]
         :return: The network objects for the specified revision.
         :rtype: Network_Objects_List
         :raise ValueError: If a revision with the specified ID does not exist.
         :raise IOError: Ifp there was a communication problem trying to get the network objects.
         """
         logger.info("Getting network object with ID %s for revision %s.", network_object_ids, revision_id)
-        if isinstance(network_object_ids, collections.Iterable):
+        if isinstance(network_object_ids, Iterable):
             network_object_ids = ",".join([str(network_object_id) for network_object_id in network_object_ids])
         try:
             response_string = self.get_uri(
@@ -2227,14 +2230,14 @@ class Secure_Track_Helper(Secure_API_Helper):
         :param device_id: The device ID for which we want to get network objects.
         :type device_id: int
         :param network_object_ids: The ID of the network object to get
-        :type network_object_ids: int|collections.Iterable[int]
+        :type network_object_ids: int|Iterable[int]
         :return: The network objects for the specified device.
         :rtype: Network_Objects_List
         :raise ValueError: If a device with the specified ID does not exist.
         :raise IOError: Ifp there was a communication problem trying to get the network objects.
         """
         logger.info("Getting network object with ID %s for device %s.", network_object_ids, device_id)
-        if isinstance(network_object_ids, collections.Iterable):
+        if isinstance(network_object_ids, Iterable):
             network_object_ids = ",".join([str(network_object_id) for network_object_id in network_object_ids])
         try:
             response_string = self.get_uri(
