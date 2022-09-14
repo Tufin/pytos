@@ -1,5 +1,8 @@
 
-import collections
+try:
+    from collections import Iterable
+except:
+    from collections.abc import Iterable
 import datetime
 import hashlib
 import http.cookiejar
@@ -222,7 +225,7 @@ class REST_Request(object):
             status_code_ok = False
 
         if status_code_ok:
-            if isinstance(self.expected_status_codes, collections.Iterable):
+            if isinstance(self.expected_status_codes, Iterable):
                 if self.response.status_code not in self.expected_status_codes:
                     status_code_ok = False
             elif isinstance(self.expected_status_codes, int):
