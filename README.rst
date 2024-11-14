@@ -1,3 +1,6 @@
+This project is no longer maintained, please use the `pytos2-ce SDK <https://gitlab.com/tufinps/pytos2-ce>`__
+=====
+
 Pytos
 =====
 
@@ -22,98 +25,6 @@ Common Use Cases
 * Submit and manage access requests to update firewall policies
 * Manage application connectivity
 
-
-Installation
-************
-
-Install the package by running the following command (it is recommended that you upgrade pip first)::
-
-	# pip install pytos
-
-Running Tests
-~~~~~~~~~~~~~
-The package can be tested in all supported Python versions using ``tox``. The tested Python version
-must be installed including ``tox``:
-
-	$ tox -e py34
-
-You can also run individual tests with your default Python version by running ``nosetests`` command directly:
-
-	$ nosetests -v tests/securetrack_test/test_secure_track_helper_unittest.py:TestGeneralSettings
-
-SecureTrack
-***********
-
-Connect to SecureTrack with valid username and password::
-
-	from pytos.securetrack.helpers import Secure_Track_Helper
-	st_helper = Secure_Track_Helper("127.0.0.1", ("username", "password"))
-
-SecureChange
-************
-
-Connect to SecureChange with valid username and password::
-
-	from pytos.securechange.helpers import Secure_Change_Helper
-	sc_helper = Secure_Change_Helper("127.0.0.1", ("username", "password"))
-
-SecureApp
-*********
-
-Connect to SecureApp with valid username and password::
-
-	from pytos.secureapp.helpers import Secure_App_Helper
-	sa_helper = Secure_App_Helper("127.0.0.1", ("username", "password"))
-
-How to use pytos logger
-***********************
-
-To use the pytos logging mechanism perform the following steps:
-
-The following table defines the log levels and messages, in decreasing order of severity.
-
-+---------------------+----------------------------------------------+
-| Parameters          | Description                                  |
-+=====================+==============================================+
-| CRITICAL            | Only critical messages.                      |
-+---------------------+----------------------------------------------+
-| ERROR               | Messages with error and above.               |
-+---------------------+----------------------------------------------+
-| WARNING             | Message with warning and above.              |
-+---------------------+----------------------------------------------+
-| INFO                | Messages with info and above.                |
-+---------------------+----------------------------------------------+
-| DEBUG               | All levels.                                  |
-+---------------------+----------------------------------------------+
-
-Create an ini like configuration file with the following sections::
-
-	[common]
-	log_file_path = /var/log/pytos/
-
-	[log_levels]
-	common = WARNING
-	helpers = WARNING
-	reports = WARNING
-	requests = WARNING
-	mail = WARNING
-	sql = WARNING
-	xml = WARNING
-	web = WARNING
-	third_party = WARNING
-
-In your code call the following methods::
-
-	import logging
-	from pytos.common.logging.Defines import COMMON_LOGGER_NAME
-	from pytos.common.logging.Logger import setup_loggers
-	from pytos.common.functions.Config import Secure_Config_Parser
-
-	conf = Secure_Config_Parser(config_file_path="/ini/like/configuration/path/pytos.conf")
-	logger = logging.getLogger(COMMON_LOGGER_NAME)
-	setup_loggers(conf.dict("log_levels"), log_to_stdout=True)
-	logger.info("Hello world")
-
 Getting Help
 ************
 
@@ -121,5 +32,4 @@ For tracking bugs and new feature requests please use GitHub issues. Please also
 help:
 
 * Join the `Tufin Developer Community <https://community.tufin.com>`__
-* If you think you found a bug, please `submit an issue <https://github.com/Tufin/pytos/issues>`__A
 
