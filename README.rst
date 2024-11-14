@@ -121,4 +121,5 @@ For tracking bugs and new feature requests please use GitHub issues. Please also
 help:
 
 * Join the `Tufin Developer Community <https://community.tufin.com>`__
-* If you think you found a bug, please `submit an issue <https://github.com/Tufin/pytos/issues>`__
+* If you think you found a bug, please `submit an issue <https://github.com/Tufin/pytos/issues>`__A
+
